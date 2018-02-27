@@ -1,0 +1,20 @@
+declare -a ARR_JENKINS_SETUP_SCRIPTS
+# Provisioner-specific configuration
+export JENKINS_PORT=${JENKINS_PORT:-8080}
+export JENKINS_RAM='1000m'
+export ANSIBLE_TARGET="${ANSIBLE_TARGET:-'nobody@192.0.2.201'}"
+# Jenkins-specific configuration
+export JENKINS_ADDR="http://127.0.0.1:${JENKINS_PORT}"
+export JENKINS_ADMIN_USER='admin'
+ARR_JENKINS_SETUP_SCRIPTS=(
+  "common/output-test.groovy"
+  "factory/plugins-install.groovy"
+  "common/useradd-admin.groovy"
+  "common/jobs-delete.groovy"
+  "common/views-delete.groovy"
+  "factory/jobs/factory-job-dsl-import.groovy"
+  "common/security-setup.groovy"
+  "common/safe-restart.groovy"
+)
+export JENKINS_SETUP_SCRIPTS="${ARR_JENKINS_SETUP_SCRIPTS[*]}"
+

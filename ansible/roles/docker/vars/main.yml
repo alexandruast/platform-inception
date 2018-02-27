@@ -1,0 +1,6 @@
+docker_packages:
+  - docker-io
+  
+docker_groups:
+  - docker
+  - dockerroot

@@ -1,0 +1,129 @@
+- name: "exit on missing mandatory variables"
+  shell: 'false'
+  when: jenkins_port == "" or jenkins_ram == ""
+
+- name: "ensure service groups exist"
+  group:
+    name: "{{ item.group }}"
+  become: true
+  with_items:
+    - "{{ services }}"
+  loop_control: 
+    label: "{{ item.group }}"
+
+- name: "ensure service users exist"
+  user:
+    name: "{{ item.user }}"
+    groups: "{{ item.group }}"
+    home: "{{ item.home }}"
+  become: true
+  with_items:
+    - "{{ services }}"
+  loop_control: 
+    label: "{{ item.user }}"
+
+- name: "ensure required service directories are created"
+  file:
+    path: "{{ item.data_dir }}"
+    state: directory
+    mode: 0700
+    owner: "{{ item.user }}"
+    group: "{{ item.group }}"
+  become: true
+  with_items:
+    - "{{ services }}"
+  loop_control: 
+    label: "{{ item.data_dir }}"
+
+- name: "ensure required log files are touched"
+  file:
+    path: "{{ item.log_file }}"
+    state: touch
+    mode: 0640
+    owner: "{{ item.user }}"
+    group: "{{ item.group }}"
+  become: true
+  with_items:
+    - "{{ services }}"
+  loop_control:
+    label: "{{ item.log_file }}"
+  changed_when: false
+  
+- name: "ensure required service assets are downloaded"
+  get_url:
+    url:  "{{ item.download_url }}"
+    dest: "{{ item.download_dest }}"
+    force: "{{ item.download_force }}"
+  notify:
+     - restart service
+  become: true
+  with_items:
+    - "{{ services }}"
+  loop_control: 
+    label: "{{ item.download_dest }}"
+
+- name: "ensure init.d service configs are updated"
+  template:
+    src: "{{ initd_service_conf }}.j2"
+    dest: "/etc/init.d/{{ item.name }}"
+    mode: 0740
+  register: service_changed
+  become: true
+  with_items:
+    - "{{ services }}"
+  notify:
+     - restart service
+  loop_control:
+    label: "/etc/init.d/{{ item.name }}"
+
+- name: "ensure services are enabled and running"
+  service:
+    name: "{{item.name}}"
+    enabled: yes
+    state: started
+  become: true
+  with_items:
+    - "{{ services }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: "ensure user jenkins belongs to docker groups"
+  user:
+    name: jenkins
+    groups: "{{ item }}"
+    append: yes
+  become: true
+  with_items:
+    - "{{ docker_groups }}"
+  when: docker_groups_task is defined and docker_groups_task.changed
+  notify:
+    - restart docker
+
+- name: "ensure jenkins ./ssh directory is created"
+  file:
+    path: "{{ item.home }}/.ssh"
+    state: directory
+    mode: 0750
+    owner: "{{ item.user }}"
+    group: "{{ item.group }}"
+  become: true
+  when: '"jenkins" in item.user'
+  with_items:
+    - "{{ services }}"
+  loop_control:
+    label: "{{ item.home }}"
+
+- name: "ensure {{ user_ssh_key }} private key file can be used by jenkins"
+  copy:
+    src: "{{ user_ssh_key }}"
+    dest: "{{ item.home }}/.ssh/id_rsa"
+    owner: "{{ item.user }}"
+    group: "{{ item.group }}"
+    mode: 0600
+    remote_src: yes
+  become: true
+  when: '"jenkins" in item.user'
+  with_items:
+    - "{{ services }}"
+  loop_control:
+    label: "{{ item.home }}/.ssh/id_rsa"

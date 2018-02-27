@@ -1,0 +1,13 @@
+- hosts: all
+  gather_facts: yes
+
+  roles:
+    - role: check-sudo
+    - role: epel-release
+    - role: base-common
+    - role: java8-openjdk
+    - role: ansible
+    - role: mo
+    - role: docker
+    - role: docker-compose
+    - role: jenkins

@@ -1,0 +1,27 @@
+packages:
+  - acpid
+  - bash
+  - bc
+  - ca-certificates
+  - curl
+  - bind-utils
+  - ethtool
+  - git
+  - htop
+  - iftop
+  - iotop
+  - jq
+  - nethogs
+  - ncdu
+  - ntp
+  - procps
+  - psmisc
+  - sysstat
+  - tcpdump
+  - telnet
+  - unzip
+  - vim
+
+on_services:
+  - ntpd
+  - acpid

@@ -1,0 +1,14 @@
+workspace_tmp_dir: "/tmp/ansible-workspace"
+user_ssh_dir: "{{ ansible_env.HOME }}/.ssh"
+user_ssh_key: "{{ user_ssh_dir }}/id_rsa"
+
+user_dirs:
+  - "{{ user_ssh_dir }}"
+  - "{{ workspace_tmp_dir }}"
+
+system_dirs:
+  - /etc/ansible/facts.d
+
+sudoers_dir: /etc/sudoers.d
+initd_service_conf: initd-service
+no_passwd_sudo_conf: 90-no-passwd-for-ansible-user

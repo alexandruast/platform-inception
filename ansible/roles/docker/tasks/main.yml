@@ -1,0 +1,42 @@
+- name: "ensure docker prerequisites are installed"
+  yum:
+    name: "{{ item }}"
+    state: present
+  become: true
+  with_items:
+    - device-mapper-persistent-data
+    - lvm2
+
+- name: "ensure docker groups exist"
+  group:
+    name: "{{ item }}"
+  become: true
+  with_items:
+    - "{{ docker_groups }}"
+  register: docker_groups_task
+
+- name: "ensure docker is installed"
+  yum:
+    name: "{{ item }}"
+    state: present
+  become: true
+  with_items:
+    - "{{ docker_packages }}"
+
+- name: "ensure user {{ ansible_user_id }} belongs to docker groups"
+  user:
+    name: "{{ ansible_user_id }}"
+    groups: "{{ item }}"
+    append: yes
+  become: true
+  with_items:
+    - "{{ docker_groups }}"
+  notify:
+    - restart docker
+  
+- name: ensure services are enabled and running
+  service:
+    name: docker
+    enabled: yes
+    state: started
+  become: true

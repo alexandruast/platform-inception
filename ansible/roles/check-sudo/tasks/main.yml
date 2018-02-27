@@ -1,0 +1,8 @@
+- name: "test if user {{ ansible_user_id }} can use privileged mode"
+  shell: whoami
+  become: true
+  when: ansible_user_id != 'root'
+  changed_when: false
+  tags: 
+    - user
+    - always

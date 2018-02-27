@@ -1,0 +1,2 @@
+- debug:
+    msg: "Ansible distribution/release: {{ ansible_distribution }}/{{ ansible_lsb }}"

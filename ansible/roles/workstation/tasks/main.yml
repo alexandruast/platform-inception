@@ -1,0 +1,68 @@
+- name: "include all variables"
+  include_vars:
+    dir: vars
+  tags: always
+
+- name: "ensure required packages are installed"
+  yum:
+    name: "{{ item }}"
+    state: present
+  become: true
+  with_items:
+    - "{{ packages }}"
+  tags: yum
+
+- name: "ensure required system pips are installed and upgraded"
+  pip:
+    name: "{{ item }}"
+    extra_args: --upgrade
+  become: true
+  with_items:
+    - "{{ system_pips }}"
+  tags: pip
+
+- name: "ensure required user pips are installed and upgraded"
+  pip:
+    name: "{{ item }}"
+    extra_args: --upgrade --user
+  with_items:
+    - "{{ user_pips }}"
+  tags: pip
+
+- name: "ensure required git repos are in place"
+  git:
+    repo: "{{ item.download_url }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - "{{ git }}"
+  tags: git
+
+- name: "ensure .zshrc exists and is updated"
+  template:
+    src: "{{ zshrc_conf }}.j2"
+    dest: "{{ ansible_env.HOME }}/{{ zshrc_conf }}"
+  tags: env
+
+- name: "ensure .aliases exists and is updated"
+  template:
+    src: "{{ shell_aliases_conf }}.j2"
+    dest: "{{ ansible_env.HOME }}/{{ shell_aliases_conf }}"
+  tags: env
+
+- name: "ensure user {{ ansible_user_id }} uses zsh shell"
+  user:
+    name: "{{ ansible_user_id }}"
+    shell: "{{ shell }}"
+  become: true
+  tags: env
+
+- name: "install custom fact for workstation setup completed"
+  copy:
+    src: facts/w_setup_completed.fact
+    dest: /etc/ansible/facts.d/w_setup_completed.fact
+  become: true
+
+- name: "reload ansible_local"
+  setup:
+    filter: ansible_local
+  tags: always

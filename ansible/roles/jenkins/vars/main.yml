@@ -1,0 +1,18 @@
+jenkins_port: "{{ lookup('env','JENKINS_PORT') }}"
+jenkins_ram: "{{ lookup('env','JENKINS_RAM') }}"
+jenkins_war: /usr/local/share/jenkins.war
+
+services:
+  - name: jenkins
+    user: jenkins
+    group: jenkins
+    home: /home/jenkins
+    download_url: http://mirrors.jenkins.io/war/2.108/jenkins.war
+    download_dest: "{{ jenkins_war }}"
+    download_force: no
+    data_dir: /usr/local/share/jenkins
+    log_file: /var/log/jenkins.log
+    env: { 
+      JENKINS_HOME: /usr/local/share/jenkins
+    }
+    cmd: "/usr/bin/java -Xmx{{ jenkins_ram }} -Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -jar {{ jenkins_war }} --httpPort={{ jenkins_port }}"

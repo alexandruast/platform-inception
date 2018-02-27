@@ -1,0 +1,42 @@
+shell: /bin/zsh
+zshrc_conf: .zshrc
+shell_aliases_conf: .aliases
+
+packages:
+  - automake
+  - gcc
+  - gcc-c++
+  - git-extras
+  - kernel-devel
+  - make
+  - mc
+  - mysql
+  - nano
+  - python-netaddr
+  - python-pip
+  - socat
+  - tree
+  - zsh
+
+system_pips:
+  - pip
+
+user_pips:
+  - awscli
+
+git:
+  - download_url: https://github.com/robbyrussell/oh-my-zsh.git
+    dest: "{{ ansible_env.HOME }}/.oh-my-zsh"
+
+  - download_url: https://github.com/pyenv/pyenv.git
+    dest: "{{ ansible_env.HOME }}/.pyenv"
+
+  - download_url: https://github.com/rbenv/rbenv.git
+    dest: "{{ ansible_env.HOME }}/.rbenv"
+
+  - download_url: https://github.com/rbenv/ruby-build.git
+    dest: "{{ ansible_env.HOME }}/.rbenv/plugins/ruby-build"
+
+  - download_url: https://github.com/gcuisinier/jenv.git
+    dest: "{{ ansible_env.HOME }}/.jenv"
+    
