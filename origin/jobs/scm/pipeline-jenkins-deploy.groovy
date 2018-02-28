@@ -10,7 +10,7 @@ node {
     }
     stage('preparation') {
       checkout([$class: 'GitSCM', 
-        branches: [[name: '*/devel']], 
+        branches: [[name: '*/master']], 
         doGenerateSubmoduleConfigurations: false, 
         submoduleCfg: [], 
         userRemoteConfigs: [[url: 'https://github.com/alexandruast/platform-inception.git']]])
