@@ -14,8 +14,9 @@ Subsequent runs will take much less:
 
 #### Description and Purpose - this is work in progress
 This code brings up three Jenkins instances: Origin, Factory and Prod.  
-Inception starts with one Jenkins server, the Origin-Jenkins.  
-Origin-Jenkins is used to provision Factory-Jenkins and Prod-Jenkins, and it is only required at inception and when reprovisioning. Because it has root access to Origin-Prod, it should be an air-gapped, single purpose machine and only started and connected to network when needed.  
+Inception starts one Jenkins server, the Origin-Jenkins.  
+Origin-Jenkins is then used to provision Factory-Jenkins and Prod-Jenkins, and it is only required at inception or when re-deploying those Jenkins instances.  
+Because it has root access to Origin-Prod, it should be an air-gapped, single purpose machine and only started and connected to network when needed.  
 Factory-Jenkins creates and manages all non-prod environments, where things get produced (Factory).  
 Prod-Jenkins creates and manages all prod environments, where things get deployed to public (Prod).
 
