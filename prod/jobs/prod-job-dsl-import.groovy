@@ -6,7 +6,7 @@ import javaposse.jobdsl.plugin.*
 job_name='system-prod-job-seed'
 job_description="Dynamically created by jenkins-setup\nAny changes to this item will be overwritten without notice."
 git_repository='https://github.com/alexandruast/platform-inception'
-git_branch='*/devel'
+git_branch='*/master'
 targets_dir='prod/jobs/job-dsl'
 
 jenkins = Jenkins.instance
