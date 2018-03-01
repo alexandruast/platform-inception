@@ -15,6 +15,7 @@ ARR_JENKINS_SETUP_SCRIPTS=(
   "prod/jobs/prod-job-dsl-import.groovy"
   "common/security-setup.groovy"
   "common/safe-restart.groovy"
+  "common/is-online.groovy"
 )
 export JENKINS_SETUP_SCRIPTS="${ARR_JENKINS_SETUP_SCRIPTS[*]}"
 
