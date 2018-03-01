@@ -21,6 +21,7 @@ packages:
   - telnet
   - unzip
   - vim
+  - yum-plugin-security
 
 on_services:
   - ntpd
