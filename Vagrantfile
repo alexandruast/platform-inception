@@ -41,9 +41,7 @@ export ANSIBLE_TARGET='127.0.0.1'
 ./apl-wrapper.sh ansible/jenkins-${scope}.yml
 
 ./jenkins-setup.sh
-./jenkins-query.sh common/is-online.groovy
 echo "${scope}-jenkins is online: http://${!ip_var}:${JENKINS_PORT} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
-
 JENKINS_BUILD_JOB=system-${scope}-job-seed ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
 
 opk=$(ssh-keygen -y -f $HOME/.ssh/id_rsa)
@@ -72,7 +70,6 @@ prod_ip=$5
 cd $provision_dir
 
 for scope in origin factory prod; do
-  export JENKINS_NULL='null'
   for v in $(env | grep '^JENKINS_' | cut -f1 -d'='); do unset $v; done
   source ${scope}/.scope
   export JENKINS_ADMIN_PASS=$jenkins_admin_pass

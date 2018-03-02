@@ -1,4 +1,4 @@
-gicu() { git add -A && git commit -m "${*:-Work in progress}" && git push; }
+gwip() { git add -A && git commit -m "${*:-Work in progress}" && git push; }
 g() {
   case $1 in
     b) shift; git branch "$@" ;;

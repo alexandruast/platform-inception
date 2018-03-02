@@ -37,12 +37,12 @@
     - "{{ git }}"
   tags: git
 
-- name: "ensure aliases files are in place"
+- name: "ensure shell profile scripts are in place"
   copy:
     src: "{{ item }}"
-    dest: "{{ ansible_env.HOME }}/aliases.d/"
+    dest: "{{ ansible_env.HOME }}/profile.d/"
   with_fileglob:
-  - "{{ role_path }}/files/aliases.d/*"
+  - "{{ role_path }}/files/profile.d/*"
   tags: env
 
 - name: "ensure .zshrc exists and is updated"

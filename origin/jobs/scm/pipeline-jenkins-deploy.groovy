@@ -38,7 +38,6 @@ node {
         export JENKINS_PORT=$tunnel_port
         source ./$JENKINS_SCOPE/.scope
         ./jenkins-setup.sh
-        ./jenkins-query.sh common/is-online.groovy
       '''
     }
     stage('cleanup') {
