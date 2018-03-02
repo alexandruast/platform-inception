@@ -1,13 +1,10 @@
-user_ssh_dir: "{{ ansible_env.HOME }}/.ssh"
-user_ssh_key: "{{ user_ssh_dir }}/id_rsa"
+user_ssh_key: "{{ ansible_env.HOME }}/id_rsa"
 
 user_dirs:
-  - "{{ user_ssh_dir }}"
-  - "{{ ansible_env.HOME }}/aliases.d"
+  - "{{ ansible_env.HOME }}/.ssh"
+  - "{{ ansible_env.HOME }}/profile.d"
 
 system_dirs:
   - /etc/ansible/facts.d
 
-sudoers_dir: /etc/sudoers.d
 initd_service_conf: initd-service
-no_passwd_sudo_conf: 90-no-passwd-for-ansible-user

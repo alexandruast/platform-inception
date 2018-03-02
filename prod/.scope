@@ -1,18 +1,13 @@
-declare -a ARR_JENKINS_SETUP_SCRIPTS
-# Provisioner-specific configuration
-export JENKINS_PORT=${JENKINS_PORT:-8080}
-export JENKINS_RAM='0500m'
-export ANSIBLE_TARGET="${ANSIBLE_TARGET:-'nobody@192.0.2.201'}"
-# Jenkins-specific configuration
-export JENKINS_ADDR="http://127.0.0.1:${JENKINS_PORT}"
+export JENKINS_JAVA_OPTS="-Xmx500m -Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"
 export JENKINS_ADMIN_USER='admin'
+declare -a ARR_JENKINS_SETUP_SCRIPTS
 ARR_JENKINS_SETUP_SCRIPTS=(
   "common/is-online.groovy"
-  "prod/plugins-install.groovy"
+  "origin/plugins-install.groovy"
   "common/useradd-admin.groovy"
   "common/jobs-delete.groovy"
   "common/views-delete.groovy"
-  "prod/jobs/prod-job-dsl-import.groovy"
+  "origin/jobs/origin-job-dsl-import.groovy"
   "common/security-setup.groovy"
   "common/safe-restart.groovy"
   "common/is-online.groovy"
