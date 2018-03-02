@@ -142,7 +142,9 @@ done
 
 ssh-add -l
 
-# Load aliases file
-  if [ -f $HOME/.aliases ]; then
-      source $HOME/.aliases
-  fi
+# Load aliases
+ALIASES_DIR="$HOME/aliases.d"
+if [ "$(find $ALIASES_DIR/ -type f -printf '.' | wc -c)" -gt 0 ]; then
+  source <(cat $ALIASES_DIR/*)
+  echo "aliases: $(echo $ALIASES_DIR/*)"
+fi

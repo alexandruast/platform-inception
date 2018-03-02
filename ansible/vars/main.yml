@@ -1,10 +1,9 @@
-workspace_tmp_dir: "/tmp/ansible-workspace"
 user_ssh_dir: "{{ ansible_env.HOME }}/.ssh"
 user_ssh_key: "{{ user_ssh_dir }}/id_rsa"
 
 user_dirs:
   - "{{ user_ssh_dir }}"
-  - "{{ workspace_tmp_dir }}"
+  - "{{ ansible_env.HOME }}/aliases.d"
 
 system_dirs:
   - /etc/ansible/facts.d
