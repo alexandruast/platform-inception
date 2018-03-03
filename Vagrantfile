@@ -32,18 +32,16 @@ chmod +x ./*.sh
 sudo yum -q -y install epel-release python libselinux-python
 sudo yum -q -y install ansible
 
-export JENKINS_ADMIN_PASS=$jenkins_admin_pass
-
 scope='origin'
-ip_var="${scope}_ip"
 source ${scope}/.scope
-export ANSIBLE_TARGET='127.0.0.1'
-./apl-wrapper.sh ansible/jenkins-${scope}.yml
+export JENKINS_ADMIN_PASS=$jenkins_admin_pass
+ip_var="${scope}_ip"
+export JENKINS_ADDR=http://${!ip_var}:${JENKINS_PORT}
 
+ANSIBLE_TARGET='127.0.0.1' ./apl-wrapper.sh ansible/jenkins.yml
 ./jenkins-setup.sh
-./jenkins-query.sh common/output-test.groovy
-echo "${scope}-jenkins is online: http://${!ip_var}:${JENKINS_PORT} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
 
+echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
 JENKINS_BUILD_JOB=system-${scope}-job-seed ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
 
 opk=$(ssh-keygen -y -f $HOME/.ssh/id_rsa)
@@ -78,7 +76,7 @@ for scope in origin factory prod; do
   export JENKINS_ADMIN_PASS=$jenkins_admin_pass
   ip_var="${scope}_ip"
   export JENKINS_ADDR=http://${!ip_var}:${JENKINS_PORT}
-  ./jenkins-query.sh common/output-test.groovy
+  ./jenkins-query.sh common/is-online.groovy
   echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
 done
 SCRIPT
@@ -88,8 +86,9 @@ Vagrant.configure(2) do |config|
     node.vm.box = $box
     node.vm.hostname = $factory_hostname
     node.vm.provider "virtualbox" do |vb|
-        vb.memory = $memory
-        vb.cpus = $cpus
+      vb.linked_clone = true
+      vb.memory = $memory
+      vb.cpus = $cpus
     end  
     node.vm.network "private_network", ip: $factory_ip
   end
@@ -98,8 +97,9 @@ Vagrant.configure(2) do |config|
     node.vm.box = $box
     node.vm.hostname = $prod_hostname
     node.vm.provider "virtualbox" do |vb|
-        vb.memory = $memory
-        vb.cpus = $cpus
+      vb.linked_clone = true
+      vb.memory = $memory
+      vb.cpus = $cpus
     end  
     node.vm.network "private_network", ip: $prod_ip
   end
@@ -109,6 +109,7 @@ Vagrant.configure(2) do |config|
     node.vm.hostname = $origin_hostname
     
     node.vm.provider "virtualbox" do |vb|
+        vb.linked_clone = true
         vb.memory = $memory
         vb.cpus = $cpus
     end

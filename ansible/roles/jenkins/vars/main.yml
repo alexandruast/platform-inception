@@ -1,5 +1,5 @@
 jenkins_port: "{{ lookup('env','JENKINS_PORT') }}"
-jenkins_ram: "{{ lookup('env','JENKINS_RAM') }}"
+jenkins_java_opts: "{{ lookup('env','JENKINS_JAVA_OPTS') }}"
 jenkins_war: /usr/local/share/jenkins.war
 
 services:
@@ -15,4 +15,4 @@ services:
     env: { 
       JENKINS_HOME: /usr/local/share/jenkins
     }
-    cmd: "/usr/bin/java -Xmx{{ jenkins_ram }} -Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -jar {{ jenkins_war }} --httpPort={{ jenkins_port }}"
+    cmd: "/usr/bin/java {{ jenkins_java_opts }} -jar {{ jenkins_war }} --httpPort={{ jenkins_port }}"

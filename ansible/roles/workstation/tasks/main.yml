@@ -37,16 +37,18 @@
     - "{{ git }}"
   tags: git
 
-- name: "ensure .zshrc exists and is updated"
-  template:
-    src: "{{ zshrc_conf }}.j2"
-    dest: "{{ ansible_env.HOME }}/{{ zshrc_conf }}"
+- name: "ensure shell profile scripts are in place"
+  copy:
+    src: "{{ item }}"
+    dest: "{{ ansible_env.HOME }}/profile.d/"
+  with_fileglob:
+  - "{{ role_path }}/files/profile.d/*"
   tags: env
 
-- name: "ensure .aliases exists and is updated"
-  template:
-    src: "{{ shell_aliases_conf }}.j2"
-    dest: "{{ ansible_env.HOME }}/{{ shell_aliases_conf }}"
+- name: "ensure .zshrc exists and is updated"
+  copy:
+    src: "{{ zshrc_conf }}"
+    dest: "{{ ansible_env.HOME }}/{{ zshrc_conf }}"
   tags: env
 
 - name: "ensure user {{ ansible_user_id }} uses zsh shell"

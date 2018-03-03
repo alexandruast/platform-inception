@@ -142,7 +142,9 @@ done
 
 ssh-add -l
 
-# Load aliases file
-  if [ -f $HOME/.aliases ]; then
-      source $HOME/.aliases
-  fi
+# Load profile directory
+PROFILE_DIR="$HOME/profile.d"
+if [ "$(find $PROFILE_DIR/ -type f -printf '.' | wc -c)" -gt 0 ]; then
+  source <(cat $PROFILE_DIR/*)
+  echo "profiles: $(find $PROFILE_DIR/ -type f -exec basename {} \; | tr '\n' ' ')"
+fi

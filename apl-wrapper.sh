@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# This script provides a convenient wrapper over ansible-playbook command
 # Warning: this script is NOT POSIX compliant, and was never meant to be!
+# This script provides a convenient wrapper over ansible-playbook command
 set -eEo pipefail
 trap 'echo "[error] exit code $? running $(eval echo $BASH_COMMAND)"' ERR
 
