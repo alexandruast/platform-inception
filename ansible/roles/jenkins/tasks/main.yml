@@ -1,6 +1,6 @@
 - name: "exit on missing mandatory variables"
   shell: 'false'
-  when: jenkins_port == "" or jenkins_ram == ""
+  when: jenkins_port == "" or jenkins_java_opts == ""
 
 - name: "ensure service groups exist"
   group:

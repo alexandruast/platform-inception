@@ -101,7 +101,7 @@ sudo yum -y install ansible
 
 * Run workstation and jenkins playbooks
 ```
-./apl-wrapper.sh ./ansible/workstation.yml
-JENKINS_PORT=8000 JENKINS_RAM=500m ./apl-wrapper.sh ./ansible/jenkins.yml
+ANSIBLE_TARGET='127.0.0.1' ./apl-wrapper.sh ./ansible/workstation.yml
+ANSIBLE_TARGET='127.0.0.1' JENKINS_PORT=8000 JENKINS_JAVA_OPTS="-Xmx500m -Djava.awt.headless=true -Djenkins.install.runSetupWizard=false" ./apl-wrapper.sh ./ansible/jenkins.yml
 ```
 
