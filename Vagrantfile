@@ -70,6 +70,7 @@ prod_ip=$5
 cd $provision_dir
 
 for scope in origin factory prod; do
+  export JENKINS_NULL='null'
   for v in $(env | grep '^JENKINS_' | cut -f1 -d'='); do unset $v; done
   source ${scope}/.scope
   export JENKINS_ADMIN_PASS=$jenkins_admin_pass
