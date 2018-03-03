@@ -23,7 +23,6 @@ node {
         source ./$JENKINS_SCOPE/.scope
         ssh $SSH_OPTS $ANSIBLE_TARGET "sudo yum -q -y install python libselinux-python"
         ./apl-wrapper.sh ansible/jenkins.yml
-        ./jenkins-query.sh common/is-online.groovy
       '''
     }
     stage('deploy') {
@@ -35,9 +34,7 @@ node {
         source ./$JENKINS_SCOPE/.scope
         tunnel_port=$(perl -e 'print int(rand(999)) + 58000')
         ssh $SSH_OPTS -f -N -L ${tunnel_port}:127.0.0.1:${JENKINS_PORT} ${ANSIBLE_TARGET}
-        export JENKINS_PORT=$tunnel_port
-        source ./$JENKINS_SCOPE/.scope
-        ./jenkins-setup.sh
+        JENKINS_ADDR=http://127.0.0.1:${tunnel_port} ./jenkins-setup.sh
       '''
     }
     stage('cleanup') {
