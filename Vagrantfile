@@ -38,7 +38,7 @@ scope='origin'
 ip_var="${scope}_ip"
 source ${scope}/.scope
 export ANSIBLE_TARGET='127.0.0.1'
-./apl-wrapper.sh ansible/jenkins-${scope}.yml
+./apl-wrapper.sh ansible/jenkins.yml
 
 ./jenkins-setup.sh
 echo "${scope}-jenkins is online: http://${!ip_var}:${JENKINS_PORT} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
