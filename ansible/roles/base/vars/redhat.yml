@@ -1,0 +1,29 @@
+base_packages:
+  - bash
+  - bc
+  - ca-certificates
+  - curl
+  - bind-utils
+  - ethtool
+  - git
+  - iotop
+  - logrotate
+  - lsof
+  - NetworkManager
+  - net-tools
+  - ntp
+  - procps
+  - psmisc
+  - sysstat
+  - tcpdump
+  - telnet
+  - unzip
+  - vim
+  - yum-utils
+
+base_services:
+  - ntpd
+  - NetworkManager
+
+disabled_services:
+  - firewalld

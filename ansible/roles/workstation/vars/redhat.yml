@@ -1,0 +1,20 @@
+workstation_packages:
+  - automake
+  - git-extras
+  - gcc
+  - gcc-c++
+  - htop
+  - iftop
+  - iptraf
+  - kernel-devel
+  - make
+  - mc
+  - mysql
+  - nano
+  - ncdu
+  - nethogs
+  - python-netaddr
+  - python-pip
+  - socat
+  - tree
+  - zsh

@@ -1,10 +1,16 @@
+ssh_connect_timeout: 120
+
 user_dirs:
-  - "{{ ansible_env.HOME }}/.ssh"
-  - "{{ ansible_env.HOME }}/profile.d"
+  - "$HOME/profile.d"
 
 system_dirs:
   - /etc/ansible/facts.d
 
-user_ssh_key: "{{ ansible_env.HOME }}/.ssh/id_rsa"
+user_ssh_key: "$HOME/.ssh/id_rsa"
 
-initd_service_conf: initd-service
+service_init_conf: service-initd.j2
+service_logrotate_conf: service-logrotate.j2
+service_bind_ip: $IPV4_MAIN_IP
+
+ipv4_main_interface: "$(ip route get 8.8.8.8 | head -1 | perl -lne 'print $2 if /(\\w+) dev (\\w+)/')"
+ipv4_main_ip: "$(ip -f inet addr show $IPV4_MAIN_IF | grep -Po 'inet \\K[\\d.]+')"

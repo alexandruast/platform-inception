@@ -1,4 +1,4 @@
-- name: "ensure java is installed"
+- name: "java8-openjdk package present"
   yum:
     name: java-1.8.0-openjdk
     state: present

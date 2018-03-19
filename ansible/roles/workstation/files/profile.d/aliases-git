@@ -3,7 +3,7 @@ g() {
   case $1 in
     b) shift; git branch "$@" ;;
     c) shift; git checkout "$@" ;;
-    l) git pull ;;
+    l) git log --oneline -10 ;;
     s) git status ;;
     *) git "$@" ;;
   esac

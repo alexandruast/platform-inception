@@ -1,0 +1,6 @@
+- hosts: all
+  gather_facts: no
+  serial: "{{ serial_value | default(1) }}"
+
+  roles:
+    - role: hashicorp-tools

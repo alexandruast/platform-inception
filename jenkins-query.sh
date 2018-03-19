@@ -2,7 +2,7 @@
 # Warning: this script is NOT POSIX compliant, and was never meant to be!
 # this script requires mo - https://github.com/tests-always-included/mo
 set -eEo pipefail
-trap 'echo "[error] exit code $? running $(eval echo $BASH_COMMAND)"' ERR
+trap '{ RC=$?; echo "[error] exit code $RC running $(eval echo $BASH_COMMAND)"; exit $RC; }'  ERR
 which mo >/dev/null 2>&1
 readonly max_timeout=60
 readonly connect_timeout=5

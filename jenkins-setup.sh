@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Warning: this script is NOT POSIX compliant, and was never meant to be!
 set -eEuo pipefail
-trap 'echo "[error] exit code $? running $(eval echo $BASH_COMMAND)"' ERR
+trap '{ RC=$?; echo "[error] exit code $RC running $(eval echo $BASH_COMMAND)"; exit $RC; }'  ERR
 
 readonly JENKINS_SCRIPT_RUN_WRAPPER='./jenkins-query.sh'
 declare -a cmd_args

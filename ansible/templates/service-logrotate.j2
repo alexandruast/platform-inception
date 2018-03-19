@@ -1,0 +1,9 @@
+/var/log/{{ service_name }}/*.log {
+    missingok
+    notifempty
+    size 50m
+    rotate 10
+    compress
+    delaycompress
+    create 0640 root root
+}

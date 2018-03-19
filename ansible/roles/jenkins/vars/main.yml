@@ -1,18 +1,17 @@
-jenkins_port: "{{ lookup('env','JENKINS_PORT') }}"
-jenkins_java_opts: "{{ lookup('env','JENKINS_JAVA_OPTS') }}"
-jenkins_war: /usr/local/share/jenkins.war
+jenkins_port:      "{{ lookup('env','JENKINS_PORT') | default('8080', true) }}"
+jenkins_java_opts: "{{ lookup('env','JENKINS_JAVA_OPTS') | default('-Xmx500m -Djava.awt.headless=true -Djenkins.install.runSetupWizard=false', true) }}"
+jenkins_war:       /usr/local/share/jenkins.war
+jenkins_user_home: /home/jenkins
 
-services:
-  - name: jenkins
-    user: jenkins
-    group: jenkins
-    home: /home/jenkins
-    download_url: http://mirrors.jenkins.io/war/2.108/jenkins.war
-    download_dest: "{{ jenkins_war }}"
-    download_force: no
-    data_dir: /usr/local/share/jenkins
-    log_file: /var/log/jenkins.log
-    env: { 
-      JENKINS_HOME: /usr/local/share/jenkins
-    }
-    cmd: "/usr/bin/java {{ jenkins_java_opts }} -jar {{ jenkins_war }} --httpPort={{ jenkins_port }}"
+service_name:      jenkins
+service_version:   2.108
+service_user:      "{{ service_name }}"
+service_group:     "{{ service_name }}"
+service_data_dir:  "/usr/local/share/{{ service_name }}"
+service_log_dir:   "/var/log/{{ service_name }}"
+service_pid_file:   "/var/run/{{ service_name }}.pid"
+service_env: {
+  JENKINS_HOME:   "{{ service_data_dir }}"
+}
+service_exec:     "/usr/bin/java"
+service_args:     "{{ jenkins_java_opts }} -jar {{ jenkins_war }} --httpPort={{ jenkins_port }}"

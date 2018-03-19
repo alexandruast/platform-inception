@@ -1,7 +1,5 @@
-- name: "ensure ansible is installed"
-  yum:
+- name: "ansible package present"
+  package:
     name: ansible
     state: present
   become: true
-  with_items:
-    - ansible

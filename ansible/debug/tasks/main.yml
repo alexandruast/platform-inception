@@ -1,2 +1,7 @@
-- debug:
-    msg: "Ansible distribution/release: {{ ansible_distribution }}/{{ ansible_lsb }}"
+- name: "system information" 
+  debug:
+    msg:
+      - "ansible_distribution: {{ ansible_distribution }}"
+      - "ansible_distribution_major_version: {{ ansible_distribution_major_version }}"
+      - "ansible_os_family: {{ ansible_os_family }}"
+      - "ansible_pkg_mgr: {{ ansible_pkg_mgr }}"
