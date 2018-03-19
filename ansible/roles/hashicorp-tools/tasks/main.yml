@@ -1,0 +1,9 @@
+- name: "tools downloaded and installed"
+  unarchive:
+    src:  https://releases.hashicorp.com/{{ item.name }}/{{ item.version }}/{{ item.name }}_{{ item.version }}_linux_amd64.zip
+    dest: /usr/local/bin/
+    mode: +x
+    remote_src: yes
+  become: true
+  with_items:
+    - "{{ hashicorp_tools }}"

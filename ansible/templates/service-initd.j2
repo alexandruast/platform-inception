@@ -1,0 +1,107 @@
+#!/usr/bin/env sh
+### BEGIN INIT INFO
+# Provides: {{ service_name }}
+# Required-Start: $local_fs $network
+# Required-Stop: $local_fs $network
+# Should-Start: $syslog $time $named
+# Should-Stop: $syslog $time $named
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+### END INIT INFO
+
+# source function library
+. /etc/rc.d/init.d/functions
+
+{% for key, value in service_env.iteritems() %}
+export {{ key }}="{{ value }}"
+{% endfor %}
+
+service_name="{{ service_name }}"
+service_user="{{ service_user }}"
+service_group="{{ service_group }}"
+service_exec="{{ service_exec }}"
+service_args="{{ service_args }}"
+service_log_dir="{{ service_log_dir }}"
+service_pid_file="{{ service_pid_file }}"
+
+chown ${service_user}:${service_group} ${service_log_dir}
+touch ${service_pid_file} && chown ${service_user}:${service_group} ${service_pid_file}
+
+get_pid() {
+  pid="$(<${service_pid_file})"
+  ps -p "${pid}" &> /dev/null
+  [ $? -eq 0 ] && echo $pid
+}
+
+start() {
+  if [ "x$(get_pid)" = "x" ]; then
+    echo "[info] starting ${service_name}..."
+    daemon --user=${service_user} --pidfile=${service_pid_file} "{ ${service_exec} ${service_args} &>> ${service_log_dir}/service.log & }; echo \$! >| ${service_pid_file}"
+    sleep 0.5
+    pid="$(get_pid)"
+    if [ "x$pid" != "x" ]; then
+      echo "[info] ${service_name}(PID:$pid) has started"
+    else
+      echo "[error] ${service_name} failed to start!" >&2
+      echo "[error] check log files at ${service_log_dir}" >&2
+      exit 1
+    fi
+  else
+    echo "[info] ${service_name} is already started!"
+  fi
+}
+
+stop() {
+  if [ "x$(get_pid)" != "x" ];then
+    pid="$(get_pid)"
+    echo "[info] stopping ${service_name}(PID:$pid)..."
+    for i in $(seq 1 10); do
+      killproc -p ${service_pid_file} ${service_exec} -INT 2>> ${service_log_dir}/service.log
+      sleep 3
+      if [ "x$(get_pid)" = "x" ]; then
+        echo "[info] ${service_name} stopped after $i attempts"
+        break
+      fi
+    done
+    if [ "x$(get_pid)" != "x" ]; then
+      echo "[error] couldn't stop ${service_name} after $i attempts!" >&2
+      exit 1
+    fi
+  else
+    echo "[info] ${service_name} is already stopped!"
+  fi
+}
+
+status() {
+  if [ "x$(get_pid)" != "x" ]; then
+    pid="$(get_pid)"
+    echo "[info] ${service_name}(PID:$pid) is running"
+  else
+    echo "[info] ${service_name} is stopped"
+  fi
+}
+
+case "$1" in
+  start)
+    start
+    ;;
+
+  stop)
+    stop
+    ;;
+
+  restart)
+    stop
+    start
+    ;;
+
+  status)
+    status
+    ;;
+
+  *)
+    echo "Usage: $0 {start|stop|restart|status}"
+    exit 1
+esac
+
+exit 0

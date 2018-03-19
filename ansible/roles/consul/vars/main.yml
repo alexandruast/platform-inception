@@ -1,1 +1,16 @@
-dnsmasq_consul_conf: dnsmasq-consul.conf
+service_name:     consul
+service_version:  1.0.6
+service_user:     "{{ service_name }}"
+service_group:    "{{ service_name }}"
+service_data_dir: "/usr/local/share/{{ service_name }}"
+service_conf_dir: "/etc/{{ service_name }}.d"
+service_log_dir:  "/var/log/{{ service_name }}"
+service_pid_file:  "/var/run/{{ service_name }}.pid"
+service_env: {
+  PATH:           "/usr/local/bin:$PATH",
+  GOMAXPROCS:     "${GOMAXPROCS:-2}",
+  IPV4_MAIN_IF:   "{{ ipv4_main_interface }}",
+  IPV4_MAIN_IP:   "{{ ipv4_main_ip }}"
+}
+service_exec:     "/usr/local/bin/{{ service_name }}"
+service_args:     "agent -bind={{ service_bind_ip }} -config-dir={{ service_conf_dir }}"

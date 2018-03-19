@@ -1,40 +1,52 @@
-- name: "ensure docker prerequisites are installed"
-  yum:
-    name: "{{ item }}"
-    state: present
-  become: true
-  with_items:
-    - device-mapper-persistent-data
-    - lvm2
+- name: "include variables"
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "vars/{{ ansible_distribution | lower }}.yml"
+  tags: always
 
-- name: "ensure docker groups exist"
-  group:
-    name: "{{ item }}"
+- name: "yum - docker repository added"
+  yum_repository:
+    name: docker-ce-stable
+    description: Docker CE Stable
+    baseurl: https://download.docker.com/linux/centos/7/x86_64/stable
+    gpgkey: https://download.docker.com/linux/centos/gpg
+    gpgcheck: yes
   become: true
-  with_items:
-    - "{{ docker_groups }}"
+  when: ansible_distribution | lower == 'redhat' or ansible_distribution | lower == 'centos'
+
+- name: "docker group created"
+  group:
+    name: docker
+  become: true
   register: docker_groups_task
 
-- name: "ensure docker is installed"
-  yum:
+- name: "docker packages installed"
+  package:
     name: "{{ item }}"
     state: present
   become: true
   with_items:
     - "{{ docker_packages }}"
 
-- name: "ensure user {{ ansible_user_id }} belongs to docker groups"
+- name: "{{ ansible_user_id }} appended to docker group"
   user:
     name: "{{ ansible_user_id }}"
-    groups: "{{ item }}"
+    groups: docker
     append: yes
   become: true
   with_items:
     - "{{ docker_groups }}"
   notify:
     - restart docker
-  
-- name: ensure services are enabled and running
+
+- name: "net.ipv4.ip_forward is enabled"
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    sysctl_set: yes
+  become: true
+
+- name: "docker service enabled and started"
   service:
     name: docker
     enabled: yes

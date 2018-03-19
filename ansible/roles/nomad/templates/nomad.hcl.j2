@@ -1,0 +1,14 @@
+log_level = "DEBUG"
+data_dir = "{{ service_data_dir }}"
+disable_update_check = true
+{% if service_mode == 'server' %}
+server {
+  enabled = true
+  bootstrap_expect = 2
+  rejoin_after_leave = true
+}
+{% else %}
+client {
+  enabled = true
+}
+{% endif %}

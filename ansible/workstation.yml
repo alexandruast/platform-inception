@@ -1,14 +1,18 @@
 - hosts: all
-  gather_facts: yes
+  gather_facts: no
 
   roles:
-  - role: check-sudo
-  - role: epel-release
-  - role: base-common
-  - role: java8-openjdk
-  - role: ansible
-  - role: mo
-  - role: docker
-  - role: docker-compose
-  - role: pumba
-  - role: workstation
+    - role: alive
+    - role: gather-facts
+    - role: debug
+    - role: check-sudo
+    - role: user-ssh-key
+    - role: base
+    - role: dnsmasq
+      dns_servers:
+        - 8.8.8.8
+        - 8.8.4.4
+    - role: ansible
+    - role: docker
+    - role: docker-compose
+    - role: workstation

@@ -1,7 +1,12 @@
 - hosts: all
-  gather_facts: yes
+  gather_facts: no
+  serial: "{{ serial_value | default(1) }}"
 
   roles:
+    - role: alive
+    - role: gather-facts
     - role: debug
     - role: check-sudo
-    - role: base-common
+    - role: base
+    - role: swap
+    - role: jq

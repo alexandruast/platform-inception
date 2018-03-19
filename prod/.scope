@@ -1,5 +1,5 @@
 export JENKINS_PORT=8080
-export JENKINS_JAVA_OPTS="-Xmx500m -Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"
+export JENKINS_JAVA_OPTS="-Xmx400m -Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"
 export JENKINS_ADMIN_USER='admin'
 declare -a ARR_JENKINS_SETUP_SCRIPTS
 ARR_JENKINS_SETUP_SCRIPTS=(

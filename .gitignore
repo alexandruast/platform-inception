@@ -1,6 +1,7 @@
 # Workspace
 .workspace
 .vagrant
+*.stackdump
 
 # Ansible
 *.retry

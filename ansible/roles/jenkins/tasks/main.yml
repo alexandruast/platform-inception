@@ -1,129 +1,89 @@
-- name: "exit on missing mandatory variables"
-  shell: 'false'
-  when: jenkins_port == "" or jenkins_java_opts == ""
-
-- name: "ensure service groups exist"
+- name: "service group present"
   group:
-    name: "{{ item.group }}"
+    name: "{{ service_group }}"
   become: true
-  with_items:
-    - "{{ services }}"
-  loop_control: 
-    label: "{{ item.group }}"
 
-- name: "ensure service users exist"
+- name: "service user present"
   user:
-    name: "{{ item.user }}"
-    groups: "{{ item.group }}"
-    home: "{{ item.home }}"
+    name: "{{ service_user }}"
+    group: "{{ service_group }}"
   become: true
-  with_items:
-    - "{{ services }}"
-  loop_control: 
-    label: "{{ item.user }}"
 
-- name: "ensure required service directories are created"
+- name: "service data directory created"
   file:
-    path: "{{ item.data_dir }}"
+    path: "{{ service_data_dir }}"
     state: directory
-    mode: 0700
-    owner: "{{ item.user }}"
-    group: "{{ item.group }}"
+    mode: 0750
+    owner:  "{{ service_user }}"
+    group:  "{{ service_group }}"
   become: true
-  with_items:
-    - "{{ services }}"
-  loop_control: 
-    label: "{{ item.data_dir }}"
 
-- name: "ensure required log files are touched"
+- name: "service log directory created"
   file:
-    path: "{{ item.log_file }}"
-    state: touch
-    mode: 0640
-    owner: "{{ item.user }}"
-    group: "{{ item.group }}"
+    path: "{{ service_log_dir }}"
+    state: directory
+    mode: 0750
+    owner:  "{{ service_user }}"
+    group:  "{{ service_group }}"
   become: true
-  with_items:
-    - "{{ services }}"
-  loop_control:
-    label: "{{ item.log_file }}"
-  changed_when: false
-  
-- name: "ensure required service assets are downloaded"
+
+- name: "service binaries downloaded and installed"
   get_url:
-    url:  "{{ item.download_url }}"
-    dest: "{{ item.download_dest }}"
-    force: "{{ item.download_force }}"
-  notify:
-     - restart service
+    url:  "http://mirrors.jenkins.io/war/{{ service_version }}/jenkins.war"
+    dest: "{{ jenkins_war }}"
+    force: no
   become: true
-  with_items:
-    - "{{ services }}"
-  loop_control: 
-    label: "{{ item.download_dest }}"
 
-- name: "ensure init.d service configs are updated"
+- name: "init.d service config updated"
   template:
-    src: "{{ initd_service_conf }}.j2"
-    dest: "/etc/init.d/{{ item.name }}"
-    mode: 0740
-  register: service_changed
+    src: "{{ service_init_conf }}"
+    dest: "/etc/init.d/{{ service_name }}"
+    mode: 0700
   become: true
-  with_items:
-    - "{{ services }}"
-  notify:
-     - restart service
-  loop_control:
-    label: "/etc/init.d/{{ item.name }}"
+  register: service_restart
 
-- name: "ensure services are enabled and running"
-  service:
-    name: "{{item.name}}"
-    enabled: yes
-    state: started
+- name: "systemd daemon reload"
+  systemd: daemon_reload=yes
   become: true
-  with_items:
-    - "{{ services }}"
-  loop_control:
-    label: "{{ item.name }}"
+  when: service_restart.changed
 
-- name: "ensure user jenkins belongs to docker groups"
+- name: "service logrotate updated"
+  template:
+    src: "{{ service_logrotate_conf }}"
+    dest: "/etc/logrotate.d/{{ service_name }}"
+    mode: 0644
+  become: true
+
+- name: "user belongs to docker groups"
   user:
-    name: jenkins
+    name: "{{ service_user }}"
     groups: "{{ item }}"
     append: yes
   become: true
   with_items:
     - "{{ docker_groups }}"
-  when: docker_groups_task is defined and docker_groups_task.changed
+  when: docker_groups_task is defined or docker_groups_task.changed
+  register: service_restart
   notify:
     - restart docker
 
-- name: "ensure jenkins ./ssh directory is created"
-  file:
-    path: "{{ item.home }}/.ssh"
-    state: directory
-    mode: 0750
-    owner: "{{ item.user }}"
-    group: "{{ item.group }}"
+- name: "service enabled"
+  service:
+    name: "{{ service_name }}"
+    enabled: yes
   become: true
-  when: '"jenkins" in item.user'
-  with_items:
-    - "{{ services }}"
-  loop_control:
-    label: "{{ item.home }}"
+  
+- name: "service started"
+  service:
+    name: "{{ service_name }}"
+    state: started
+  become: true
+  register: service_started
+  
+- name: "restart service"
+  service:
+    name: "{{ service_name }}"
+    state: restarted
+  become: true
+  when: service_restart.changed and not service_started.changed
 
-- name: "ensure {{ user_ssh_key }} private key file can be used by jenkins"
-  copy:
-    src: "{{ user_ssh_key }}"
-    dest: "{{ item.home }}/.ssh/id_rsa"
-    owner: "{{ item.user }}"
-    group: "{{ item.group }}"
-    mode: 0600
-    remote_src: yes
-  become: true
-  when: '"jenkins" in item.user'
-  with_items:
-    - "{{ services }}"
-  loop_control:
-    label: "{{ item.home }}/.ssh/id_rsa"

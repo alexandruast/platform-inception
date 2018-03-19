@@ -10,7 +10,7 @@ node {
     }
     stage('prepare') {
       checkout([$class: 'GitSCM', 
-        branches: [[name: '*/master']], 
+        branches: [[name: '*/devel']], 
         doGenerateSubmoduleConfigurations: false, 
         submoduleCfg: [], 
         userRemoteConfigs: [[url: 'https://github.com/alexandruast/platform-inception.git']]])
@@ -18,7 +18,7 @@ node {
     stage('provision') {
       sh '''#!/usr/bin/env bash
         set -xeEo pipefail
-        trap 'echo "[error] exit code $? running $(eval echo $BASH_COMMAND)"' ERR
+        trap '{ RC=$?; echo "[error] exit code $RC running $(eval echo $BASH_COMMAND)"; exit $RC; }'  ERR
         SSH_OPTS='-o LogLevel=quiet -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
         source ./$JENKINS_SCOPE/.scope
         ssh $SSH_OPTS $ANSIBLE_TARGET "sudo yum -q -y install python libselinux-python"
@@ -28,7 +28,7 @@ node {
     stage('deploy') {
       sh '''#!/usr/bin/env bash
         set -xeEo pipefail
-        trap 'echo "[error] exit code $? running $(eval echo $BASH_COMMAND)"' ERR
+        trap '{ RC=$?; echo "[error] exit code $RC running $(eval echo $BASH_COMMAND)"; exit $RC; }'  ERR
         SSH_OPTS='-o LogLevel=quiet -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
         export PATH=/usr/local/bin:$PATH
         source ./$JENKINS_SCOPE/.scope

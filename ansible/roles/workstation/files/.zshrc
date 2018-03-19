@@ -124,7 +124,7 @@ eval "$(jenv init -)"
 #  - this can be hacked by anyone with root access, obviously
 
 AGENT_CONFIG="$HOME/.ssh/agent"
-IDENTITIES_WILDCARD='*_rsa'
+IDENTITIES_WILDCARD='*.pem'
 if [ ! -f $AGENT_CONFIG ]; then
   touch $AGENT_CONFIG
   chmod 600 $AGENT_CONFIG

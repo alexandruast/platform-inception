@@ -2,144 +2,181 @@
 # vi: set ft=ruby :
 ENV["LC_ALL"] = "en_US.UTF-8"
 
-$box="bento/centos-6.9"
-$memory = "1000"
-$cpus = 1
-$origin_hostname = "origin-jenkins"
-$origin_ip = "192.168.169.170"
-$factory_hostname = "factory-jenkins"
-$factory_ip = "192.168.169.171"
-$prod_hostname = "factory-jenkins"
-$prod_ip = "192.168.169.172"
-$provision_dir = "/tmp/tmp.H7NVqJGC2q"
-$jenkins_admin_pass = "welcome1"
+ci_admin_pass = "welcome1"
 
-$origin_bootstrap = <<SCRIPT
+ci_origin = {
+  :hostname => "origin",
+  :ip => "192.168.169.171",
+  :box => "bento/centos-7.4",
+  :memory => 640,
+  :cpus => 1
+}
+
+ci_nodes = [
+  {
+    :hostname => "factory",
+    :ip => "192.168.169.172",
+    :box => "bento/centos-7.4",
+    :memory => 800,
+    :cpus => 2
+  },
+  {
+    :hostname => "prod",
+    :ip => "192.168.169.173",
+    :box => "bento/centos-7.4",
+    :memory => 500,
+    :cpus => 1
+  }
+]
+
+server_nodes = [
+  {
+    :hostname => "server1",
+    :ip => "192.168.169.181",
+    :box => "bento/centos-7.4",
+    :memory => 500,
+    :cpus => 1
+  },
+  {
+    :hostname => "server2",
+    :ip => "192.168.169.182",
+    :box => "bento/centos-7.4",
+    :memory => 500,
+    :cpus => 1
+  }
+]
+
+compute_nodes = [
+  {
+    :hostname => "node1",
+    :ip => "192.168.169.191",
+    :box => "bento/centos-7.4",
+    :memory => 640,
+    :cpus => 2
+  }
+]
+
+always_origin = <<SCRIPT
 #!/usr/bin/env bash
 set -eEo pipefail
-trap 'echo "[error] exit code $? running $(eval echo $BASH_COMMAND)"' ERR
-SSH_OPTS='-o LogLevel=quiet -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
-
-provision_dir=$1
-jenkins_admin_pass=$2
-origin_ip=$3
-factory_ip=$4
-prod_ip=$5
-
-cd $provision_dir
-chmod +x ./*.sh
-
-sudo yum -q -y install epel-release python libselinux-python
-sudo yum -q -y install ansible
-
-scope='origin'
-source ${scope}/.scope
-export JENKINS_ADMIN_PASS=$jenkins_admin_pass
-ip_var="${scope}_ip"
-export JENKINS_ADDR=http://${!ip_var}:${JENKINS_PORT}
-
-ANSIBLE_TARGET='127.0.0.1' ./apl-wrapper.sh ansible/jenkins.yml
-./jenkins-setup.sh
-
-echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
-JENKINS_BUILD_JOB=system-${scope}-job-seed ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
-
-opk=$(ssh-keygen -y -f $HOME/.ssh/id_rsa)
-for scope in factory prod; do
-  echo "waiting for ${scope}-jenkins-deploy to finish..."
-  chmod 600 .vagrant/machines/${scope}/virtualbox/private_key
-  ip_var="${scope}_ip"
-  ssh $SSH_OPTS -i .vagrant/machines/${scope}/virtualbox/private_key ${!ip_var} "if ! grep \'$opk\' \$HOME/.ssh/authorized_keys >> /dev/null; then echo "$opk" >> \$HOME/.ssh/authorized_keys; fi"
-  ssh $SSH_OPTS ${!ip_var} "whoami" >/dev/null
-  JENKINS_SCOPE=${scope} ANSIBLE_TARGET=vagrant@${!ip_var} JENKINS_BUILD_JOB=${scope}-jenkins-deploy ./jenkins-query.sh ./common/jobs/build-jenkins-deploy-job.groovy
-done
-SCRIPT
-
-$origin_always = <<SCRIPT
-#!/usr/bin/env bash
-set -eEo pipefail
-trap 'echo "[error] exit code $? running $(eval echo $BASH_COMMAND)"' ERR
-SSH_OPTS='-o LogLevel=quiet -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
-
-provision_dir=$1
-jenkins_admin_pass=$2
-origin_ip=$3
-factory_ip=$4
-prod_ip=$5
-
-cd $provision_dir
-
+trap '{ RC=$?; echo "[error] exit code $RC running $(eval echo $BASH_COMMAND)"; exit $RC; }'  ERR
+ci_admin_pass=$1
+ci_origin_json=$2
+ci_nodes_json=$3
+server_nodes_json=$4
+compute_nodes_json=$5
+cd /home/vagrant/provision
+concat_json="$(echo ${ci_nodes_json} | sed -e 's/]$/,/')${ci_origin_json}]"
 for scope in origin factory prod; do
   export JENKINS_NULL='null'
   for v in $(env | grep '^JENKINS_' | cut -f1 -d'='); do unset $v; done
   source ${scope}/.scope
-  export JENKINS_ADMIN_PASS=$jenkins_admin_pass
-  ip_var="${scope}_ip"
-  export JENKINS_ADDR=http://${!ip_var}:${JENKINS_PORT}
+  export JENKINS_ADMIN_PASS=$ci_admin_pass
+  server_ip="$(echo ${concat_json} | jq --arg hostname "$scope" '.[] | select(.hostname==$hostname)' | jq -re .ip)"
+  export JENKINS_ADDR=http://${server_ip}:${JENKINS_PORT}
   ./jenkins-query.sh common/is-online.groovy
   echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
 done
+server1_ip="$(echo ${server_nodes_json} | jq -r .[0].ip)"
+server2_ip="$(echo ${server_nodes_json} | jq -r .[1].ip)"
+curl --silent -X PUT "http://${server1_ip}:4646/v1/system/gc"
+echo "Consul UI is available at http://${server1_ip}:8500"
+echo "Nomad UI is available at http://${server1_ip}:4646"
+echo "Vault is available at http://${server1_ip}:8200"
+SCRIPT
+
+bootstrap_centos7 = <<SCRIPT
+#!/usr/bin/env bash
+set -eEo pipefail
+trap '{ RC=$?; echo "[error] exit code $RC running $(eval echo $BASH_COMMAND)"; exit $RC; }'  ERR
+find /home/vagrant/provision -type f -name '*.sh' -exec chmod +x {} \\;
+sudo yum -q -y install python libselinux-python
 SCRIPT
 
 Vagrant.configure(2) do |config|
-  config.vm.define "factory" do |node|
-    node.vm.box = $box
-    node.vm.hostname = $factory_hostname
-    node.vm.provider "virtualbox" do |vb|
-      vb.linked_clone = true
-      vb.memory = $memory
-      vb.cpus = $cpus
-    end  
-    node.vm.network "private_network", ip: $factory_ip
+  
+  ci_nodes.each do |machine|
+    config.vm.define machine[:hostname] do |node|
+      node.vm.box = machine[:box]
+      node.vm.hostname = machine[:hostname]
+      node.vm.provider "virtualbox" do |vb|
+        vb.linked_clone = true
+        vb.memory = machine[:memory]
+        vb.cpus = machine[:cpus]
+      end  
+      node.vm.network "private_network", ip: machine[:ip]
+      node.vm.provision "shell", inline: "rm -fr /home/vagrant/provision", privileged: false
+      node.vm.provision "file", source: "./", destination: "/home/vagrant/provision"
+      node.vm.provision "shell", inline: bootstrap_centos7, privileged: false
+    end
   end
   
-  config.vm.define "prod" do |node|
-    node.vm.box = $box
-    node.vm.hostname = $prod_hostname
-    node.vm.provider "virtualbox" do |vb|
-      vb.linked_clone = true
-      vb.memory = $memory
-      vb.cpus = $cpus
-    end  
-    node.vm.network "private_network", ip: $prod_ip
+  server_nodes.each do |machine|
+    config.vm.define machine[:hostname] do |node|
+      node.vm.box = machine[:box]
+      node.vm.hostname = machine[:hostname]
+      node.vm.provider "virtualbox" do |vb|
+        vb.linked_clone = true
+        vb.memory = machine[:memory]
+        vb.cpus = machine[:cpus]
+      end  
+      node.vm.network "private_network", ip: machine[:ip]
+      node.vm.provision "shell", inline: "rm -fr /home/vagrant/provision", privileged: false
+      node.vm.provision "file", source: "./", destination: "/home/vagrant/provision"
+      node.vm.provision "shell", inline: bootstrap_centos7, privileged: false
+    end
+  end
+  
+  compute_nodes.each do |machine|
+    config.vm.define machine[:hostname] do |node|
+      node.vm.box = machine[:box]
+      node.vm.hostname = machine[:hostname]
+      node.vm.provider "virtualbox" do |vb|
+        vb.linked_clone = true
+        vb.memory = machine[:memory]
+        vb.cpus = machine[:cpus]
+      end  
+      node.vm.network "private_network", ip: machine[:ip]
+      node.vm.provision "shell", inline: "rm -fr /home/vagrant/provision", privileged: false
+      node.vm.provision "file", source: "./", destination: "/home/vagrant/provision"
+      node.vm.provision "shell", inline: bootstrap_centos7, privileged: false
+    end
   end
   
   config.vm.define "origin" do |node|
-    node.vm.box = $box
-    node.vm.hostname = $origin_hostname
-    
+    node.vm.box = ci_origin[:box]
+    node.vm.hostname = ci_origin[:hostname]
     node.vm.provider "virtualbox" do |vb|
         vb.linked_clone = true
-        vb.memory = $memory
-        vb.cpus = $cpus
+        vb.memory = ci_origin[:memory]
+        vb.cpus = ci_origin[:cpus]
     end
-    
-    node.vm.network "private_network", ip: $origin_ip
-    node.vm.provision "shell", inline: "rm -fr $1", privileged: false, args: $provision_dir
-    node.vm.provision "file", source: "./", destination: $provision_dir
-    
+    node.vm.network "private_network", ip: ci_origin[:ip]
+    node.vm.provision "shell", inline: "rm -fr /home/vagrant/provision", privileged: false
+    node.vm.provision "file", source: "./", destination: "/home/vagrant/provision"
+    node.vm.provision "shell", inline: bootstrap_centos7, privileged: false
     node.vm.provision "shell" do |s|
-      s.inline = $origin_bootstrap
-      s.privileged = false
-      s.args = [ 
-        $provision_dir,
-        $jenkins_admin_pass,
-        $origin_ip,
-        $factory_ip,
-        $prod_ip
-      ]
-    end
-    
-    node.vm.provision "shell", run: "always" do |s|
-      s.inline = $origin_always
+      s.path = "./extras/bootstrap-origin.sh"
       s.privileged = false
       s.args = [
-        $provision_dir,
-        $jenkins_admin_pass,
-        $origin_ip,
-        $factory_ip,
-        $prod_ip
+        ci_admin_pass,
+        ci_origin.to_json.to_s,
+        ci_nodes.to_json.to_s,
+        server_nodes.to_json.to_s,
+        compute_nodes.to_json.to_s
+      ]
+    end
+    node.vm.provision "shell", run: "always" do |s|
+      s.inline = always_origin
+      s.privileged = false
+      s.args = [
+        ci_admin_pass,
+        ci_origin.to_json.to_s,
+        ci_nodes.to_json.to_s,
+        server_nodes.to_json.to_s,
+        compute_nodes.to_json.to_s
       ]
     end
   end
 end
+

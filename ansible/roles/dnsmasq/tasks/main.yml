@@ -1,0 +1,82 @@
+- name: "/etc/NetworkManager/conf.d/* updated"
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/NetworkManager/conf.d/"
+  with_fileglob: "{{ role_path }}/files/etc/NetworkManager/conf.d/*"
+  become: true
+  register: NetworkManagerConf
+  
+- name: "restart NetworkManager on config change"
+  service:
+    name: NetworkManager
+    state: restarted
+  become: true
+  when: NetworkManagerConf.changed
+
+- name: "dnsmasq package present"
+  package:
+    name: dnsmasq
+    state: present
+  become: true
+
+- name: "/etc/dnsmasq.conf updated"
+  template:
+    src: "etc/dnsmasq.conf.j2"
+    dest: "/etc/dnsmasq.conf"
+  register: dnsmasq_restart
+  become: true
+
+- name: "get dhclient status"
+  shell: pgrep dhclient
+  register: dhclient_pgrep
+  become: true
+  ignore_errors: true
+  changed_when: false
+
+- name: "/etc/dhcp/dhclient.conf updated"
+  template:
+    src: "etc/dhcp/dhclient.conf.j2"
+    dest: "/etc/dhcp/dhclient.conf"
+  become: true
+  register: dhclientConf
+  when: dhclient_pgrep.rc == 0
+
+- name: "/etc/resolv.conf updated - no dhclient"
+  lineinfile:
+    dest: /etc/resolv.conf
+    regexp: "^nameserver 127.0.0.1"
+    line: "nameserver 127.0.0.1"
+    insertbefore: '^nameserver'
+    state: present
+    backup: yes
+  become: true
+  when: dhclient_pgrep.rc != 0
+
+- name: "dnsmasq service enabled and started"
+  service:
+    name: dnsmasq
+    enabled: yes
+    state: started
+  become: true
+  register: dnsmasq_started
+
+- name: "dnsmasq service restarted"
+  service:
+    name: dnsmasq
+    state: restarted
+  become: true
+  when: dnsmasq_restart.changed and not dnsmasq_started.changed
+
+- name: "restart network"
+  service:
+    name: network
+    enabled: yes
+    state: restarted
+  become: true
+  when: dhclientConf.changed
+
+- name: "run dhclient"
+  shell: dhclient -r && dhclient
+  become: true
+  when: dhclientConf.changed
+

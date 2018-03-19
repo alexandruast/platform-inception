@@ -1,0 +1,4 @@
+- name: "rhel-7-server-extras-rpms repository enabled"
+  shell: "subscription-manager repos --enable=rhel-7-server-extras-rpms"
+  become: true
+  changed_when: false

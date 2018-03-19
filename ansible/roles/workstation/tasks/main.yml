@@ -1,64 +1,63 @@
-- name: "include all variables"
-  include_vars:
-    dir: vars
+- name: "include variables"
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "vars/{{ ansible_os_family | lower }}.yml"
   tags: always
 
-- name: "ensure required packages are installed"
+- name: "required packages present"
   yum:
     name: "{{ item }}"
     state: present
   become: true
   with_items:
-    - "{{ packages }}"
-  tags: yum
+    - "{{ workstation_packages }}"
 
-- name: "ensure required system pips are installed and upgraded"
+- name: "system pips installed and upgraded"
   pip:
     name: "{{ item }}"
     extra_args: --upgrade
   become: true
   with_items:
-    - "{{ system_pips }}"
+    - "{{ workstation_system_pips }}"
   tags: pip
 
-- name: "ensure required user pips are installed and upgraded"
+- name: "user pips installed and upgraded"
   pip:
     name: "{{ item }}"
     extra_args: --upgrade --user
   with_items:
-    - "{{ user_pips }}"
+    - "{{ workstation_user_pips }}"
   tags: pip
 
-- name: "ensure required git repos are in place"
+- name: "git repos are in place"
   git:
     repo: "{{ item.download_url }}"
     dest: "{{ item.dest }}"
   with_items:
-    - "{{ git }}"
+    - "{{ workstation_git }}"
   tags: git
 
-- name: "ensure shell profile scripts are in place"
+- name: "shell profile scripts are in place"
   copy:
     src: "{{ item }}"
     dest: "{{ ansible_env.HOME }}/profile.d/"
-  with_fileglob:
-  - "{{ role_path }}/files/profile.d/*"
+  with_fileglob: "{{ role_path }}/files/profile.d/*"
   tags: env
 
-- name: "ensure .zshrc exists and is updated"
+- name: ".zshrc exists and is updated"
   copy:
     src: "{{ zshrc_conf }}"
     dest: "{{ ansible_env.HOME }}/{{ zshrc_conf }}"
   tags: env
 
-- name: "ensure user {{ ansible_user_id }} uses zsh shell"
+- name: "user {{ ansible_user_id }} uses zsh shell"
   user:
     name: "{{ ansible_user_id }}"
-    shell: "{{ shell }}"
+    shell: "{{ workstation_shell }}"
   become: true
   tags: env
 
-- name: "install custom fact for workstation setup completed"
+- name: "custom fact for workstation setup completed"
   copy:
     src: facts/w_setup_completed.fact
     dest: /etc/ansible/facts.d/w_setup_completed.fact

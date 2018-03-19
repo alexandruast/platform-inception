@@ -1,0 +1,10 @@
+bind-dynamic
+localise-queries
+local-service
+cache-size=65536
+no-dhcp-interface=*
+{% if dns_servers is defined %}
+{% for server in dns_servers %}
+server={{ server }}
+{% endfor %}
+{% endif %}

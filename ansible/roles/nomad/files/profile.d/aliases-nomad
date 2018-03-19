@@ -14,10 +14,9 @@ nomad-job-alloc() {
 n() {
   case $1 in
     s) shift; nomad status ;;
-    n) shift; nomad server-members; nomad node status ;;
+    n) shift; nomad server-members; nomad node-status ;;
     a) shift; nomad alloc-status "$@" ;;
     j) shift; nomad-job-alloc "$@" ;;
     *) nomad "$@" ;;
   esac
 }
-

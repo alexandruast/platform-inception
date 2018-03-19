@@ -1,0 +1,5 @@
+[epel-release]
+baseurl = https://dl.fedoraproject.org/pub/epel/7Server/x86_64
+gpgcheck = 1
+gpgkey = https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7Server
+name = Extra Packages for Enterprise Linux 7
