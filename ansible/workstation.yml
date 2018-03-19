@@ -8,11 +8,15 @@
     - role: check-sudo
     - role: user-ssh-key
     - role: base
+    - role: os-update
     - role: dnsmasq
       dns_servers:
         - 8.8.8.8
         - 8.8.4.4
+      dnsmasq_supersede: true
     - role: ansible
     - role: docker
     - role: docker-compose
+    - role: hashicorp-tools
+    - role: jq
     - role: workstation

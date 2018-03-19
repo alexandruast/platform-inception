@@ -28,5 +28,5 @@
     state: started
   become: true
   with_items:
-    - "{{ start_services }}"
+    - "{{ start_services | default([]) }}"
   when: machine_reboot is defined and machine_reboot.changed

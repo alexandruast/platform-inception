@@ -1,4 +1,6 @@
-- name: "rhel-7-server-extras-rpms repository enabled"
-  shell: "subscription-manager repos --enable=rhel-7-server-extras-rpms"
-  become: true
-  changed_when: false
+- block:
+  - name: "rhel-7-server-extras-rpms repository enabled"
+    shell: "subscription-manager repos --enable=rhel-7-server-extras-rpms"
+    become: true
+    changed_when: false
+  when: repos_enabled|default('repos_enabled_default')

@@ -1,0 +1,10 @@
+- block:
+  - name: "epel-release yum repository added"
+    yum_repository:
+      name: epel-release
+      description: "Extra Packages for Enterprise Linux 7"
+      baseurl: "https://dl.fedoraproject.org/pub/epel/7Server/x86_64"
+      gpgkey: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7Server"
+      gpgcheck: yes
+    become: true
+  when: repos_enabled|default('repos_enabled_default')

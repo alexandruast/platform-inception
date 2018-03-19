@@ -5,4 +5,3 @@
   roles:
     - role: gather-facts
     - role: debug
-    - role: hashicorp-tools

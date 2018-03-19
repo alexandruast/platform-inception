@@ -34,3 +34,4 @@ ANSIBLE_TARGET=vagrant@192.168.169.181,vagrant@192.168.169.182 \
 ANSIBLE_EXTRAVARS="{'start_services':['consul','nomad']}" \
 ./apl-wrapper.sh ansible/os-update.yml
 ```
+

@@ -1,3 +1,5 @@
 dependencies:
-  - { role: rhn-extras, when: ansible_distribution|lower == "redhat" }
-  - { role: rhn-optional, when: ansible_distribution|lower == "redhat" }
+  - role: rhn-extras
+    when: ansible_distribution|lower == "redhat"
+  - role: rhn-optional
+    when: ansible_distribution|lower == "redhat"

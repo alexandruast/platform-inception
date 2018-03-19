@@ -6,7 +6,6 @@ base_packages:
   - bind-utils
   - ethtool
   - git
-  - iotop
   - logrotate
   - lsof
   - NetworkManager
