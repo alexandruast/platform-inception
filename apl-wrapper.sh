@@ -48,9 +48,10 @@ esac
 
 case "${ANSIBLE_JUMPHOST}" in
   none)
+    connect_args=(${connect_args[@]} "--ssh-common-args='-o ForwardAgent=yes'")
     ;;
   *)
-    connect_args=(${connect_args[@]} "--ssh-common-args='-o ProxyCommand=\"ssh -W %h:%p -q ${ANSIBLE_JUMPHOST}\"'")
+    connect_args=(${connect_args[@]} "--ssh-common-args='-o ForwardAgent=yes -o ProxyCommand=\"ssh -W %h:%p -q ${ANSIBLE_JUMPHOST}\"'")
     ;;
 esac
 

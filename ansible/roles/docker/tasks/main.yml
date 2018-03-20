@@ -46,6 +46,13 @@
     sysctl_set: yes
   become: true
 
+- name: "shell profile scripts are in place"
+  copy:
+    src: "{{ item }}"
+    dest: "{{ ansible_env.HOME }}/profile.d/"
+  with_fileglob: "{{ role_path }}/files/profile.d/*"
+  tags: env
+
 - name: "docker service enabled and started"
   service:
     name: docker

@@ -1,0 +1,7 @@
+docker() {
+  local DOCKER_BINARY=$(which docker)
+  case $1 in
+    bash) shift; $DOCKER_BINARY exec -it "$1" /bin/bash ;;
+    *) $DOCKER_BINARY "$@" ;;
+  esac
+}
