@@ -1,0 +1,16 @@
+docker() {
+  DOCKER_BINARY=$(which docker)
+  case $1 in
+    login) shift; $DOCKER_BINARY exec -it "$1" /bin/sh ;;
+    reset)
+      $DOCKER_BINARY stop $($DOCKER_BINARY ps -qa) &>/dev/null
+      $DOCKER_BINARY rm -f $($DOCKER_BINARY ps -qa) &>/dev/null
+      $DOCKER_BINARY rmi -f $($DOCKER_BINARY images -qa) &>/dev/null
+      $DOCKER_BINARY system prune -f
+      ;;
+    *) $DOCKER_BINARY "$@" ;;
+  esac
+}
+
+d() { docker "$@"; }
+

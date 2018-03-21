@@ -1,22 +1,23 @@
-# nomad-job-alloc - view nodes corresponding to allocations for specified job
-nomad-job-alloc() {
-  nomad="http://127.0.0.1:4646"
-  service="$1"
-  job=$(curl -s $nomad/v1/jobs | jq -r --arg service "$service" '[.[] | select(.ID | contains($service)) | .ID'][0])
-  nodes_json="$(curl -s $nomad/v1/nodes)"
-  echo "Nodes hosting $job"
-  for i in $(curl -s $nomad/v1/allocations | jq -r --arg job "$job" '.[] | select(.JobID==$job) | [.NodeID,.ID] | join(":")'); do
-    node=$(echo "$nodes_json" | jq -r --arg node "${i%:*}" '.[] | select(.ID | contains($node)) | .Name')
-    echo -e "$node\t${i#*:}"
-  done
-}
-
-n() {
+nomad() {
+  NOMAD_BINARY=$(which nomad)
+  NOMAD_ADDR=${NOMAD_ADDR:-http://127.0.0.1:4646}
   case $1 in
-    s) shift; nomad status ;;
-    n) shift; nomad server-members; nomad node-status ;;
-    a) shift; nomad alloc-status "$@" ;;
-    j) shift; nomad-job-alloc "$@" ;;
-    *) nomad "$@" ;;
+    st) shift; $NOMAD_BINARY status ;;
+    ns) shift; $NOMAD_BINARY server-members; $NOMAD_BINARY node-status ;;
+    as) shift; $NOMAD_BINARY alloc-status "$@" ;;
+    jn)
+      shift
+      service="$1"
+      job=$(curl -s $NOMAD_ADDR/v1/jobs | jq -r --arg service "$service" '[.[] | select(.ID | contains($service)) | .ID'][0])
+      nodes_json="$(curl -s $NOMAD_ADDR/v1/nodes)"
+      echo "Nodes hosting $job"
+      for i in $(curl -s $NOMAD_ADDR/v1/allocations | jq -r --arg job "$job" '.[] | select(.JobID==$job) | [.NodeID,.ID] | join(":")'); do
+        node=$(echo "$nodes_json" | jq -r --arg node "${i%:*}" '.[] | select(.ID | contains($node)) | .Name')
+        echo -e "$node\t${i#*:}"
+      done
+      ;;
+    *) $NOMAD_BINARY "$@" ;;
   esac
 }
+
+n() { nomad "$@"; }
