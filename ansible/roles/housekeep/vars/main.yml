@@ -1,0 +1,5 @@
+delete_files:
+  - /var/log/consul.log
+  - /var/log/nomad.log
+  - /var/log/vault.log
+  - /var/log/jenkins.log

@@ -11,7 +11,7 @@
     name: NetworkManager
     state: restarted
   become: true
-  when: NetworkManagerConf.changed
+  when: NetworkManagerConf|changed
 
 - name: "dnsmasq package present"
   package:
@@ -65,7 +65,7 @@
     name: dnsmasq
     state: restarted
   become: true
-  when: dnsmasq_restart.changed and not dnsmasq_started.changed
+  when: dnsmasq_restart|changed and not dnsmasq_started|changed
 
 - name: "restart network"
   service:
@@ -73,10 +73,10 @@
     enabled: yes
     state: restarted
   become: true
-  when: dhclientConf.changed
+  when: dhclientConf|changed
 
 - name: "run dhclient"
   shell: dhclient -r && dhclient
   become: true
-  when: dhclientConf.changed
+  when: dhclientConf|changed
 

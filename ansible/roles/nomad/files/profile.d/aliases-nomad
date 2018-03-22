@@ -20,4 +20,5 @@ nomad() {
   esac
 }
 
-n() { nomad "$@"; }
+alias n=nomad
+

@@ -13,4 +13,4 @@ service_env: {
   IPV4_MAIN_IP:   "{{ ipv4_main_ip }}"
 }
 service_exec:     "/usr/local/bin/{{ service_name }}"
-service_args:     "server -config={{ service_conf_dir }}"
+service_args:     "server -syslog -config={{ service_conf_dir }}"

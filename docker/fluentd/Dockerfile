@@ -1,7 +1,7 @@
 FROM fluent/fluentd:v1.1-debian
 
 RUN apt-get -y -qq update \
-&& apt-get -y -qq install --no-install-recommends procps \
+&& apt-get -y -qq install --no-install-recommends procps inotify-tools \
 && gem install fluent-plugin-concat \
 && gem install fluent-plugin-grok-parser \
 && gem install fluent-plugin-record-modifier \

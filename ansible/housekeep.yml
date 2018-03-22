@@ -1,0 +1,9 @@
+- hosts: all
+  gather_facts: no
+
+  roles:
+    - role: alive
+    - role: gather-facts
+    - role: debug
+    - role: check-sudo
+    - role: housekeep

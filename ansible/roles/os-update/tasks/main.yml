@@ -20,7 +20,7 @@
 - name: "waiting for connection"
   wait_for_connection:
     timeout: "{{ ssh_connect_timeout }}"
-  when: machine_reboot is defined and machine_reboot.changed
+  when: machine_reboot is defined and machine_reboot|changed
 
 - name: "start services"
   service:
@@ -29,4 +29,4 @@
   become: true
   with_items:
     - "{{ start_services | default([]) }}"
-  when: machine_reboot is defined and machine_reboot.changed
+  when: machine_reboot is defined and machine_reboot|changed

@@ -13,5 +13,5 @@ docker() {
   esac
 }
 
-d() { docker "$@"; }
+alias d=docker
 

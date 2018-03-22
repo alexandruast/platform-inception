@@ -48,12 +48,13 @@
     dest: "/etc/init.d/{{ service_name }}"
     mode: 0700
   become: true
-  register: service_restart
+  register: initd_config
 
 - name: "systemd daemon reload"
   systemd: daemon_reload=yes
   become: true
-  when: service_restart.changed
+  changed_when: true
+  when: initd_config|changed
 
 - name: "service config file updated"
   template:
@@ -61,7 +62,7 @@
     dest: "{{ service_conf_dir }}/service.hcl"
     mode: 0644
   become: true
-  register: service_restart
+  register: service_config
 
 - name: "service logrotate updated"
   template:
@@ -95,4 +96,4 @@
     name: "{{ service_name }}"
     state: restarted
   become: true
-  when: service_restart.changed and not service_started.changed
+  when: (initd_config|changed or service_config|changed) and not service_started|changed

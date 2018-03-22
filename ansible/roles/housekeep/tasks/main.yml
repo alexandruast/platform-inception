@@ -1,0 +1,7 @@
+- name: "obsolete files deleted"
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ delete_files }}"
+  become: yes

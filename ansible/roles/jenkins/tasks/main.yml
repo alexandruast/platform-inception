@@ -40,12 +40,12 @@
     dest: "/etc/init.d/{{ service_name }}"
     mode: 0700
   become: true
-  register: service_restart
+  register: initd_config
 
 - name: "systemd daemon reload"
   systemd: daemon_reload=yes
   become: true
-  when: service_restart.changed
+  when: initd_config|changed
 
 - name: "service logrotate updated"
   template:
@@ -62,7 +62,7 @@
   become: true
   with_items:
     - "{{ docker_groups }}"
-  when: docker_groups_task is defined or docker_groups_task.changed
+  when: docker_groups_task is defined or docker_groups_task|changed
   register: service_restart
   notify:
     - restart docker
@@ -85,5 +85,5 @@
     name: "{{ service_name }}"
     state: restarted
   become: true
-  when: service_restart.changed and not service_started.changed
+  when: (initd_config|changed or service_config|changed) and not service_started|changed
 
