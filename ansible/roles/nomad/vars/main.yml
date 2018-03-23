@@ -4,8 +4,6 @@ service_user:     "{{ service_name }}"
 service_group:    "{{ service_name }}"
 service_data_dir: "/usr/local/share/{{ service_name }}"
 service_conf_dir: "/etc/{{ service_name }}.d"
-service_log_dir:  "/var/log/{{ service_name }}"
-service_pid_file:  "/var/run/{{ service_name }}.pid"
 service_env: {
   PATH:           "/usr/local/bin:$PATH",
   GOMAXPROCS:     "${GOMAXPROCS:-2}",
@@ -13,5 +11,5 @@ service_env: {
   IPV4_MAIN_IP:   "{{ ipv4_main_ip }}"
 }
 service_exec:     "/usr/local/bin/{{ service_name }}"
-service_args:     "agent -syslog -bind={{ service_bind_ip }} -config={{ service_conf_dir }}"
+service_args:     "agent -bind={{ service_bind_ip }} -config={{ service_conf_dir }}"
 

@@ -8,10 +8,8 @@ service_version:   2.108
 service_user:      "{{ service_name }}"
 service_group:     "{{ service_name }}"
 service_data_dir:  "/usr/local/share/{{ service_name }}"
-service_log_dir:   "/var/log/{{ service_name }}"
-service_pid_file:   "/var/run/{{ service_name }}.pid"
 service_env: {
-  JENKINS_HOME:   "{{ service_data_dir }}"
+  JENKINS_HOME:    "{{ service_data_dir }}"
 }
-service_exec:     "/usr/bin/java"
-service_args:     "{{ jenkins_java_opts }} -jar {{ jenkins_war }} --httpPort={{ jenkins_port }}"
+service_exec:      "/usr/bin/java"
+service_args:      "{{ jenkins_java_opts }} -jar {{ jenkins_war }} --httpPort={{ jenkins_port }}"

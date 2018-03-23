@@ -13,6 +13,7 @@ vault_reset() {
   curl --silent -X POST -H "X-Vault-Token:${VAULT_ROOT_TOKEN}" -d '{"type":"approle"}' ${VAULT_ADDR}/v1/sys/auth/approle
   echo "[info] vault enabled approle backend"
   curl --silent -X PUT -H "X-Vault-Token:${VAULT_ROOT_TOKEN}" -d "{\"type\":\"file\",\"options\":{\"path\":\"/var/log/vault/audit.log\"}}" ${VAULT_ADDR}/v1/sys/audit/file
+  curl --silent -X PUT -H "X-Vault-Token:${VAULT_ROOT_TOKEN}" -d "{\"type\":\"syslog\"}" ${VAULT_ADDR}/v1/sys/audit/syslog
   echo "[info] vault enabled file audit backend"
   curl --silent -X PUT -H "X-Vault-Token:${VAULT_ROOT_TOKEN}" -d '{"value":"HelloWorldSecret"}' ${VAULT_ADDR}/v1/secret/hello
   echo "[info] vault written hello secret"
@@ -43,7 +44,6 @@ vault_reset() {
 }
 
 VAULT_ADDR="${VAULT_ADDR:-http://127.0.0.1:8200}"
-CONSUL_HTTP_ADDR="${CONSUL_HTTP_ADDR:-http://127.0.0.1:8500}"
 vault_init=$(curl --connect-timeout 4 --silent ${VAULT_ADDR}/v1/sys/init | jq -r .initialized)
 vault_sealed=$(curl --connect-timeout 4 --silent ${VAULT_ADDR}/v1/sys/seal-status | jq -r .sealed)
 

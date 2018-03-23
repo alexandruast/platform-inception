@@ -1,0 +1,14 @@
+- name: "rsyslog config is in place"
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/rsyslog.d/"
+  with_fileglob: "{{ role_path }}/files/rsyslog.d/*"
+  become: true
+  register: rsyslog_config
+
+- name: "service restarted"
+  service:
+    name: "rsyslog"
+    state: restarted
+  become: true
+  when: rsyslog_config|changed

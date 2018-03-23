@@ -4,6 +4,12 @@
     - "vars/{{ ansible_os_family | lower }}.yml"
   tags: always
 
+# Setting up hostname is not provisioner's job
+# - name: "hostname is set"
+#   hostname:
+#     name: whatever
+#   when: hostname_override
+
 - name: "system dirs created"
   file:
     path: "{{ item }}"

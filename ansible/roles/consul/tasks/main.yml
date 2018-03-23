@@ -25,14 +25,14 @@
     mode: 0755
   become: true
 
-- name: "service log directory created"
-  file:
-    path: "{{ service_log_dir }}"
-    state: directory
-    mode: 0750
-    owner:  "{{ service_user }}"
-    group:  "{{ service_group }}"
-  become: true
+# - name: "service log directory created"
+#   file:
+#     path: "{{ service_log_dir }}"
+#     state: directory
+#     mode: 0750
+#     owner:  "{{ service_user }}"
+#     group:  "{{ service_group }}"
+#   become: true
 
 - name: "service binaries downloaded and installed"
   unarchive:
@@ -42,19 +42,19 @@
     remote_src: yes
   become: true
 
-- name: "init.d service config updated"
+- name: "systemd service config updated"
   template:
     src: "{{ service_init_conf }}"
-    dest: "/etc/init.d/{{ service_name }}"
+    dest: "/etc/systemd/system/{{ service_name }}.service"
     mode: 0700
   become: true
-  register: initd_config
+  register: systemd_config
 
 - name: "systemd daemon reload"
   systemd: daemon_reload=yes
   become: true
   changed_when: true
-  when: initd_config|changed
+  when: systemd_config|changed
 
 - name: "service config file updated"
   template:
@@ -64,12 +64,12 @@
   become: true
   register: service_config
 
-- name: "service logrotate updated"
-  template:
-    src: "{{ service_logrotate_conf }}"
-    dest: "/etc/logrotate.d/{{ service_name }}"
-    mode: 0644
-  become: true
+# - name: "service logrotate updated"
+#   template:
+#     src: "{{ service_logrotate_conf }}"
+#     dest: "/etc/logrotate.d/{{ service_name }}"
+#     mode: 0644
+#   become: true
 
 - name: "service enabled"
   service:
@@ -89,5 +89,5 @@
     name: "{{ service_name }}"
     state: restarted
   become: true
-  when: (initd_config|changed or service_config|changed) and not service_started|changed
+  when: (systemd_config|changed or service_config|changed) and not service_started|changed
 

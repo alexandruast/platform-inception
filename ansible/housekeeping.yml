@@ -6,4 +6,4 @@
     - role: gather-facts
     - role: debug
     - role: check-sudo
-    - role: housekeep
+    - role: housekeeping
