@@ -64,15 +64,17 @@
 - name: "user belongs to docker groups"
   user:
     name: "{{service_user}}"
-    groups: "{{item}}"
+    groups: docker
     append: yes
   become: true
-  with_items:
-    - "{{docker_groups}}"
-  when: docker_groups_task is defined or docker_groups_task|changed
-  register: service_restart
-  notify:
-    - restart docker
+  register: docker_group
+
+- name: "restart docker"
+  service:
+    name: docker
+    state: restarted
+  become: true
+  when: docker_group|changed
 
 - name: "/etc/profile - NOMAD_ADDR"
   lineinfile:
@@ -95,7 +97,7 @@
     name: "{{service_name}}"
     enabled: yes
   become: true
-  
+
 - name: "service started"
   service:
     name: "{{service_name}}"
@@ -108,4 +110,4 @@
     name: "{{service_name}}"
     state: restarted
   become: true
-  when: (systemd_config|changed or service_config|changed) and not service_started|changed
+  when: (systemd_config|changed or service_config|changed or docker_group|changed) and not service_started|changed
