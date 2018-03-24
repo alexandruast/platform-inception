@@ -8,7 +8,7 @@ User={{service_user}}
 Group={{service_group}}
 Restart=always
 {% for key, value in service_env.iteritems() %}
-Environment={{key}}="{{value}}"
+Environment={{key}}={{value}}
 {% endfor %}
 ExecStart={{service_exec}} {{service_args}}
 ExecReload=/bin/kill -HUP $MAINPID

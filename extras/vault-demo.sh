@@ -12,9 +12,8 @@ vault_reset() {
   echo "[info] vault unsealed"
   curl --silent -X POST -H "X-Vault-Token:${VAULT_ROOT_TOKEN}" -d '{"type":"approle"}' ${VAULT_ADDR}/v1/sys/auth/approle
   echo "[info] vault enabled approle backend"
-  curl --silent -X PUT -H "X-Vault-Token:${VAULT_ROOT_TOKEN}" -d "{\"type\":\"file\",\"options\":{\"path\":\"/var/log/vault/audit.log\"}}" ${VAULT_ADDR}/v1/sys/audit/file
   curl --silent -X PUT -H "X-Vault-Token:${VAULT_ROOT_TOKEN}" -d "{\"type\":\"syslog\"}" ${VAULT_ADDR}/v1/sys/audit/syslog
-  echo "[info] vault enabled file audit backend"
+  echo "[info] vault enabled syslog audit backend"
   curl --silent -X PUT -H "X-Vault-Token:${VAULT_ROOT_TOKEN}" -d '{"value":"HelloWorldSecret"}' ${VAULT_ADDR}/v1/secret/hello
   echo "[info] vault written hello secret"
   curl --silent -X PUT -H "X-Vault-Token:${VAULT_ROOT_TOKEN}" -d '{"policy":"{\"path\":{\"secret/hello\":{\"capabilities\":[\"read\",\"list\"]}}"}' ${VAULT_ADDR}/v1/sys/policy/app-f85b911a

@@ -22,6 +22,8 @@
   get_url:
     url:  "http://mirrors.jenkins.io/war/{{service_version}}/jenkins.war"
     dest: "{{jenkins_war}}"
+    owner: "{{service_user}}"
+    group: "{{service_group}}"
     force: no
   become: true
 

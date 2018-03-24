@@ -1,0 +1,22 @@
+- hosts: all
+  gather_facts: no
+  serial: "{{serial_value|default(1)}}"
+
+  roles:
+    - role: alive
+    - role: gather-facts
+    - role: debug
+    - role: check-sudo
+    - role: housekeeping
+    - role: base
+    - role: dnsmasq
+      dns_servers:
+        - "/consul/172.28.16.61"
+        - "/consul/172.28.16.62"
+        - "172.28.27.162"
+        - "8.8.8.8"
+    - role: consul
+      service_mode: client
+    - role: docker
+    - role: nomad
+      service_mode: client
