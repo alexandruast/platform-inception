@@ -9,6 +9,7 @@
     - role: check-sudo
     - role: housekeeping
     - role: base
+    - role: systemd-setenv
     - role: dnsmasq
       dns_servers:
         - "/consul/172.28.16.61"

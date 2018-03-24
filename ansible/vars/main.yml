@@ -9,7 +9,6 @@ system_dirs:
 user_ssh_key: "$HOME/.ssh/id_rsa"
 
 service_init_conf: service-systemd.j2
-service_bind_ip: "${HOST_IP_ADDR}"
 
 dnsmasq_supersede: no
 repos_enabled: yes

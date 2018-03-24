@@ -23,3 +23,7 @@
     state: restarted
   become: true
   when: systemd_setenv_service|changed
+
+- name: "facts for env variables are set"
+  set_fact:
+    service_bind_ip: "${HOST_IP_ADDR}"
