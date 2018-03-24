@@ -2,6 +2,3 @@ docker_packages:
   - device-mapper-persistent-data
   - lvm2
   - docker-17.06.2ce-1.102.amzn2
-  
-docker_groups:
-  - docker

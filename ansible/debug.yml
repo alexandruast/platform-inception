@@ -1,7 +1,12 @@
 - hosts: all
   gather_facts: no
-  serial: "{{ serial_value | default(1) }}"
+  serial: "{{serial_value|default(1)}}"
 
   roles:
     - role: gather-facts
+      tags: always
     - role: debug
+      tags: always
+    - role: systemd-setenv
+    - role: consul
+      service_mode: server

@@ -1,0 +1,19 @@
+- hosts: all
+  gather_facts: no
+  serial: "{{serial_value|default(1)}}"
+
+  roles:
+    - role: alive
+    - role: gather-facts
+    - role: debug
+    - role: check-sudo
+    - role: housekeeping
+    - role: base
+    - role: systemd-setenv
+    - role: dnsmasq
+      dns_servers:
+        - "/consul/127.0.0.1#8600"
+    - role: consul
+      service_mode: server
+    - role: nomad
+      service_mode: server

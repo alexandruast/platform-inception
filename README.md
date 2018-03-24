@@ -24,7 +24,7 @@ Factory-Jenkins creates and manages all non-prod environments, where things get 
 Prod-Jenkins creates and manages all prod environments, where things get deployed to public (Prod).  
 Sandbox infrastructure is provisioned via ansible from origin shell.
 
-#### Misc shell commands
+#### Misc
 ```
 ANSIBLE_JUMPHOST=jumper@bastion.example.com \
 ANSIBLE_TARGET=user@10.241.2.10 \
@@ -33,5 +33,7 @@ ANSIBLE_TARGET=user@10.241.2.10 \
 ANSIBLE_TARGET=vagrant@192.168.169.181,vagrant@192.168.169.182 \
 ANSIBLE_EXTRAVARS="{'start_services':['consul','nomad']}" \
 ./apl-wrapper.sh ansible/os-update.yml
+docker build --tag platformdemo/images:fluentd-devel-20180320 --force-rm --pull --no-cache ./
+docker run --rm -it -d -p 24224:24224 -p 5140:5140 platformdemo/images:fluentd-devel-20180320
 ```
 

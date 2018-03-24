@@ -3,4 +3,4 @@
     name: dnsmasq
     state: restarted
   become: true
-  when: not dnsmasq_started.changed
+  when: not dnsmasq_started|changed

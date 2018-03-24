@@ -1,7 +1,7 @@
 - name: "include variables"
-  include_vars: "{{ item }}"
+  include_vars: "{{item}}"
   with_first_found:
-    - "vars/{{ ansible_distribution | lower }}.yml"
+    - "vars/{{ansible_distribution|lower}}.yml"
   tags: always
 
 - name: "yum - docker repository added"
@@ -12,32 +12,23 @@
     gpgkey: https://download.docker.com/linux/centos/gpg
     gpgcheck: yes
   become: true
-  when: ansible_distribution | lower == 'redhat' or ansible_distribution | lower == 'centos'
-
-- name: "docker group created"
-  group:
-    name: docker
-  become: true
-  register: docker_groups_task
+  when: ansible_distribution|lower == 'redhat' or ansible_distribution|lower == 'centos'
 
 - name: "docker packages installed"
   package:
-    name: "{{ item }}"
+    name: "{{item}}"
     state: present
   become: true
   with_items:
-    - "{{ docker_packages }}"
+    - "{{docker_packages}}"
 
-- name: "{{ ansible_user_id }} appended to docker group"
+- name: "{{ansible_user_id}} appended to docker group"
   user:
-    name: "{{ ansible_user_id }}"
+    name: "{{ansible_user_id}}"
     groups: docker
     append: yes
   become: true
-  with_items:
-    - "{{ docker_groups }}"
-  notify:
-    - restart docker
+  register: docker_group
 
 - name: "net.ipv4.ip_forward is enabled"
   sysctl:
@@ -46,9 +37,29 @@
     sysctl_set: yes
   become: true
 
-- name: "docker service enabled and started"
+- name: "shell profile scripts are in place"
+  copy:
+    src: "{{item}}"
+    dest: "{{ansible_env.HOME}}/profile.d/"
+  with_fileglob: "{{role_path}}/files/profile.d/*"
+  tags: env
+
+- name: "service enabled"
   service:
     name: docker
     enabled: yes
+  become: true
+  
+- name: "service started"
+  service:
+    name: docker
     state: started
   become: true
+  register: service_started
+
+- name: "restart service"
+  service:
+    name: docker
+    state: restarted
+  become: true
+  when: docker_group|changed and not service_started|changed

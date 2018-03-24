@@ -1,0 +1,24 @@
+docker() {
+  DOCKER_BINARY=$(which docker)
+  case $1 in
+    login)
+      shift
+      if [ "$1" != "" ]; then
+        $DOCKER_BINARY exec -it "$1" /bin/sh
+      else
+        $DOCKER_BINARY exec -it "$($DOCKER_BINARY ps -q | head -1)" /bin/sh
+      fi
+      ;;
+    reset)
+      $DOCKER_BINARY stop $($DOCKER_BINARY ps -qa) &>/dev/null
+      $DOCKER_BINARY rm -f $($DOCKER_BINARY ps -qa) &>/dev/null
+      $DOCKER_BINARY rmi -f $($DOCKER_BINARY images -qa) &>/dev/null
+      $DOCKER_BINARY system prune -f
+      $DOCKER_BINARY volume prune -f
+      ;;
+    *) $DOCKER_BINARY "$@" ;;
+  esac
+}
+
+alias d=docker
+

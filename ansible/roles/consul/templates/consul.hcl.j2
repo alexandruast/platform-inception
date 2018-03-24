@@ -1,6 +1,9 @@
 client_addr = "0.0.0.0"
 log_level = "DEBUG"
-data_dir = "{{ service_data_dir }}"
+data_dir = "{{service_data_dir}}"
+# For systemd, the default behaviour is to send logs to syslog
+# Uncomment this line if you use init.d
+# enable_syslog = true
 disable_update_check = true
 rejoin_after_leave = true
 leave_on_terminate = true

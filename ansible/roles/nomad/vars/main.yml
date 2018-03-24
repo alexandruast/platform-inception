@@ -1,17 +1,12 @@
 service_name:     nomad
 service_version:  0.7.1
-service_user:     "{{ service_name }}"
-service_group:    "{{ service_name }}"
-service_data_dir: "/usr/local/share/{{ service_name }}"
-service_conf_dir: "/etc/{{ service_name }}.d"
-service_log_dir:  "/var/log/{{ service_name }}"
-service_pid_file:  "/var/run/{{ service_name }}.pid"
+service_user:     "{{service_name}}"
+service_group:    "{{service_name}}"
+service_data_dir: "/usr/local/share/{{service_name}}"
+service_conf_dir: "/etc/{{service_name}}.d"
 service_env: {
-  PATH:           "/usr/local/bin:$PATH",
-  GOMAXPROCS:     "${GOMAXPROCS:-2}",
-  IPV4_MAIN_IF:   "{{ ipv4_main_interface }}",
-  IPV4_MAIN_IP:   "{{ ipv4_main_ip }}"
+  GOMAXPROCS:     "${GOMAXPROCS:-4}"
 }
-service_exec:     "/usr/local/bin/{{ service_name }}"
-service_args:     "agent -bind={{ service_bind_ip }} -config={{ service_conf_dir }}"
+service_exec:     "/usr/local/bin/{{service_name}}"
+service_args:     "agent -bind={{service_bind_ip|default('0.0.0.0')}} -config={{service_conf_dir}}"
 

@@ -1,5 +1,5 @@
 - name: "swap enabled check"
-  shell: "swapon -s | wc -l"
+  shell: "swapon -s|wc -l"
   changed_when: false
   register: swap_enabled_check
   become: true
@@ -10,7 +10,7 @@
   become: true
 
 - name: "swap enabled check"
-  shell: "swapon -s | wc -l"
+  shell: "swapon -s|wc -l"
   changed_when: false
   register: swap_enabled_check
   when: swap_enabled_check.stdout == '0'
@@ -19,29 +19,29 @@
 - block:
   - name: "swap file check"
     stat:
-      path: "{{ swap_file }}"
+      path: "{{swap_file}}"
     register: swap_file_check
     changed_when: false
   
   - name: "swap file created"
-    command: "dd if=/dev/zero of={{ swap_file }} bs=1M count={{ swap_size_mb }}"
+    command: "dd if=/dev/zero of={{swap_file}} bs=1M count={{swap_size_mb}}"
     when: not swap_file_check.stat.exists
     
   - name: "swap file permissions set"
     file:
-      path: "{{ swap_file }}"
+      path: "{{swap_file}}"
       owner: root
       group: root
       mode: 0600
 
   - name: "swap file formatted"
-    command: "mkswap {{ swap_file }}"
+    command: "mkswap {{swap_file}}"
     when: not swap_file_check.stat.exists
 
   - name: "/etc/fstab updated"
     mount:
       name: none
-      src: "{{ swap_file }}"
+      src: "{{swap_file}}"
       fstype: swap
       opts: sw
       passno: 0

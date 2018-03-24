@@ -16,9 +16,9 @@ def creds = com.cloudbees.plugins.credentials.CredentialsProvider.lookupCredenti
     Jenkins.instance
 )
 
-credential_id="{{ JENKINS_CREDENTIAL_ID }}"
-credential_desc="{{ JENKINS_CREDENTIAL_DESCRIPTION }}"
-credential_secret="{{ JENKINS_CREDENTIAL_SECRET }}"
+credential_id="{{JENKINS_CREDENTIAL_ID}}"
+credential_desc="{{JENKINS_CREDENTIAL_DESCRIPTION}}"
+credential_secret="{{JENKINS_CREDENTIAL_SECRET}}"
 
 def c = creds.findResult { it.id == credential_id ? it : null }
 

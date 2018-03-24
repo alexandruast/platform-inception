@@ -1,9 +1,8 @@
 - hosts: all
   gather_facts: no
-  serial: "{{ serial_value | default(1) }}"
+  serial: "{{serial_value|default(1)}}"
 
   roles:
     - role: gather-facts
     - role: check-sudo
-    - role: consul
-      service_mode: client
+    - role: vault

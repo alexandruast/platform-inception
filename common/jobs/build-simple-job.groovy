@@ -1,5 +1,5 @@
 def instance = Hudson.instance
-def job = instance.getItem("{{ JENKINS_BUILD_JOB }}")
+def job = instance.getItem("{{JENKINS_BUILD_JOB}}")
 def futureTask = job.scheduleBuild2(0)
 def build = futureTask.get()
 if (build.result.toString() != "SUCCESS" && build.result.toString() != "UNSTABLE") {

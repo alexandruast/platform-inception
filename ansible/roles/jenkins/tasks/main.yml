@@ -1,89 +1,77 @@
 - name: "service group present"
   group:
-    name: "{{ service_group }}"
+    name: "{{service_group}}"
   become: true
 
 - name: "service user present"
   user:
-    name: "{{ service_user }}"
-    group: "{{ service_group }}"
+    name: "{{service_user}}"
+    group: "{{service_group}}"
   become: true
 
 - name: "service data directory created"
   file:
-    path: "{{ service_data_dir }}"
+    path: "{{service_data_dir}}"
     state: directory
     mode: 0750
-    owner:  "{{ service_user }}"
-    group:  "{{ service_group }}"
-  become: true
-
-- name: "service log directory created"
-  file:
-    path: "{{ service_log_dir }}"
-    state: directory
-    mode: 0750
-    owner:  "{{ service_user }}"
-    group:  "{{ service_group }}"
+    owner:  "{{service_user}}"
+    group:  "{{service_group}}"
   become: true
 
 - name: "service binaries downloaded and installed"
   get_url:
-    url:  "http://mirrors.jenkins.io/war/{{ service_version }}/jenkins.war"
-    dest: "{{ jenkins_war }}"
+    url:  "http://mirrors.jenkins.io/war/{{service_version}}/jenkins.war"
+    dest: "{{jenkins_war}}"
+    owner: "{{service_user}}"
+    group: "{{service_group}}"
     force: no
   become: true
 
-- name: "init.d service config updated"
+- name: "systemd service config updated"
   template:
-    src: "{{ service_init_conf }}"
-    dest: "/etc/init.d/{{ service_name }}"
-    mode: 0700
+    src: "{{service_init_conf}}"
+    dest: "/etc/systemd/system/{{service_name}}.service"
+    mode: 0640
   become: true
-  register: service_restart
+  register: systemd_config
 
 - name: "systemd daemon reload"
   systemd: daemon_reload=yes
   become: true
-  when: service_restart.changed
+  when: systemd_config|changed
 
-- name: "service logrotate updated"
-  template:
-    src: "{{ service_logrotate_conf }}"
-    dest: "/etc/logrotate.d/{{ service_name }}"
-    mode: 0644
-  become: true
-
-- name: "user belongs to docker groups"
+- name: "user belongs to docker group"
   user:
-    name: "{{ service_user }}"
-    groups: "{{ item }}"
+    name: "{{service_user}}"
+    groups: docker
     append: yes
   become: true
-  with_items:
-    - "{{ docker_groups }}"
-  when: docker_groups_task is defined or docker_groups_task.changed
-  register: service_restart
-  notify:
-    - restart docker
+  register: docker_group
+
+- name: "restart docker"
+  service:
+    name: docker
+    state: restarted
+  become: true
+  when: docker_group|changed
 
 - name: "service enabled"
   service:
-    name: "{{ service_name }}"
+    name: "{{service_name}}"
     enabled: yes
   become: true
   
 - name: "service started"
   service:
-    name: "{{ service_name }}"
+    name: "{{service_name}}"
     state: started
   become: true
   register: service_started
   
 - name: "restart service"
   service:
-    name: "{{ service_name }}"
+    name: "{{service_name}}"
     state: restarted
   become: true
-  when: service_restart.changed and not service_started.changed
+  when: (systemd_config|changed or docker_group|changed) and not service_started|changed
 

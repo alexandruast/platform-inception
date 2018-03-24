@@ -1,8 +1,8 @@
 - name: "ssh authorized keys set"
   authorized_key:
-    user: "{{ item.user }}"
+    user: "{{item.user}}"
     state: present
-    key: "{{ lookup('file', item.file) }}"
+    key: "{{lookup('file', item.file)}}"
   with_items:
-    - "{{ authorized_keys }}"
+    - "{{authorized_keys}}"
   become: true

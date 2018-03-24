@@ -1,0 +1,2 @@
+systemctl_environment:
+  - { key: "HOST_IP_ADDR", value: "$(hostname -i)" }

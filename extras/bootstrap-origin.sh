@@ -78,8 +78,8 @@ ANSIBLE_TARGET=${all_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%'}" ./apl-wr
 ANSIBLE_TARGET=${all_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','authorized_keys':[{'user':'vagrant','file':'/home/vagrant/.ssh/id_rsa.pub'}]}" ./apl-wrapper.sh ansible/authorized-keys.yml
 
 ANSIBLE_TARGET=${server_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','dns_servers':['/consul/127.0.0.1#8600','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true}" ./apl-wrapper.sh ansible/dnsmasq.yml
-ANSIBLE_TARGET=${server_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_bind_ip': '{{ ansible_host }}' }" ./apl-wrapper.sh ansible/consul-server.yml
-ANSIBLE_TARGET=${server_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_bind_ip': '{{ ansible_host }}' }" ./apl-wrapper.sh ansible/nomad-server.yml
+ANSIBLE_TARGET=${server_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_mode':'server','service_bind_ip':'{{ansible_host}}'}" ./apl-wrapper.sh ansible/consul.yml
+ANSIBLE_TARGET=${server_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_mode':'server','service_bind_ip':'{{ansible_host}}'}" ./apl-wrapper.sh ansible/nomad.yml
 
 for i in $(echo $server_nodes | tr ',' ' '); do
   if [ "$i" != "$server1_ip" ]; then
@@ -88,9 +88,9 @@ for i in $(echo $server_nodes | tr ',' ' '); do
   fi
 done
 
-ANSIBLE_TARGET=${server1_ip} ./apl-wrapper.sh ansible/vault-server.yml
+ANSIBLE_TARGET=${server1_ip} ./apl-wrapper.sh ansible/vault.yml
 VAULT_ADDR="http://${server1_ip}:8200" CONSUL_HTTP_ADDR="http://${server1_ip}:8500" ./extras/vault-demo.sh
 
 ANSIBLE_TARGET=${compute_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true}" ./apl-wrapper.sh ansible/dnsmasq.yml
-ANSIBLE_TARGET=${compute_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_bind_ip': '{{ ansible_host }}' }" ./apl-wrapper.sh ansible/consul-client.yml
-ANSIBLE_TARGET=${compute_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_bind_ip': '{{ ansible_host }}' }" ./apl-wrapper.sh ansible/nomad-client.yml
+ANSIBLE_TARGET=${compute_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_mode':'client','service_bind_ip': '{{ansible_host}}'}" ./apl-wrapper.sh ansible/consul.yml
+ANSIBLE_TARGET=${compute_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_mode':'client','service_bind_ip': '{{ansible_host}}'}" ./apl-wrapper.sh ansible/nomad.yml

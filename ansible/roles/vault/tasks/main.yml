@@ -1,98 +1,83 @@
 - name: "service group present"
   group:
-    name: "{{ service_group }}"
+    name: "{{service_group}}"
   become: true
 
 - name: "service user present"
   user:
-    name: "{{ service_user }}"
-    group: "{{ service_group }}"
+    name: "{{service_user}}"
+    group: "{{service_group}}"
   become: true
 
 - name: "service data directory created"
   file:
-    path: "{{ service_data_dir }}"
+    path: "{{service_data_dir}}"
     state: directory
     mode: 0750
-    owner:  "{{ service_user }}"
-    group:  "{{ service_group }}"
+    owner:  "{{service_user}}"
+    group:  "{{service_group}}"
   become: true
 
 - name: "service conf directory created"
   file:
-    path: "{{ service_conf_dir }}"
+    path: "{{service_conf_dir}}"
     state: directory
     mode: 0755
   become: true
 
-- name: "service log directory created"
-  file:
-    path: "{{ service_log_dir }}"
-    state: directory
-    mode: 0750
-    owner:  "{{ service_user }}"
-    group:  "{{ service_group }}"
-  become: true
-
 - name: "service binaries downloaded and installed"
   unarchive:
-    src:  https://releases.hashicorp.com/{{ service_name }}/{{ service_version }}/{{ service_name }}_{{ service_version }}_linux_amd64.zip
+    src:  https://releases.hashicorp.com/{{service_name}}/{{service_version}}/{{service_name}}_{{service_version}}_linux_amd64.zip
     dest: /usr/local/bin/
     mode: +x
     remote_src: yes
   become: true
 
-- name: "init.d service config updated"
+- name: "systemd service config updated"
   template:
-    src: "{{ service_init_conf }}"
-    dest: "/etc/init.d/{{ service_name }}"
-    mode: 0700
+    src: "{{service_init_conf}}"
+    dest: "/etc/systemd/system/{{service_name}}.service"
+    mode: 0640
   become: true
-  register: service_restart
+  register: systemd_config
 
 - name: "systemd daemon reload"
   systemd: daemon_reload=yes
   become: true
-  when: service_restart.changed
+  changed_when: true
+  when: systemd_config|changed
 
 - name: "service config file updated"
   template:
-    src: "{{ service_name }}.hcl.j2"
-    dest: "{{ service_conf_dir }}/service.hcl"
+    src: "{{service_name}}.hcl.j2"
+    dest: "{{service_conf_dir}}/service.hcl"
     mode: 0644
   become: true
-  register: service_restart
-
-- name: "service logrotate updated"
-  template:
-    src: "{{ service_logrotate_conf }}"
-    dest: "/etc/logrotate.d/{{ service_name }}"
-    mode: 0644
-  become: true
+  register: service_config
 
 - name: "service granted mlock syscall"
   capabilities:
     capability: cap_ipc_lock=+ep
-    path: "/usr/local/bin/{{ service_name }}"
+    path: "/usr/local/bin/{{service_name}}"
   become: true
   changed_when: false
 
 - name: "service enabled"
   service:
-    name: "{{ service_name }}"
+    name: "{{service_name}}"
     enabled: yes
   become: true
   
 - name: "service started"
   service:
-    name: "{{ service_name }}"
+    name: "{{service_name}}"
     state: started
   become: true
   register: service_started
   
 - name: "restart service"
   service:
-    name: "{{ service_name }}"
+    name: "{{service_name}}"
     state: restarted
   become: true
-  when: service_restart.changed and not service_started.changed
+  when: (systemd_config|changed or service_config|changed) and not service_started|changed

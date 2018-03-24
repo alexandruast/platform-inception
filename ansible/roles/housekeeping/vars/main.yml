@@ -1,0 +1,34 @@
+deprecated_init_services:
+  - consul
+  - nomad
+  - vault
+  - jenkins
+  - fluentd
+
+delete_items:
+  - /var/log/consul.log
+  - /var/log/nomad.log
+  - /var/log/vault.log
+  - /var/log/jenkins.log
+  - /var/log/consul
+  - /var/log/nomad
+  - /var/log/vault
+  - /var/log/jenkins
+  - /var/log/fluentd
+  - /etc/init.d/consul
+  - /etc/init.d/nomad
+  - /etc/init.d/vault
+  - /etc/init.d/jenkins
+  - /etc/init.d/fluentd
+  - /etc/logrotate.d/consul
+  - /etc/logrotate.d/nomad
+  - /etc/logrotate.d/vault
+  - /etc/logrotate.d/jenkins
+  - /etc/logrotate.d/fluentd
+  - /etc/systemd/system/profile.service
+
+etc_profile_removed:
+  - IPV4_MAIN_IP
+  - IPV4_MAIN_IF
+  - IPV4_PRIMARY_INTERFACE
+  - IPV4_PRIMARY_IP_ADDR

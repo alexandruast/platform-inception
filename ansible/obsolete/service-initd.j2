@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 ### BEGIN INIT INFO
-# Provides: {{ service_name }}
+# Provides: {{service_name}}
 # Required-Start: $local_fs $network
 # Required-Stop: $local_fs $network
 # Should-Start: $syslog $time $named
@@ -13,19 +13,22 @@
 . /etc/rc.d/init.d/functions
 
 {% for key, value in service_env.iteritems() %}
-export {{ key }}="{{ value }}"
+export {{key}}="{{value}}"
 {% endfor %}
 
-service_name="{{ service_name }}"
-service_user="{{ service_user }}"
-service_group="{{ service_group }}"
-service_exec="{{ service_exec }}"
-service_args="{{ service_args }}"
-service_log_dir="{{ service_log_dir }}"
-service_pid_file="{{ service_pid_file }}"
+service_name="{{service_name}}"
+service_user="{{service_user}}"
+service_group="{{service_group}}"
+service_exec="{{service_exec}}"
+service_args="{{service_args}}"
+service_log_dir="{{service_log_dir}}"
+service_log_file="${service_log_dir}/service.log"
+service_pid_file="{{service_pid_file}}"
 
-chown ${service_user}:${service_group} ${service_log_dir}
-touch ${service_pid_file} && chown ${service_user}:${service_group} ${service_pid_file}
+reset_permissions() {
+  chown -R ${service_user}:${service_group} ${service_log_dir}
+  touch ${service_pid_file} && chown ${service_user}:${service_group} ${service_pid_file}
+}
 
 get_pid() {
   pid="$(<${service_pid_file})"
@@ -36,7 +39,9 @@ get_pid() {
 start() {
   if [ "x$(get_pid)" = "x" ]; then
     echo "[info] starting ${service_name}..."
-    daemon --user=${service_user} --pidfile=${service_pid_file} "{ ${service_exec} ${service_args} &>> ${service_log_dir}/service.log & }; echo \$! >| ${service_pid_file}"
+    # Always reset permissions on service start
+    reset_permissions
+    daemon --user=${service_user} --pidfile=${service_pid_file} "{ ${service_exec} ${service_args} &>> ${service_log_file} & }; echo \$! >| ${service_pid_file}"
     sleep 0.5
     pid="$(get_pid)"
     if [ "x$pid" != "x" ]; then
@@ -56,7 +61,7 @@ stop() {
     pid="$(get_pid)"
     echo "[info] stopping ${service_name}(PID:$pid)..."
     for i in $(seq 1 10); do
-      killproc -p ${service_pid_file} ${service_exec} -INT 2>> ${service_log_dir}/service.log
+      killproc -p ${service_pid_file} ${service_exec} -INT 2>> ${service_log_file}
       sleep 3
       if [ "x$(get_pid)" = "x" ]; then
         echo "[info] ${service_name} stopped after $i attempts"
