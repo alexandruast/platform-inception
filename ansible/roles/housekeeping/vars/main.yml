@@ -25,3 +25,7 @@ delete_items:
   - /etc/logrotate.d/vault
   - /etc/logrotate.d/jenkins
   - /etc/logrotate.d/fluentd
+
+ect_profile_vars_removed:
+  - IPV4_MAIN_IP
+  - IPV4_MAIN_IF

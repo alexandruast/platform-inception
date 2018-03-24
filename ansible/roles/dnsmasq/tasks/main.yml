@@ -1,8 +1,8 @@
 - name: "/etc/NetworkManager/conf.d/* updated"
   copy:
-    src: "{{ item }}"
+    src: "{{item}}"
     dest: "/etc/NetworkManager/conf.d/"
-  with_fileglob: "{{ role_path }}/files/etc/NetworkManager/conf.d/*"
+  with_fileglob: "{{role_path}}/files/etc/NetworkManager/conf.d/*"
   become: true
   register: NetworkManagerConf
   

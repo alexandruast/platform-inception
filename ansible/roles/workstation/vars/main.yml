@@ -9,17 +9,17 @@ workstation_user_pips:
 
 workstation_git:
   - download_url: https://github.com/robbyrussell/oh-my-zsh.git
-    dest: "{{ ansible_env.HOME }}/.oh-my-zsh"
+    dest: "{{ansible_env.HOME}}/.oh-my-zsh"
 
   - download_url: https://github.com/pyenv/pyenv.git
-    dest: "{{ ansible_env.HOME }}/.pyenv"
+    dest: "{{ansible_env.HOME}}/.pyenv"
 
   - download_url: https://github.com/rbenv/rbenv.git
-    dest: "{{ ansible_env.HOME }}/.rbenv"
+    dest: "{{ansible_env.HOME}}/.rbenv"
 
   - download_url: https://github.com/rbenv/ruby-build.git
-    dest: "{{ ansible_env.HOME }}/.rbenv/plugins/ruby-build"
+    dest: "{{ansible_env.HOME}}/.rbenv/plugins/ruby-build"
 
   - download_url: https://github.com/gcuisinier/jenv.git
-    dest: "{{ ansible_env.HOME }}/.jenv"
+    dest: "{{ansible_env.HOME}}/.jenv"
     

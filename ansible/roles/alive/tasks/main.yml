@@ -1,3 +1,3 @@
 - name: "waiting for connection"
   wait_for_connection:
-    timeout: "{{ ssh_connect_timeout }}"
+    timeout: "{{ssh_connect_timeout}}"

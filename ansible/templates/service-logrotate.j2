@@ -1,4 +1,4 @@
-/var/log/{{ service_name }}/*.log {
+{{log_file}} {
     missingok
     notifempty
     size 50m

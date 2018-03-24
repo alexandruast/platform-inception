@@ -1,9 +1,9 @@
 - name: "deprecated init.d services disabled and stopped"
-  command: "/etc/init.d/{{ item }} stop"
+  command: "/etc/init.d/{{item}} stop"
   become: yes
   ignore_errors: yes
   with_items:
-    - "{{ deprecated_init_services }}"
+    - "{{deprecated_init_services}}"
 
 - name: "systemd daemon reload"
   systemd: daemon_reload=yes
@@ -11,8 +11,17 @@
 
 - name: "obsolete files/directories deleted"
   file:
-    path: "{{ item }}"
+    path: "{{item}}"
     state: absent
   with_items:
-    - "{{ delete_items }}"
+    - "{{delete_items}}"
   become: yes
+
+- name: "/etc/profile cleaned"
+  lineinfile:
+    state: absent
+    regexp: "^{{item}}="
+    dest: /etc/profile
+  become: true
+  with_items:
+    - "{{etc_profile_vars_removed}}"

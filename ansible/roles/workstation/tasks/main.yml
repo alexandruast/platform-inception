@@ -1,59 +1,59 @@
 - name: "include variables"
-  include_vars: "{{ item }}"
+  include_vars: "{{item}}"
   with_first_found:
-    - "vars/{{ ansible_os_family | lower }}.yml"
+    - "vars/{{ansible_os_family|lower}}.yml"
   tags: always
 
 - name: "required packages present"
   yum:
-    name: "{{ item }}"
+    name: "{{item}}"
     state: present
   become: true
   with_items:
-    - "{{ workstation_packages }}"
+    - "{{workstation_packages}}"
 
 - name: "system pips installed and upgraded"
   pip:
-    name: "{{ item }}"
+    name: "{{item}}"
     extra_args: --upgrade
   become: true
   with_items:
-    - "{{ workstation_system_pips }}"
+    - "{{workstation_system_pips}}"
   tags: pip
 
 - name: "user pips installed and upgraded"
   pip:
-    name: "{{ item }}"
+    name: "{{item}}"
     extra_args: --upgrade --user
   with_items:
-    - "{{ workstation_user_pips }}"
+    - "{{workstation_user_pips}}"
   tags: pip
 
 - name: "git repos are in place"
   git:
-    repo: "{{ item.download_url }}"
-    dest: "{{ item.dest }}"
+    repo: "{{item.download_url}}"
+    dest: "{{item.dest}}"
   with_items:
-    - "{{ workstation_git }}"
+    - "{{workstation_git}}"
   tags: git
 
 - name: "shell profile scripts are in place"
   copy:
-    src: "{{ item }}"
-    dest: "{{ ansible_env.HOME }}/profile.d/"
-  with_fileglob: "{{ role_path }}/files/profile.d/*"
+    src: "{{item}}"
+    dest: "{{ansible_env.HOME}}/profile.d/"
+  with_fileglob: "{{role_path}}/files/profile.d/*"
   tags: env
 
 - name: ".zshrc exists and is updated"
   copy:
-    src: "{{ zshrc_conf }}"
-    dest: "{{ ansible_env.HOME }}/{{ zshrc_conf }}"
+    src: "{{zshrc_conf}}"
+    dest: "{{ansible_env.HOME}}/{{zshrc_conf}}"
   tags: env
 
-- name: "user {{ ansible_user_id }} uses zsh shell"
+- name: "user {{ansible_user_id}} uses zsh shell"
   user:
-    name: "{{ ansible_user_id }}"
-    shell: "{{ workstation_shell }}"
+    name: "{{ansible_user_id}}"
+    shell: "{{workstation_shell}}"
   become: true
   tags: env
 

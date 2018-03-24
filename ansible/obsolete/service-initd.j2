@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 ### BEGIN INIT INFO
-# Provides: {{ service_name }}
+# Provides: {{service_name}}
 # Required-Start: $local_fs $network
 # Required-Stop: $local_fs $network
 # Should-Start: $syslog $time $named
@@ -13,17 +13,17 @@
 . /etc/rc.d/init.d/functions
 
 {% for key, value in service_env.iteritems() %}
-export {{ key }}="{{ value }}"
+export {{key}}="{{value}}"
 {% endfor %}
 
-service_name="{{ service_name }}"
-service_user="{{ service_user }}"
-service_group="{{ service_group }}"
-service_exec="{{ service_exec }}"
-service_args="{{ service_args }}"
-service_log_dir="{{ service_log_dir }}"
+service_name="{{service_name}}"
+service_user="{{service_user}}"
+service_group="{{service_group}}"
+service_exec="{{service_exec}}"
+service_args="{{service_args}}"
+service_log_dir="{{service_log_dir}}"
 service_log_file="${service_log_dir}/service.log"
-service_pid_file="{{ service_pid_file }}"
+service_pid_file="{{service_pid_file}}"
 
 reset_permissions() {
   chown -R ${service_user}:${service_group} ${service_log_dir}

@@ -1,8 +1,8 @@
 - name: "rsyslog config is in place"
   copy:
-    src: "{{ item }}"
+    src: "{{item}}"
     dest: "/etc/rsyslog.d/"
-  with_fileglob: "{{ role_path }}/files/rsyslog.d/*"
+  with_fileglob: "{{role_path}}/files/rsyslog.d/*"
   become: true
   register: rsyslog_config
 

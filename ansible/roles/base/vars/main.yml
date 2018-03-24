@@ -1,6 +1,6 @@
-etc_profile:
-  - { key: "IPV4_MAIN_IF", value: "{{ ipv4_main_interface }}" }
-  - { key: "IPV4_MAIN_IP", value: "{{ ipv4_main_ip }}" }
+etc_profile_vars:
+  - { key: "IPV4_PRIMARY_INTERFACE", value: "{{ipv4_main_interface}}" }
+  - { key: "IPV4_PRIMARY_IP_ADDR", value: "{{ipv4_main_ip_addr}}" }
 
 pam_limits:
   - domain: '*'

@@ -2,7 +2,7 @@
     msg: "This cannot be run as root!"
   when: ansible_user_id == 'root'
 
-- name: "{{ ansible_user_id }} can use privileged mode"
+- name: "{{ansible_user_id}} can use privileged mode"
   shell: whoami
   become: true
   when: ansible_user_id != 'root'
