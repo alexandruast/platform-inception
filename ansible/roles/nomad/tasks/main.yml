@@ -68,7 +68,7 @@
     append: yes
   become: true
   register: docker_group
-  when: service_mode is defined and service_mode == 'client'
+  when: service_mode == 'client'
 
 - name: "restart docker"
   service:
