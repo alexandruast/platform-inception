@@ -1,3 +1,4 @@
 dependencies:
+  - role: systemd-setenv
   - role: docker
     when: service_mode == 'client'

@@ -24,4 +24,4 @@
     dest: /etc/profile
   become: true
   with_items:
-    - "{{etc_profile_vars_removed}}"
+    - "{{etc_profile_removed}}"

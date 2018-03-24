@@ -1,6 +1,5 @@
 etc_profile_vars:
-  - { key: "IPV4_PRIMARY_INTERFACE", value: "{{ipv4_main_interface}}" }
-  - { key: "IPV4_PRIMARY_IP_ADDR", value: "{{ipv4_main_ip_addr}}" }
+  - { key: "PATH", value: "/usr/local/bin:$PATH" }
 
 pam_limits:
   - domain: '*'
@@ -8,7 +7,6 @@ pam_limits:
     limit: nofile
     value: 64000
     
-
 sysctl_entries:
   - name: net.core.somaxconn
     value: 1024

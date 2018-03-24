@@ -9,10 +9,7 @@ system_dirs:
 user_ssh_key: "$HOME/.ssh/id_rsa"
 
 service_init_conf: service-systemd.j2
-service_bind_ip: $IPV4_PRIMARY_IP_ADDR
-
-ipv4_main_interface: "$(ip route get 8.8.8.8 | head -1 | perl -lne 'print $2 if /(\\w+) dev (\\w+)/')"
-ipv4_main_ip_addr: "$(ip -f inet addr show $IPV4_PRIMARY_INTERFACE | grep -Po 'inet \\K[\\d.]+')"
+service_bind_ip: "${HOST_IP_ADDR}"
 
 dnsmasq_supersede: no
 repos_enabled: yes

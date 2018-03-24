@@ -38,18 +38,6 @@
     backup: yes
   become: true
 
-- name: "/etc/profile variables are set"
-  lineinfile:
-    insertbefore: EOF
-    state: present
-    regexp: "^{{item.key}}="
-    line: "{{item.key}}={{item.value}}"
-    dest: /etc/profile
-    create: yes
-  become: true
-  with_items:
-    - "{{etc_profile_vars}}"
-
 - name: "pam limits set"
   pam_limits:
     domain: "{{item.domain}}"

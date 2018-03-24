@@ -1,7 +1,7 @@
 [Unit]
 Description={{service_name}} daemon
 Requires=network-online.target
-After=network-online.target
+After=network-online.target setenv.service
 
 [Service]
 User={{service_user}}
@@ -12,6 +12,3 @@ Environment={{key}}={{value}}
 {% endfor %}
 ExecStart={{service_exec}} {{service_args}}
 ExecReload=/bin/kill -HUP $MAINPID
-
-[Install]
-WantedBy=multi-user.target

@@ -25,7 +25,10 @@ delete_items:
   - /etc/logrotate.d/vault
   - /etc/logrotate.d/jenkins
   - /etc/logrotate.d/fluentd
+  - /etc/systemd/system/profile.service
 
-etc_profile_vars_removed:
+etc_profile_removed:
   - IPV4_MAIN_IP
   - IPV4_MAIN_IF
+  - IPV4_PRIMARY_INTERFACE
+  - IPV4_PRIMARY_IP_ADDR
