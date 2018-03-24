@@ -68,14 +68,14 @@
     append: yes
   become: true
   register: docker_group
-  when: service_mode|defined and service_mode == 'client'
+  when: service_mode is defined and service_mode == 'client'
 
 - name: "restart docker"
   service:
     name: docker
     state: restarted
   become: true
-  when: docker_group|defined and docker_group|changed
+  when: docker_group is defined and docker_group|changed
 
 - name: "/etc/profile - NOMAD_ADDR"
   lineinfile:
