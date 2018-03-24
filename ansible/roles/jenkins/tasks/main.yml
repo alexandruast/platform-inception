@@ -71,5 +71,5 @@
     name: "{{service_name}}"
     state: restarted
   become: true
-  when: (systemd_config|changed or service_config|changed) and not service_started|changed
+  when: systemd_config|changed and not service_started|changed
 
