@@ -1,3 +1,0 @@
-dependencies:
-  - role: docker
-    when: service_mode == 'client'

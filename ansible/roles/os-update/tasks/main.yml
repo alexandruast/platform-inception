@@ -23,7 +23,7 @@
   when: machine_reboot is defined and machine_reboot|changed
 
 - name: "start services"
-  service:
+  systemd:
     name: "{{item}}"
     state: started
   become: true

@@ -7,7 +7,7 @@
   register: NetworkManagerConf
   
 - name: "restart NetworkManager on config change"
-  service:
+  systemd:
     name: NetworkManager
     state: restarted
   become: true
@@ -53,7 +53,7 @@
   when: dhclient_pgrep.rc != 0
 
 - name: "dnsmasq service enabled and started"
-  service:
+  systemd:
     name: dnsmasq
     enabled: yes
     state: started
@@ -61,14 +61,14 @@
   register: dnsmasq_started
 
 - name: "dnsmasq service restarted"
-  service:
+  systemd:
     name: dnsmasq
     state: restarted
   become: true
   when: dnsmasq_restart|changed and not dnsmasq_started|changed
 
 - name: "restart network"
-  service:
+  systemd:
     name: network
     enabled: yes
     state: restarted

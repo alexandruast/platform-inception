@@ -71,7 +71,7 @@
   when: service_mode == 'client'
 
 - name: "restart docker"
-  service:
+  systemd:
     name: docker
     state: restarted
   become: true
@@ -94,20 +94,20 @@
   with_fileglob: "{{role_path}}/files/profile.d/*"
 
 - name: "service enabled"
-  service:
+  systemd:
     name: "{{service_name}}"
     enabled: yes
   become: true
 
 - name: "service started"
-  service:
+  systemd:
     name: "{{service_name}}"
     state: started
   become: true
   register: service_started
   
 - name: "restart service"
-  service:
+  systemd:
     name: "{{service_name}}"
     state: restarted
   become: true

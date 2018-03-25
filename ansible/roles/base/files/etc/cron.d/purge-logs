@@ -1,0 +1,1 @@
+00 10 * * * find /var/log/* -type f -mtime +7 -exec rm {} \;

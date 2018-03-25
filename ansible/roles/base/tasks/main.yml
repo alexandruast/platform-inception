@@ -58,8 +58,15 @@
   with_items:
     - "{{sysctl_entries}}"
 
+- name: "cron entries updated"
+  copy:
+    src: "{{item}}"
+    dest: "/etc/cron.d/"
+  with_fileglob: "{{role_path}}/files/etc/cron.d/*"
+  become: true
+
 - name: "unneeded services disabled and stopped"
-  service:
+  systemd:
     name: "{{item}}"
     enabled: no
     state: stopped
@@ -69,7 +76,7 @@
     - "{{disabled_services}}"
 
 - name: "base services enabled and started"
-  service:
+  systemd:
     name: "{{item}}"
     enabled: yes
     masked: no

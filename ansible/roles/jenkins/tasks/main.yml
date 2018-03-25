@@ -49,27 +49,27 @@
   register: docker_group
 
 - name: "restart docker"
-  service:
+  systemd:
     name: docker
     state: restarted
   become: true
   when: docker_group|changed
 
 - name: "service enabled"
-  service:
+  systemd:
     name: "{{service_name}}"
     enabled: yes
   become: true
   
 - name: "service started"
-  service:
+  systemd:
     name: "{{service_name}}"
     state: started
   become: true
   register: service_started
   
 - name: "restart service"
-  service:
+  systemd:
     name: "{{service_name}}"
     state: restarted
   become: true

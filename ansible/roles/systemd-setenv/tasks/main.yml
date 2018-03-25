@@ -12,13 +12,13 @@
   when: systemd_setenv_service|changed
 
 - name: "setenv service enabled"
-  service:
+  systemd:
     name: setenv
     enabled: yes
   become: true
   
 - name: "restart setenv service"
-  service:
+  systemd:
     name: setenv
     state: restarted
   become: true

@@ -45,20 +45,20 @@
   tags: env
 
 - name: "service enabled"
-  service:
+  systemd:
     name: docker
     enabled: yes
   become: true
   
 - name: "service started"
-  service:
+  systemd:
     name: docker
     state: started
   become: true
   register: service_started
 
 - name: "restart service"
-  service:
+  systemd:
     name: docker
     state: restarted
   become: true

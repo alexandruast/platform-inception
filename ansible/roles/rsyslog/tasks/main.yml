@@ -7,7 +7,7 @@
   register: rsyslog_config
 
 - name: "service restarted"
-  service:
+  systemd:
     name: "rsyslog"
     state: restarted
   become: true
