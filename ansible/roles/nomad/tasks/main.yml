@@ -84,7 +84,6 @@
     regexp: '^export NOMAD_ADDR='
     line: "export NOMAD_ADDR=http://{{service_bind_ip}}:4646"
     dest: /etc/profile
-    create: yes
   become: true
 
 - name: "shell profile scripts are in place"

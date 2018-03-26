@@ -20,7 +20,7 @@
 - name: "/etc/profile cleaned"
   lineinfile:
     state: absent
-    regexp: "^{{item}}="
+    regexp: "^export {{item}}="
     dest: /etc/profile
   become: true
   with_items:
