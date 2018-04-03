@@ -10,5 +10,4 @@ user_ssh_key: "$HOME/.ssh/id_rsa"
 
 service_init_conf: service-systemd.j2
 
-dnsmasq_supersede: no
 repos_enabled: yes

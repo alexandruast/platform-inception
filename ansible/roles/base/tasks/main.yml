@@ -37,6 +37,14 @@
     state: present
     backup: yes
   become: true
+  
+- name: "::1 entry removed in /etc/hosts"
+  lineinfile:
+    dest: /etc/hosts
+    regexp: "^::1"
+    state: absent
+    backup: yes
+  become: true
 
 - name: "/etc/profile variables set"
   lineinfile:
