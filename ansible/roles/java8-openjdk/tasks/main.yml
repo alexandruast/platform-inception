@@ -1,5 +1,5 @@
 - name: "java8-openjdk package present"
-  yum:
+  package:
     name: java-1.8.0-openjdk
     state: present
   become: true

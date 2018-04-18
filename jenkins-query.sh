@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Warning: this script is NOT POSIX compliant, and was never meant to be!
 # this script requires mo - https://github.com/tests-always-included/mo
 set -eEo pipefail
 trap '{ RC=$?; echo "[error] exit code $RC running $(eval echo $BASH_COMMAND)"; exit $RC; }'  ERR

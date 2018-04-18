@@ -5,7 +5,7 @@
   tags: always
 
 - name: "required packages present"
-  yum:
+  package:
     name: "{{item}}"
     state: present
   become: true

@@ -22,7 +22,7 @@
     - "{{user_dirs}}"
 
 - name: "base packages present"
-  yum:
+  package:
     name: "{{item}}"
     state: present
   become: true
