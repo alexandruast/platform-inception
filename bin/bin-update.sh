@@ -7,10 +7,10 @@ trap '{ RC=$?; echo "[error] exit code $RC running $(eval echo $BASH_COMMAND)"; 
 HERE="$(cd "$(dirname $0)" && pwd)"
 cd "${HERE}"
 
-# if ! git diff-index --quiet HEAD --; then
-#   echo "[error] there are uncommited changes in git, commit or stash them!"
-#   exit 1
-# fi
+if ! git diff-index --quiet HEAD --; then
+  echo "[error] there are uncommited changes in git, commit or stash them!"
+  exit 1
+fi
 
 # retrieving tools
 bin_path="${HERE}/mo"
