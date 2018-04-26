@@ -2,20 +2,9 @@
   shell: sleep 4 && shutdown -r now 'Reboot triggered by Ansible'
   async: 1
   poll: 0
-  when:  reboot_hint.rc != 0
   register: machine_reboot
   become: true
 
 - name: "waiting for connection"
   wait_for_connection:
     timeout: "{{ssh_connect_timeout}}"
-  when: machine_reboot is defined and machine_reboot|changed
-
-- name: "start services"
-  systemd:
-    name: "{{item}}"
-    state: started
-  become: true
-  with_items:
-    - "{{start_services|default([])}}"
-  when: machine_reboot is defined and machine_reboot|changed
