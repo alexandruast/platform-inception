@@ -1,6 +1,4 @@
 etc_profile_vars:
-  - { key: "PATH", value: "/usr/local/bin:$PATH" }
-  - { key: "HOST_IP_ADDR", value: "$(hostname -i)" }
 
 pam_limits:
   - domain: '*'

@@ -1,8 +1,0 @@
-hashicorp_tools:
-  - name:    consul
-    version: 1.0.6
-  - name:    nomad
-    version: 0.7.1
-  - name:    vault
-    version: 0.9.5
-  

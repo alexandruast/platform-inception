@@ -26,9 +26,13 @@ delete_items:
   - /etc/logrotate.d/jenkins
   - /etc/logrotate.d/fluentd
   - /etc/systemd/system/profile.service
+  - /etc/systemd/system/setenv.service
 
 etc_profile_removed:
   - IPV4_MAIN_IP
   - IPV4_MAIN_IF
   - IPV4_PRIMARY_INTERFACE
   - IPV4_PRIMARY_IP_ADDR
+  - NOMAD_ADDR
+  - PATH
+

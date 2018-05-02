@@ -29,25 +29,6 @@
   with_items:
     - "{{base_packages}}"
 
-# FixMe: this is not stateless, so it will zombie here for a while - to be moved
-# In cloud distros such as Amazon AMI, there is no entry for hostname.
-# - name: "hostname present in /etc/hosts"
-#   lineinfile:
-#     dest: /etc/hosts
-#     regexp: "^{{ansible_default_ipv4.address}}"
-#     line: "{{ansible_default_ipv4.address}} {{ansible_fqdn}} {{ansible_hostname}}"
-#     state: present
-#     backup: yes
-#   become: true
-  
-- name: "::1 entry removed from /etc/hosts"
-  lineinfile:
-    dest: /etc/hosts
-    regexp: "^::1"
-    state: absent
-    backup: yes
-  become: true
-
 - name: "/etc/profile variables set"
   lineinfile:
     insertbefore: EOF

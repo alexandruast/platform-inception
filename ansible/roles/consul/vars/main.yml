@@ -8,4 +8,4 @@ service_env: {
   GOMAXPROCS:     "${GOMAXPROCS:-2}"
 }
 service_exec:     "/usr/local/bin/{{service_name}}"
-service_args:     "agent -bind={{service_bind_ip|default('0.0.0.0')}} -config-dir={{service_conf_dir}}"
+service_args:     "agent -config-dir={{service_conf_dir}}"

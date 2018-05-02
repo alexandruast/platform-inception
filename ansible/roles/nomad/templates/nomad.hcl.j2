@@ -1,3 +1,4 @@
+bind_addr= "127.0.0.1 {%raw%}{{GetDefaultInterfaces}}{%endraw%}"
 log_level = "DEBUG"
 data_dir = "{{service_data_dir}}"
 disable_update_check = true
@@ -10,5 +11,8 @@ server {
 {% else %}
 client {
   enabled = true
+  meta {
+    foo = "bar"
+  }
 }
 {% endif %}

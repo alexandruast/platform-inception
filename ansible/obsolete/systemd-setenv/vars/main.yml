@@ -1,0 +1,2 @@
+systemctl_environment:
+  - { key: "FOO", value: "$(echo 'BAR')" }

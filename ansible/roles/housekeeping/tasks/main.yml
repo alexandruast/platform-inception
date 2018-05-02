@@ -8,6 +8,7 @@
 - name: "systemd daemon reload"
   systemd: daemon_reload=yes
   become: true
+  changed_when: false
 
 - name: "obsolete files/directories deleted"
   file:
@@ -25,3 +26,4 @@
   become: true
   with_items:
     - "{{etc_profile_removed}}"
+

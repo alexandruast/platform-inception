@@ -9,6 +9,7 @@
     - role: housekeeping
     - role: user-ssh-key
     - role: base
+    - role: hostname
     - role: systemd-setenv
     - role: os-update
     - role: dnsmasq

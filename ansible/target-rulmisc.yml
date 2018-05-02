@@ -1,8 +1,0 @@
-- hosts: all
-  gather_facts: no
-  serial: "100%"
-
-  roles:
-    - role: alive
-    - role: gather-facts
-    - role: housekeeping

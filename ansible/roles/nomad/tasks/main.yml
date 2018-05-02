@@ -77,15 +77,6 @@
   become: true
   when: docker_group is defined and docker_group|changed
 
-- name: "/etc/profile - NOMAD_ADDR"
-  lineinfile:
-    insertbefore: EOF
-    state: present
-    regexp: '^export NOMAD_ADDR='
-    line: "export NOMAD_ADDR=http://{{service_bind_ip}}:4646"
-    dest: /etc/profile
-  become: true
-
 - name: "shell profile scripts are in place"
   copy:
     src: "{{item}}"
