@@ -41,17 +41,6 @@
   register: dhclientConf
   when: dhclient_pgrep.rc == 0
 
-- name: "/etc/resolv.conf updated - no dhclient"
-  lineinfile:
-    dest: /etc/resolv.conf
-    regexp: "^nameserver 127.0.0.1"
-    line: "nameserver 127.0.0.1"
-    insertbefore: '^nameserver'
-    state: present
-    backup: yes
-  become: true
-  when: dhclient_pgrep.rc != 0
-
 - name: "dnsmasq service enabled and started"
   systemd:
     name: dnsmasq
@@ -79,4 +68,24 @@
   shell: dhclient -r && dhclient
   become: true
   when: dhclientConf|changed
+
+- name: "/etc/resolv.conf updated - no dhclient - dnsmasq_supersede"
+  lineinfile:
+    dest: /etc/resolv.conf
+    regexp: "^nameserver .*$"
+    state: absent
+    backup: yes
+  become: true
+  when: dhclient_pgrep.rc != 0 and dnsmasq_supersede
+
+- name: "/etc/resolv.conf updated - no dhclient - add 127.0.0.1"
+  lineinfile:
+    dest: /etc/resolv.conf
+    regexp: "^nameserver 127.0.0.1"
+    line: "nameserver 127.0.0.1"
+    insertbefore: "^nameserver .*$"
+    state: present
+    backup: yes
+  become: true
+  when: dhclient_pgrep.rc != 0
 
