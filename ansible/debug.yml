@@ -7,3 +7,7 @@
       tags: always
     - role: debug
       tags: always
+    - role: consul
+      service_mode: client
+    - role: nomad
+      service_mode: client
