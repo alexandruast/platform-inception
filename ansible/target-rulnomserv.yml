@@ -9,7 +9,6 @@
     - role: check-sudo
     - role: housekeeping
     - role: base
-    - role: systemd-setenv
     - role: dnsmasq
       dnsmasq_supersede: yes
       dns_servers:
