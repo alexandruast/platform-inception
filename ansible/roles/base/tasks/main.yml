@@ -29,16 +29,16 @@
   with_items:
     - "{{base_packages}}"
 
-- name: "/etc/profile variables set"
-  lineinfile:
-    insertbefore: EOF
-    state: present
-    regexp: "^export {{item.key}}="
-    line: "export {{item.key}}={{item.value}}"
-    dest: /etc/profile
-  become: true
-  with_items:
-    - "{{etc_profile_vars}}"
+# - name: "/etc/profile variables set"
+#   lineinfile:
+#     insertbefore: EOF
+#     state: present
+#     regexp: "^export {{item.key}}="
+#     line: "export {{item.key}}={{item.value}}"
+#     dest: /etc/profile
+#   become: true
+#   with_items:
+#     - "{{etc_profile_vars}}"
 
 - name: "pam limits set"
   pam_limits:

@@ -1,4 +1,5 @@
 etc_profile_vars:
+  - { key: "FOO", value: "BAR" }
 
 pam_limits:
   - domain: '*'
