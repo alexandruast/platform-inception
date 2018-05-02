@@ -30,7 +30,6 @@ node {
         set -xeEo pipefail
         trap '{ RC=$?; echo "[error] exit code $RC running $(eval echo $BASH_COMMAND)"; exit $RC; }'  ERR
         SSH_OPTS='-o LogLevel=quiet -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes -o ExitOnForwardFailure=yes'
-        export PATH=/usr/local/bin:$PATH
         source ./$JENKINS_SCOPE/.scope
         tunnel_port=$(perl -e 'print int(rand(999)) + 58000')
         ssh $SSH_OPTS -f -N -M -S ssh-control-socket -L ${tunnel_port}:127.0.0.1:${JENKINS_PORT} ${ANSIBLE_TARGET}
