@@ -9,7 +9,8 @@
       tags: always
     - role: dnsmasq
       dns_servers:
-        - "/consul/127.0.0.1#8600"
+        - "/consul/172.28.16.61"
+        - "/consul/172.28.16.62"
         - "172.28.27.162"
         - "172.28.27.163"
       dnsmasq_supersede: yes
