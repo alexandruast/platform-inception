@@ -1,9 +1,13 @@
-deprecated_init_services:
+deprecated_initd_services:
   - consul
   - nomad
   - vault
   - jenkins
   - fluentd
+
+deprecated_systemd_services:
+  - setenv
+  - profile
 
 delete_items:
   - /var/log/consul.log
