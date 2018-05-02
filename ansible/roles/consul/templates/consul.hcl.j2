@@ -1,5 +1,5 @@
 client_addr = "0.0.0.0"
-bind_addr= "127.0.0.1 {%raw%}{{GetDefaultInterfaces}}{%endraw%}"
+bind_addr= "{%raw%}{{ GetDefaultInterfaces | attr \"address\" }}{%endraw%}"
 log_level = "DEBUG"
 data_dir = "{{service_data_dir}}"
 disable_update_check = true
