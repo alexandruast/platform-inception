@@ -72,7 +72,7 @@
 - name: "/etc/resolv.conf updated - no dhclient - dnsmasq_supersede"
   lineinfile:
     dest: /etc/resolv.conf
-    regexp: "^nameserver .*$"
+    regexp: "^nameserver (?!127\.0\.0\.1).*$"
     state: absent
     backup: yes
   become: true
