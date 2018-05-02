@@ -11,11 +11,12 @@
     - role: base
     - role: systemd-setenv
     - role: dnsmasq
+      dnsmasq_supersede: yes
       dns_servers:
         - "/consul/172.28.16.61"
         - "/consul/172.28.16.62"
         - "172.28.27.162"
-        - "8.8.8.8"
+        - "172.28.27.163"
     - role: consul
       service_mode: client
     - role: docker
