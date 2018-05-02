@@ -7,7 +7,6 @@
     - role: gather-facts
     - role: debug
     - role: check-sudo
-    - role: systemd-setenv
     - role: base
     - role: swap
     - role: jq
