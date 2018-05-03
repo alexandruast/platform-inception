@@ -11,6 +11,7 @@
     - role: docker-compose
     - role: mo
     - role: jq
+    - role: pumba
     - role: java8-openjdk
     - role: jenkins
     - role: user-ssh-key

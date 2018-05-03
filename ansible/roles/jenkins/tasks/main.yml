@@ -38,7 +38,7 @@
 - name: "systemd daemon reload"
   systemd: daemon_reload=yes
   become: true
-  when: systemd_config|changed
+  when: systemd_config is changed
 
 - name: "user belongs to docker group"
   user:
@@ -53,7 +53,7 @@
     name: docker
     state: restarted
   become: true
-  when: docker_group|changed
+  when: docker_group is changed
 
 - name: "service enabled"
   systemd:
@@ -73,5 +73,5 @@
     name: "{{service_name}}"
     state: restarted
   become: true
-  when: (systemd_config|changed or docker_group|changed) and not service_started|changed
+  when: (systemd_config is changed or docker_group is changed) and not service_started is changed
 

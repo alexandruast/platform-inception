@@ -1,30 +1,3 @@
-- name: "service group present"
-  group:
-    name: "{{service_group}}"
-  become: true
-
-- name: "service user present"
-  user:
-    name: "{{service_user}}"
-    group: "{{service_group}}"
-  become: true
-
-- name: "service data directory created"
-  file:
-    path: "{{service_data_dir}}"
-    state: directory
-    mode: 0750
-    owner:  "{{service_user}}"
-    group:  "{{service_group}}"
-  become: true
-
-- name: "service conf directory created"
-  file:
-    path: "{{service_conf_dir}}"
-    state: directory
-    mode: 0755
-  become: true
-
 - name: "service binaries downloaded and installed"
   unarchive:
     src:  https://releases.hashicorp.com/{{service_name}}/{{service_version}}/{{service_name}}_{{service_version}}_linux_amd64.zip
@@ -33,72 +6,102 @@
     remote_src: yes
   become: true
 
-- name: "systemd service config updated"
-  template:
-    src: "{{service_init_conf}}"
-    dest: "/etc/systemd/system/{{service_name}}.service"
-    mode: 0644
-  become: true
-  register: systemd_config
+- block:
+  - name: "service group present"
+    group:
+      name: "{{service_group}}"
+    become: true
 
-- name: "systemd daemon reload"
-  systemd: daemon_reload=yes
-  become: true
-  changed_when: true
-  when: systemd_config|changed
+  - name: "service user present"
+    user:
+      name: "{{service_user}}"
+      group: "{{service_group}}"
+    become: true
 
-- name: "service config file updated"
-  template:
-    src: "{{service_name}}.hcl.j2"
-    dest: "{{service_conf_dir}}/service.hcl"
-    mode: 0644
-  become: true
-  register: service_config
+  - name: "service data directory created"
+    file:
+      path: "{{service_data_dir}}"
+      state: directory
+      mode: 0750
+      owner:  "{{service_user}}"
+      group:  "{{service_group}}"
+    become: true
 
-- name: "shell profile scripts are in place"
-  copy:
-    src: "{{item}}"
-    dest: "{{ansible_env.HOME}}/profile.d/"
-  with_fileglob: "{{role_path}}/files/profile.d/*"
+  - name: "service conf directory created"
+    file:
+      path: "{{service_conf_dir}}"
+      state: directory
+      mode: 0755
+    become: true
 
-- name: "user belongs to docker groups"
-  user:
-    name: "{{service_user}}"
-    groups: docker
-    append: yes
-  become: true
-  register: docker_group
-  when: service_mode == 'client'
+  - name: "systemd service config updated"
+    template:
+      src: "{{service_init_conf}}"
+      dest: "/etc/systemd/system/{{service_name}}.service"
+      mode: 0644
+    become: true
+    register: systemd_config
 
-- name: "restart docker"
-  systemd:
-    name: docker
-    state: restarted
-  become: true
-  when: docker_group is defined and docker_group|changed
+  - name: "systemd daemon reload"
+    systemd: daemon_reload=yes
+    become: true
+    changed_when: true
+    when: systemd_config is changed
 
-- name: "shell profile scripts are in place"
-  copy:
-    src: "{{item}}"
-    dest: "{{ansible_env.HOME}}/profile.d/"
-  with_fileglob: "{{role_path}}/files/profile.d/*"
+  - name: "service config file updated"
+    template:
+      src: "{{service_name}}.hcl.j2"
+      dest: "{{service_conf_dir}}/service.hcl"
+      mode: 0644
+    become: true
+    register: service_config
 
-- name: "service enabled"
-  systemd:
-    name: "{{service_name}}"
-    enabled: yes
-  become: true
+  - name: "shell profile scripts are in place"
+    copy:
+      src: "{{item}}"
+      dest: "{{ansible_env.HOME}}/profile.d/"
+    with_fileglob: "{{role_path}}/files/profile.d/*"
 
-- name: "service started"
-  systemd:
-    name: "{{service_name}}"
-    state: started
-  become: true
-  register: service_started
-  
-- name: "restart service"
-  systemd:
-    name: "{{service_name}}"
-    state: restarted
-  become: true
-  when: (systemd_config|changed or service_config|changed or docker_group|changed) and not service_started|changed
+  - name: "user belongs to docker groups"
+    user:
+      name: "{{service_user}}"
+      groups: docker
+      append: yes
+    become: true
+    register: docker_group
+    when: service_mode == 'client'
+
+  - name: "restart docker"
+    systemd:
+      name: docker
+      state: restarted
+    become: true
+    when: docker_group is defined and docker_group is changed
+
+  - name: "shell profile scripts are in place"
+    copy:
+      src: "{{item}}"
+      dest: "{{ansible_env.HOME}}/profile.d/"
+    with_fileglob: "{{role_path}}/files/profile.d/*"
+
+  - name: "service enabled"
+    systemd:
+      name: "{{service_name}}"
+      enabled: yes
+    become: true
+
+  - name: "service started"
+    systemd:
+      name: "{{service_name}}"
+      state: started
+    become: true
+    register: service_started
+    
+  - name: "restart service"
+    systemd:
+      name: "{{service_name}}"
+      state: restarted
+    become: true
+    when: (systemd_config is changed or service_config is changed or docker_group is changed) and not service_started is changed
+
+  when: service_install is not defined or service_install

@@ -20,5 +20,6 @@
     - role: consul
       service_mode: client
     - role: docker
+    - role: pumba
     - role: nomad
       service_mode: client

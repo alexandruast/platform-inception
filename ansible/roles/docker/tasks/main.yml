@@ -1,7 +1,9 @@
 - name: "include variables"
   include_vars: "{{item}}"
   with_first_found:
-    - "vars/{{ansible_distribution|lower}}.yml"
+    - files:
+        - "vars/{{ansible_distribution|lower}}.yml"
+      skip: true
   tags: always
 
 - name: "yum - docker repository added"
@@ -62,4 +64,4 @@
     name: docker
     state: restarted
   become: true
-  when: docker_group|changed and not service_started|changed
+  when: docker_group is changed and not service_started is changed

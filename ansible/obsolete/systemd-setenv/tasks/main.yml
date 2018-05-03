@@ -9,7 +9,7 @@
 - name: "systemd daemon reload"
   systemd: daemon_reload=yes
   become: true
-  when: systemd_setenv_service|changed
+  when: systemd_setenv_service is changed
 
 - name: "setenv service enabled"
   systemd:
@@ -22,7 +22,7 @@
     name: setenv
     state: restarted
   become: true
-  when: systemd_setenv_service|changed
+  when: systemd_setenv_service is changed
 
 - name: "facts for env variables are set"
   set_fact:

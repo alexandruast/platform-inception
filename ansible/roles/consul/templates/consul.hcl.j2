@@ -1,5 +1,11 @@
 client_addr = "0.0.0.0"
-bind_addr= "{%raw%}{{ GetDefaultInterfaces | attr \"address\" }}{%endraw%}"
+{% if service_bind_ip is defined %}
+{% if service_bind_ip %}
+bind_addr= "{{service_bind_ip}}"
+{% endif %}
+{% else %}
+bind_addr= "{%raw%}{{ GetAllInterfaces | attr \"address\" }}{%endraw%}"
+{% endif %}
 log_level = "DEBUG"
 data_dir = "{{service_data_dir}}"
 disable_update_check = true

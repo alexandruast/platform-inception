@@ -1,4 +1,4 @@
-- name: "ensure mo is installed"
+- name: "mo is downloaded and installed"
   get_url:
     url:  https://raw.githubusercontent.com/tests-always-included/mo/master/mo
     dest: /usr/local/bin/mo

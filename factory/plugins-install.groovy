@@ -1,7 +1,7 @@
 import jenkins.model.Jenkins
 sleep(10000)
 
-def instance = Jenkins.getInstance()
+def instance = Jenkins.get()
 pm = Jenkins.instance.pluginManager
 uc = Jenkins.instance.updateCenter
 

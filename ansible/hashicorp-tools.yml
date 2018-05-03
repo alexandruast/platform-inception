@@ -4,4 +4,10 @@
 
   roles:
     - role: alive
-    - role: hashicorp-tools
+    - role: consul
+      service_install: false
+    - role: nomad
+      service_install: false
+    - role: vault
+      service_install: false
+    - role: packer
