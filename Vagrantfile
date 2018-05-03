@@ -3,11 +3,13 @@
 ENV["LC_ALL"] = "en_US.UTF-8"
 
 ci_admin_pass = "welcome1"
+# box = "bento/centos-7.4"
+box = "moonphase/amazonlinux2"
 
 ci_origin = {
   :hostname => "origin",
   :ip => "192.168.169.171",
-  :box => "bento/centos-7.4",
+  :box => box,
   :memory => 640,
   :cpus => 1
 }
@@ -16,14 +18,14 @@ ci_nodes = [
   {
     :hostname => "factory",
     :ip => "192.168.169.172",
-    :box => "bento/centos-7.4",
+    :box => box,
     :memory => 800,
     :cpus => 2
   },
   {
     :hostname => "prod",
     :ip => "192.168.169.173",
-    :box => "bento/centos-7.4",
+    :box => box,
     :memory => 500,
     :cpus => 1
   }
@@ -33,14 +35,14 @@ server_nodes = [
   {
     :hostname => "server1",
     :ip => "192.168.169.181",
-    :box => "bento/centos-7.4",
+    :box => box,
     :memory => 500,
     :cpus => 1
   },
   {
     :hostname => "server2",
     :ip => "192.168.169.182",
-    :box => "bento/centos-7.4",
+    :box => box,
     :memory => 500,
     :cpus => 1
   }
@@ -50,7 +52,7 @@ compute_nodes = [
   {
     :hostname => "node1",
     :ip => "192.168.169.191",
-    :box => "bento/centos-7.4",
+    :box => box,
     :memory => 640,
     :cpus => 2
   }
