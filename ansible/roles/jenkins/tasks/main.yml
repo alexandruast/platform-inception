@@ -24,7 +24,7 @@
     dest: "{{jenkins_war}}"
     owner: "{{service_user}}"
     group: "{{service_group}}"
-    force: no
+    force: yes
   become: true
 
 - name: "systemd service config updated"
