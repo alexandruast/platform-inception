@@ -4,60 +4,11 @@
 ENV["LC_ALL"] = "en_US.UTF-8"
 
 required_plugins = [ 'vagrant-triggers' ]
-missing_plugins = required_plugins.reject { |p| Vagrant.has_plugin?(p) }
-unless missing_plugins.empty?
-  system "vagrant plugin install #{missing_plugins.join(' ')}"
-  puts "Installed new Vagrant plugins. Please re-run your last command!"
-  exit 1
-end
 
 ci_admin_pass = "welcome1"
 # box = "bento/centos-7.4"
 # box = "moonphase/amazonlinux2"
 box = "generic/rhel7"
-
-if box.include? "rhel"
-  rhel_subscription_username = 'none'
-  rhel_subscription_password = 'none'
-  if ARGV[0] == "up" or ARGV[0] == "provision"
-    puts "Red Hat Enterprise Linux requires RHN subscription."
-    print "Press ENTER within 3 seconds to enter credentials."
-
-    timeout_seconds = 3
-
-    loop_a = Thread.new do
-      Thread.current["key_pressed"] = false
-      STDIN.noecho(&:gets).chomp
-      Thread.current["key_pressed"] = true
-    end
-
-    loop_b = Thread.new do
-      start_time = Time.now.to_f.to_int
-      current_time = start_time
-      progress_time = start_time
-      while current_time - start_time < timeout_seconds do
-        break if !loop_a.alive?
-        current_time = Time.now.to_f.to_int
-        if progress_time != current_time
-          print '.'
-          progress_time = current_time
-        end
-      end
-      print "\n"
-    end
-
-    loop_b.join
-    loop_a.exit
-    loop_a.join
-
-    if loop_a["key_pressed"]
-      print "RHN username:"
-      rhel_subscription_username = STDIN.gets.chomp
-      print "RHN passsword:"
-      rhel_subscription_password = STDIN.gets.chomp
-    end
-  end
-end
 
 ci_origin = {
   :hostname => "origin",
@@ -110,6 +61,56 @@ compute_nodes = [
     :cpus => 2
   }
 ]
+
+missing_plugins = required_plugins.reject { |p| Vagrant.has_plugin?(p) }
+unless missing_plugins.empty?
+  system "vagrant plugin install #{missing_plugins.join(' ')}"
+  puts "Installed new Vagrant plugins. Please re-run your last command!"
+  exit 1
+end
+
+if box.include? "rhel"
+  rhel_subscription_username = 'none'
+  rhel_subscription_password = 'none'
+  if ARGV[0] == "up" or ARGV[0] == "provision"
+    puts "Red Hat Enterprise Linux requires RHN subscription."
+    print "Press ENTER within 3 seconds to enter credentials."
+
+    timeout_seconds = 3
+
+    loop_a = Thread.new do
+      Thread.current["key_pressed"] = false
+      STDIN.noecho(&:gets).chomp
+      Thread.current["key_pressed"] = true
+    end
+
+    loop_b = Thread.new do
+      start_time = Time.now.to_f.to_int
+      current_time = start_time
+      progress_time = start_time
+      while current_time - start_time < timeout_seconds do
+        break if !loop_a.alive?
+        current_time = Time.now.to_f.to_int
+        if progress_time != current_time
+          print '.'
+          progress_time = current_time
+        end
+      end
+      print "\n"
+    end
+
+    loop_b.join
+    loop_a.exit
+    loop_a.join
+
+    if loop_a["key_pressed"]
+      print "RHN username:"
+      rhel_subscription_username = STDIN.gets.chomp
+      print "RHN passsword:"
+      rhel_subscription_password = STDIN.gets.chomp
+    end
+  end
+end
 
 always_origin = <<SCRIPT
 #!/usr/bin/env bash
