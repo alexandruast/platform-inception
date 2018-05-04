@@ -22,6 +22,7 @@ node {
         SSH_OPTS='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
         source ./$JENKINS_SCOPE/.scope
         ssh $SSH_OPTS $ANSIBLE_TARGET "sudo yum -q -y install python libselinux-python"
+        ./apl-wrapper.sh ansible/base.yml
         ./apl-wrapper.sh ansible/jenkins.yml
       '''
     }

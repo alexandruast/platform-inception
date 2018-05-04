@@ -18,14 +18,14 @@ sudo cp provision/extras/epel-release.repo /etc/yum.repos.d/
 sudo yum -q -y install ansible
 
 cd /home/vagrant/provision
-ANSIBLE_TARGET="127.0.0.1" ./apl-wrapper.sh ansible/base.yml
+./apl-wrapper.sh ansible/base.yml
 
 server1_ip="$(echo ${server_nodes_json} | jq -r .[0].ip)"
 server2_ip="$(echo ${server_nodes_json} | jq -r .[1].ip)"
 
-ANSIBLE_TARGET="127.0.0.1" ANSIBLE_EXTRAVARS="{'authorized_keys':[{'user':'vagrant','file':'/home/vagrant/.ssh/id_rsa.pub'}]}" ./apl-wrapper.sh ansible/authorized-keys.yml
-ANSIBLE_TARGET="127.0.0.1" ANSIBLE_EXTRAVARS="{'dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true}" ./apl-wrapper.sh ansible/dnsmasq.yml
-ANSIBLE_TARGET="127.0.0.1" ./apl-wrapper.sh ansible/hashicorp-tools.yml
+ANSIBLE_EXTRAVARS="{'authorized_keys':[{'user':'vagrant','file':'/home/vagrant/.ssh/id_rsa.pub'}]}" ./apl-wrapper.sh ansible/authorized-keys.yml
+ANSIBLE_EXTRAVARS="{'dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true}" ./apl-wrapper.sh ansible/dnsmasq.yml
+./apl-wrapper.sh ansible/hashicorp-tools.yml
 
 scope='origin'
 # shellcheck source=origin/.scope
@@ -33,7 +33,7 @@ source ${scope}/.scope
 export JENKINS_ADMIN_PASS=$ci_admin_pass
 server_ip="$(echo ${ci_origin_json} | jq -r .ip)"
 export JENKINS_ADDR=http://${server_ip}:${JENKINS_PORT}
-ANSIBLE_TARGET='127.0.0.1' ./apl-wrapper.sh ansible/jenkins.yml
+./apl-wrapper.sh ansible/jenkins.yml
 ./jenkins-setup.sh
 
 echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
