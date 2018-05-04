@@ -12,3 +12,6 @@ Environment={{key}}={{value}}
 {% endfor %}
 ExecStart={{service_exec}} {{service_args}}
 ExecReload=/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target
