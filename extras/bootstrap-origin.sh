@@ -14,16 +14,8 @@ cp provision/extras/ansible-sandbox.pem /home/vagrant/.ssh/id_rsa
 chmod 600 /home/vagrant/.ssh/id_rsa
 echo "$(ssh-keygen -y -f /home/vagrant/.ssh/id_rsa) ansible-sandbox" > /home/vagrant/.ssh/id_rsa.pub
 
-if which yum; then
-  sudo yum -q -y update
-  sudo cp provision/extras/epel-release.repo /etc/yum.repos.d/
-  sudo yum -q -y install ansible
-elif which apt-get; then
-  sudo apt-get update
-  sudo apt-get install ansible
-else
-  exit 1
-fi
+sudo cp provision/extras/epel-release.repo /etc/yum.repos.d/
+sudo yum -q -y install ansible
 
 cd /home/vagrant/provision
 ANSIBLE_TARGET="127.0.0.1" ./apl-wrapper.sh ansible/base.yml

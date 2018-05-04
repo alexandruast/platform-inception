@@ -74,9 +74,9 @@ if box.include? "rhel"
   rhel_subscription_password = 'none'
   if ARGV[0] == "up" or ARGV[0] == "provision"
     puts "Red Hat Enterprise Linux requires RHN subscription."
-    print "Press ENTER within 3 seconds to enter credentials."
+    print "Press ENTER within 5 seconds to enter credentials."
 
-    timeout_seconds = 3
+    timeout_seconds = 5
 
     loop_a = Thread.new do
       Thread.current["key_pressed"] = false
@@ -146,20 +146,13 @@ bootstrap = <<SCRIPT
 set -eEo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 find /home/vagrant/provision -type f -name '*.sh' -exec chmod +x {} \\;
-if which yum; then
-  if which subscription-manager; then
-    if ! sudo subscription-manager status 2>/dev/null; then
-      sudo subscription-manager register --username=#{rhel_subscription_username.strip} --password=#{rhel_subscription_password.strip} --auto-attach
-      sudo yum-config-manager --disable rhel-7-server-rt-beta-rpms
-    fi
+if which subscription-manager; then
+  if ! sudo subscription-manager status 2>/dev/null; then
+    sudo subscription-manager register --username=#{rhel_subscription_username.strip} --password=#{rhel_subscription_password.strip} --auto-attach
+    sudo yum-config-manager --disable rhel-7-server-rt-beta-rpms
   fi
-  sudo yum -q -y install python libselinux-python
-elif which apt-get; then
-  sudo apt-get update
-  sudo apt-get -qq -y install python
-else
-  exit 1
 fi
+sudo yum -q -y install python libselinux-python
 SCRIPT
 
 Vagrant.configure(2) do |config|
