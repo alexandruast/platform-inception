@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -eEo pipefail
-trap '{ RC=$?; echo "[error] exit code $RC running $(eval echo $BASH_COMMAND)"; exit $RC; }'  ERR
+trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
 vault_reset() {
   consul kv delete -recurse vault && sleep 0.5

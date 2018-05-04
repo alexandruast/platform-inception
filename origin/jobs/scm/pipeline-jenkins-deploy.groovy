@@ -18,7 +18,7 @@ node {
     stage('provision') {
       sh '''#!/usr/bin/env bash
         set -xeEo pipefail
-        trap '{ RC=$?; echo "[error] exit code $RC running $(eval echo $BASH_COMMAND)"; exit $RC; }'  ERR
+        trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
         SSH_OPTS='-o LogLevel=quiet -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
         source ./$JENKINS_SCOPE/.scope
         ssh $SSH_OPTS $ANSIBLE_TARGET "sudo yum -q -y install python libselinux-python"
@@ -28,7 +28,7 @@ node {
     stage('deploy') {
       sh '''#!/usr/bin/env bash
         set -xeEo pipefail
-        trap '{ RC=$?; echo "[error] exit code $RC running $(eval echo $BASH_COMMAND)"; exit $RC; }'  ERR
+        trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
         SSH_OPTS='-o LogLevel=quiet -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes -o ExitOnForwardFailure=yes'
         source ./$JENKINS_SCOPE/.scope
         tunnel_port=$(perl -e 'print int(rand(999)) + 58000')

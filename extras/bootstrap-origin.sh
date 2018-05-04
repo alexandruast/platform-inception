@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -eEo pipefail
-trap '{ RC=$?; echo "[error] exit code $RC running $(eval echo $BASH_COMMAND)"; exit $RC; }'  ERR
+trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 SSH_OPTS='-o LogLevel=quiet -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
 
 ci_admin_pass=$1
@@ -9,13 +9,21 @@ ci_nodes_json=$3
 server_nodes_json=$4
 compute_nodes_json=$5
 
-sudo yum -q -y update
 mkdir -p $HOME/.ssh/
 cp provision/extras/ansible-sandbox.pem /home/vagrant/.ssh/id_rsa
 chmod 600 /home/vagrant/.ssh/id_rsa
 echo "$(ssh-keygen -y -f /home/vagrant/.ssh/id_rsa) ansible-sandbox" > /home/vagrant/.ssh/id_rsa.pub
-sudo cp provision/extras/epel-release.repo /etc/yum.repos.d/
-sudo yum -q -y install ansible
+
+if which yum; then
+  sudo yum -q -y update
+  sudo cp provision/extras/epel-release.repo /etc/yum.repos.d/
+  sudo yum -q -y install ansible
+elif which apt-get; then
+  sudo apt-get update
+  sudo apt-get install ansible
+else
+  exit 1
+fi
 
 cd /home/vagrant/provision
 ANSIBLE_TARGET="127.0.0.1" ./apl-wrapper.sh ansible/base.yml

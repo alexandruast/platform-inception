@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # this script requires mo - https://github.com/tests-always-included/mo
 set -eEo pipefail
-trap '{ RC=$?; echo "[error] exit code $RC running $(eval echo $BASH_COMMAND)"; exit $RC; }'  ERR
+trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 which mo >/dev/null 2>&1
 readonly max_timeout=60
 readonly connect_timeout=5

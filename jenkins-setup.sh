@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -eEuo pipefail
-trap '{ RC=$?; echo "[error] exit code $RC running $(eval echo $BASH_COMMAND)"; exit $RC; }'  ERR
+trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
 readonly JENKINS_SCRIPT_RUN_WRAPPER='./jenkins-query.sh'
 declare -a cmd_args

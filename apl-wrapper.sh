@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # This script provides a convenient wrapper over ansible-playbook command
 set -eEo pipefail
-trap '{ RC=$?; echo "[error] exit code $RC running $(eval echo $BASH_COMMAND)"; exit $RC; }'  ERR
+trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
 readonly ANSIBLE_TAGS_DEFAULT='all'
 readonly ANSIBLE_PORT_DEFAULT=22
