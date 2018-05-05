@@ -36,7 +36,7 @@ export JENKINS_ADDR=http://${server_ip}:${JENKINS_PORT}
 # Settings:
 # authorized_keys to provide SSH access outside of Vagrant
 # dnsmasq to resolve everything using google dns and forward .consul
-ANSIBLE_TARGET="127.0.0.1" ANSIBLE_EXTRAVARS="{'authorized_keys':[{'user':'vagrant','file':'/home/vagrant/.ssh/id_rsa.pub'}],'dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true}" ./apl-wrapper.sh ansible/authorized-keys.yml ${scope}-jenkins.yml
+ANSIBLE_TARGET="127.0.0.1" ANSIBLE_EXTRAVARS="{'authorized_keys':[{'user':'vagrant','file':'/home/vagrant/.ssh/id_rsa.pub'}],'dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true}" ./apl-wrapper.sh target-${scope}-jenkins.yml
 
 # Running jenkins setup script
 ./jenkins-setup.sh
