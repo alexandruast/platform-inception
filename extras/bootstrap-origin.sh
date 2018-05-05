@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -eEo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
+trap 'ssh -S ssh-control-socket -O exit ${server_ip:-localhost}' EXIT
 SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
 
 ci_admin_pass=$1
@@ -97,7 +98,4 @@ JENKINS_ADDR=http://127.0.0.1:${tunnel_port} JENKINS_BUILD_JOB=infra-generic-vau
 
 # Nomad compute deploy on all compute nodes
 JENKINS_ADDR=http://127.0.0.1:${tunnel_port} JENKINS_BUILD_JOB=infra-generic-nomad-compute-deploy ANSIBLE_TARGET=${compute_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true,'service_bind_ip':'{{ansible_host}}'}" ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
-
-# Closing SSH tunnel
-ssh -S ssh-control-socket -O exit ${server_ip}
 
