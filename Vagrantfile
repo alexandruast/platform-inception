@@ -117,7 +117,9 @@ bootstrap = <<SCRIPT
 #!/usr/bin/env bash
 set -eEo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
-find /home/vagrant/provision -type f -name '*.sh' -exec chmod +x {} \\;
+if [ -d "/home/vagrant/provision" ];then
+  find /home/vagrant/provision -type f -name '*.sh' -exec chmod +x {} \\;
+fi
 if which subscription-manager; then
   if ! sudo subscription-manager status 2>/dev/null; then
     sudo subscription-manager register --username=#{rhel_subscription_username.strip} --password=#{rhel_subscription_password.strip} --auto-attach
