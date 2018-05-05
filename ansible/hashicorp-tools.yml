@@ -11,3 +11,5 @@
     - role: vault
       service_install: false
     - role: packer
+    - role: terraform
+    - role: terragrunt

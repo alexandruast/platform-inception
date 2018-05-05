@@ -1,4 +1,4 @@
-- name: "jq is downloaded and installed"
+- name: "binary is downloaded and installed"
   get_url:
     url:  https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
     dest: /usr/local/bin/jq

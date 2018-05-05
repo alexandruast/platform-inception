@@ -9,24 +9,35 @@ ci_nodes_json=$3
 server_nodes_json=$4
 compute_nodes_json=$5
 
+# Setting up the bundled SSH private key, DO NOT USE THIS outside your laptop!
 mkdir -p $HOME/.ssh/
 cp provision/extras/ansible-sandbox.pem /home/vagrant/.ssh/id_rsa
 chmod 600 /home/vagrant/.ssh/id_rsa
 echo "$(ssh-keygen -y -f /home/vagrant/.ssh/id_rsa) ansible-sandbox" > /home/vagrant/.ssh/id_rsa.pub
 
+# Install ansible
 sudo cp provision/extras/epel-release.repo /etc/yum.repos.d/
 sudo yum -q -y install ansible
 
 cd /home/vagrant/provision
+
+# Setting up base role
 ANSIBLE_TARGET="127.0.0.1" ./apl-wrapper.sh ansible/base.yml
 
+# Getting server nodes ip
 server1_ip="$(echo ${server_nodes_json} | jq -r .[0].ip)"
 server2_ip="$(echo ${server_nodes_json} | jq -r .[1].ip)"
 
+# Setting authorized_keys to provide SSH access outside of Vagrant
 ANSIBLE_TARGET="127.0.0.1" ANSIBLE_EXTRAVARS="{'authorized_keys':[{'user':'vagrant','file':'/home/vagrant/.ssh/id_rsa.pub'}]}" ./apl-wrapper.sh ansible/authorized-keys.yml
+
+# Setting up dnsmasq to provide DNS resolution - needed to be able to resolve .consul addresses
 ANSIBLE_TARGET="127.0.0.1" ANSIBLE_EXTRAVARS="{'dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true}" ./apl-wrapper.sh ansible/dnsmasq.yml
+
+# Installing hashicorp binaries: consul, nomad, vault, packer, terraform etc...
 ANSIBLE_TARGET="127.0.0.1" ./apl-wrapper.sh ansible/hashicorp-tools.yml
 
+# Origin-Jenkins setup
 scope='origin'
 # shellcheck source=origin/.scope
 source ${scope}/.scope
@@ -35,11 +46,15 @@ server_ip="$(echo ${ci_origin_json} | jq -r .ip)"
 export JENKINS_ADDR=http://${server_ip}:${JENKINS_PORT}
 ANSIBLE_TARGET='127.0.0.1' ./apl-wrapper.sh ansible/jenkins.yml
 ./jenkins-setup.sh
-
 echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
+
+# Running the job seeder
 JENKINS_BUILD_JOB=system-${scope}-job-seed ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
 
+# Getting the origin jenkins user SSH public key
 origin_key=$(sudo su -s /bin/bash -c 'cat $HOME/.ssh/id_rsa.pub' jenkins)
+
+# For all scopes, set the jenkins public key to authorized_keys and run the corresponding job 
 for scope in factory prod; do
   echo "waiting for ${scope}-jenkins-deploy to finish..."
   chmod 600 .vagrant/machines/${scope}/virtualbox/private_key
@@ -49,6 +64,7 @@ for scope in factory prod; do
   JENKINS_SCOPE=${scope} ANSIBLE_TARGET=vagrant@${server_ip} JENKINS_BUILD_JOB=${scope}-jenkins-deploy ./jenkins-query.sh ./common/jobs/build-jenkins-deploy-job.groovy
 done
 
+# Getting a list of nodes
 server_nodes="$(echo ${server_nodes_json} | jq -re .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')"
 compute_nodes="$(echo ${compute_nodes_json} | jq -re .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')"
 all_nodes="${server_nodes},${compute_nodes}"
@@ -64,23 +80,25 @@ if [ "${nodes_count}" -le 0 ]; then
   exit 1
 fi
 
+# Setting up the bundled SSH key in authorized_keys on all nodes
 key="$(cat /home/vagrant/.ssh/id_rsa.pub)"
-
 for i in $(seq 0 $nodes_count); do
   hostname="$(echo $concat_json | jq -re .[$i].hostname)"
   ip="$(echo $concat_json | jq -re .[$i].ip)"
   chmod 600 .vagrant/machines/${hostname}/virtualbox/private_key
   ssh $SSH_OPTS -i .vagrant/machines/${hostname}/virtualbox/private_key ${ip} "if ! grep \"$key\" \$HOME/.ssh/authorized_keys > /dev/null 2>&1; then mkdir -p \$HOME/.ssh; echo $key >> \$HOME/.ssh/authorized_keys; fi"
-  ssh $SSH_OPTS $ip
+  ssh $SSH_OPTS ${ip}
 done
 
+# Install base role on all nodes
 ANSIBLE_TARGET=${all_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%'}" ./apl-wrapper.sh ansible/base.yml
-ANSIBLE_TARGET=${all_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','authorized_keys':[{'user':'vagrant','file':'/home/vagrant/.ssh/id_rsa.pub'}]}" ./apl-wrapper.sh ansible/authorized-keys.yml
 
+# Setting up server nodes
 ANSIBLE_TARGET=${server_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','dns_servers':['/consul/127.0.0.1#8600','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true}" ./apl-wrapper.sh ansible/dnsmasq.yml
 ANSIBLE_TARGET=${server_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_bind_ip':'{{ansible_host}}'}" ./apl-wrapper.sh ansible/consul-server.yml
 ANSIBLE_TARGET=${server_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_bind_ip':'{{ansible_host}}'}" ./apl-wrapper.sh ansible/nomad-server.yml
 
+# Joining cluster members
 for i in $(echo $server_nodes | tr ',' ' '); do
   if [ "$i" != "$server1_ip" ]; then
     ssh $SSH_OPTS $i "consul join ${server1_ip}"
@@ -88,9 +106,11 @@ for i in $(echo $server_nodes | tr ',' ' '); do
   fi
 done
 
+# Setting up vault
 ANSIBLE_TARGET=${server1_ip} ./apl-wrapper.sh ansible/vault-server.yml
 VAULT_ADDR="http://${server1_ip}:8200" CONSUL_HTTP_ADDR="http://${server1_ip}:8500" ./extras/vault-demo.sh
 
+# Setting up compute nodes
 ANSIBLE_TARGET=${compute_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true}" ./apl-wrapper.sh ansible/dnsmasq.yml
 ANSIBLE_TARGET=${compute_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_bind_ip': '{{ansible_host}}'}" ./apl-wrapper.sh ansible/consul-client.yml
 ANSIBLE_TARGET=${compute_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_bind_ip': '{{ansible_host}}'}" ./apl-wrapper.sh ansible/nomad-client.yml
