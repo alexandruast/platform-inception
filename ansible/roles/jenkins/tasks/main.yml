@@ -40,20 +40,28 @@
   become: true
   when: systemd_config is changed
 
-- name: "user belongs to docker group"
-  user:
-    name: "{{service_user}}"
-    groups: docker
-    append: yes
-  become: true
-  register: docker_group
+- name: "docker installed check"
+  shell: which docker
+  ignore_errors: true
+  register: docker_installed
+  changed_when: false
 
-- name: "restart docker"
-  systemd:
-    name: docker
-    state: restarted
-  become: true
-  when: docker_group is changed
+- block:
+  - name: "user belongs to docker group"
+    user:
+      name: "{{service_user}}"
+      groups: docker
+      append: yes
+    become: true
+    register: docker_group
+
+  - name: "restart docker"
+    systemd:
+      name: docker
+      state: restarted
+    become: true
+    when: docker_group is changed
+  when: docker_installed.rc == 0
 
 - name: "service enabled"
   systemd:
