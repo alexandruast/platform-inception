@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -eEo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
-trap 'ssh -S ssh-control-socket -O exit ${server_ip:-localhost}' EXIT
+trap 'sudo su -s /bin/bash -c "ssh -S ssh-control-socket -O exit ${server_ip:-localhost}" jenkins' EXIT
 SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
 
 ci_admin_pass=$1
@@ -81,7 +81,7 @@ JENKINS_SCOPE="factory"
 source ./${JENKINS_SCOPE}/.scope
 tunnel_port=$(perl -e 'print int(rand(999)) + 58000')
 server_ip="$(echo ${ci_nodes_json} | jq --arg hostname "${JENKINS_SCOPE}" '.[] | select(.hostname==$hostname)' | jq -re .ip)"
-ssh $SSH_OPTS -f -N -M -S ssh-control-socket -L ${tunnel_port}:127.0.0.1:${JENKINS_PORT} ${server_ip}
+sudo su -s /bin/bash -c "ssh $SSH_OPTS -f -N -M -S ssh-control-socket -L ${tunnel_port}:127.0.0.1:${JENKINS_PORT} ${server_ip}" jenkins
 # Nomad server deploy on all server nodes
 JENKINS_ADDR=http://127.0.0.1:${tunnel_port} JENKINS_BUILD_JOB=infra-generic-nomad-server-deploy ANSIBLE_TARGET=${server_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_bind_ip':'{{ansible_host}}'}" ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
 
