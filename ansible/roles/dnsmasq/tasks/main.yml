@@ -1,3 +1,9 @@
+- name: "dnsmasq package present"
+  package:
+    name: dnsmasq
+    state: present
+  become: true
+
 - name: "/etc/NetworkManager/conf.d/* updated"
   copy:
     src: "{{item}}"
@@ -12,12 +18,6 @@
     state: restarted
   become: true
   when: NetworkManagerConf is changed
-
-- name: "dnsmasq package present"
-  package:
-    name: dnsmasq
-    state: present
-  become: true
 
 - name: "/etc/dnsmasq.conf updated"
   template:
