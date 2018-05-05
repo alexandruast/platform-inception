@@ -4,7 +4,8 @@ node {
   ]]) {
     stage('validate') {
       sh '''
-        [ x"$JENKINS_ADMIN_PASS" != 'x' ]
+        [ x"${JENKINS_ADMIN_PASS}" != 'x' ]
+        [ x"${ANSIBLE_TARGET}" != 'x' ]
         [ x"${JENKINS_SCOPE}" != 'x' ]
       '''
     }

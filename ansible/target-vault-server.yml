@@ -1,0 +1,19 @@
+- hosts: all
+  gather_facts: no
+  serial: "{{serial_value|default(1)}}"
+
+  roles:
+    - role: alive
+    - role: gather-facts
+    - role: check-sudo
+    - role: housekeeping
+    - role: base
+    - role: dnsmasq
+      dnsmasq_supersede: yes
+      dns_servers:
+        - "8.8.8.8"
+        - "8.8.4.4"
+    - role: jq
+    - role: consul
+      service_mode: client
+    - role: vault

@@ -41,12 +41,10 @@ ANSIBLE_TARGET="127.0.0.1" ANSIBLE_EXTRAVARS="{'authorized_keys':[{'user':'vagra
 # Running jenkins setup script
 ./jenkins-setup.sh
 echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
-
-# Running the job seeder
 JENKINS_BUILD_JOB=system-${scope}-job-seed ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
 
 # Getting the origin jenkins user SSH public key
-origin_key=$(sudo su -s /bin/bash -c 'cat $HOME/.ssh/id_rsa.pub' jenkins)
+origin_key="$(sudo su -s /bin/bash -c 'cat $HOME/.ssh/id_rsa.pub' jenkins)"
 
 # For all scopes, set the jenkins public key to authorized_keys and run the corresponding job 
 for scope in factory prod; do
@@ -56,6 +54,7 @@ for scope in factory prod; do
   ssh $SSH_OPTS -i .vagrant/machines/${scope}/virtualbox/private_key ${server_ip} "if ! grep \"$origin_key\" \$HOME/.ssh/authorized_keys > /dev/null 2>&1; then mkdir -p \$HOME/.ssh; echo $origin_key >> \$HOME/.ssh/authorized_keys; fi"
   sudo su -s /bin/bash -c "ssh $SSH_OPTS $(whoami)@${server_ip}" jenkins
   JENKINS_SCOPE=${scope} ANSIBLE_TARGET=vagrant@${server_ip} JENKINS_BUILD_JOB=${scope}-jenkins-deploy ./jenkins-query.sh ./common/jobs/build-jenkins-deploy-job.groovy
+  JENKINS_BUILD_JOB=system-${scope}-job-seed ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
 done
 
 # Getting a list of nodes
@@ -70,13 +69,13 @@ if [ "${nodes_count}" -le 0 ]; then
   exit 1
 fi
 
-# Setting up the bundled SSH key in authorized_keys on all nodes
-key="$(cat /home/vagrant/.ssh/id_rsa.pub)"
+# Setting up the bundled SSH key in authorized_keys on server/compute nodes
+bundled_key="$(cat /home/vagrant/.ssh/id_rsa.pub)"
 for i in $(seq 0 $nodes_count); do
   hostname="$(echo $concat_json | jq -re .[$i].hostname)"
   ip="$(echo $concat_json | jq -re .[$i].ip)"
   chmod 600 .vagrant/machines/${hostname}/virtualbox/private_key
-  ssh $SSH_OPTS -i .vagrant/machines/${hostname}/virtualbox/private_key ${ip} "if ! grep \"$key\" \$HOME/.ssh/authorized_keys > /dev/null 2>&1; then mkdir -p \$HOME/.ssh; echo $key >> \$HOME/.ssh/authorized_keys; fi"
+  ssh $SSH_OPTS -i .vagrant/machines/${hostname}/virtualbox/private_key ${ip} "if ! grep \"$bundled_key\" \$HOME/.ssh/authorized_keys > /dev/null 2>&1; then mkdir -p \$HOME/.ssh; echo $bundled_key >> \$HOME/.ssh/authorized_keys; fi"
   ssh $SSH_OPTS ${ip}
 done
 
