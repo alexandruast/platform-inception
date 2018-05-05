@@ -93,4 +93,4 @@ done
 ANSIBLE_TARGET=${server1_ip} ./apl-wrapper.sh ansible/vault-server.yml
 
 # Setting up compute nodes
-ANSIBLE_TARGET=${compute_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true,'service_bind_ip': '{{ansible_host}}'}" ./apl-wrapper.sh ansible/target-nomad-compute.yml
+ANSIBLE_TARGET=${compute_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true,'service_bind_ip':'{{ansible_host}}'}" ./apl-wrapper.sh ansible/target-nomad-compute.yml
