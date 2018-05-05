@@ -112,35 +112,6 @@ if box.include? "rhel"
   end
 end
 
-always_origin = <<SCRIPT
-#!/usr/bin/env bash
-set -eEo pipefail
-trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
-ci_admin_pass=$1
-ci_origin_json=$2
-ci_nodes_json=$3
-server_nodes_json=$4
-compute_nodes_json=$5
-cd /home/vagrant/provision
-concat_json="$(echo ${ci_nodes_json} | sed -e 's/]$/,/')${ci_origin_json}]"
-for scope in origin factory prod; do
-  export JENKINS_NULL='null'
-  for v in $(env | grep '^JENKINS_' | cut -f1 -d'='); do unset $v; done
-  source ${scope}/.scope
-  export JENKINS_ADMIN_PASS=$ci_admin_pass
-  server_ip="$(echo ${concat_json} | jq --arg hostname "$scope" '.[] | select(.hostname==$hostname)' | jq -re .ip)"
-  export JENKINS_ADDR=http://${server_ip}:${JENKINS_PORT}
-  ./jenkins-query.sh common/is-online.groovy
-  echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
-done
-server1_ip="$(echo ${server_nodes_json} | jq -r .[0].ip)"
-server2_ip="$(echo ${server_nodes_json} | jq -r .[1].ip)"
-curl --silent -X PUT "http://${server1_ip}:4646/v1/system/gc"
-echo "Consul UI is available at http://${server1_ip}:8500"
-echo "Nomad UI is available at http://${server1_ip}:4646"
-echo "Vault is available at http://${server1_ip}:8200"
-SCRIPT
-
 bootstrap = <<SCRIPT
 #!/usr/bin/env bash
 set -eEo pipefail
@@ -250,14 +221,13 @@ Vagrant.configure(2) do |config|
       ]
     end
     node.vm.provision "shell", run: "always" do |s|
-      s.inline = always_origin
+      s.path = "./extras/always-origin.sh"
       s.privileged = false
       s.args = [
         ci_admin_pass,
         ci_origin.to_json.to_s,
         ci_nodes.to_json.to_s,
-        server_nodes.to_json.to_s,
-        compute_nodes.to_json.to_s
+        server_nodes.to_json.to_s
       ]
     end
     node.trigger.before :destroy do
