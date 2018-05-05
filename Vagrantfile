@@ -6,9 +6,9 @@ ENV["LC_ALL"] = "en_US.UTF-8"
 required_plugins = [ 'vagrant-triggers' ]
 
 ci_admin_pass = "welcome1"
-# box = "bento/centos-7.4"
+box = "bento/centos-7.4"
 # box = "moonphase/amazonlinux2"
-box = "generic/rhel7"
+# box = "generic/rhel7"
 
 ci_origin = {
   :hostname => "origin",
@@ -69,9 +69,10 @@ unless missing_plugins.empty?
   exit 1
 end
 
+rhel_subscription_username = 'none'
+rhel_subscription_password = 'none'
+
 if box.include? "rhel"
-  rhel_subscription_username = 'none'
-  rhel_subscription_password = 'none'
   if ARGV[0] == "up" or ARGV[0] == "provision"
     puts "Red Hat Enterprise Linux requires RHN subscription."
     print "Press ENTER within 5 seconds to enter credentials."
