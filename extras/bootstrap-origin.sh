@@ -9,12 +9,6 @@ ci_nodes_json=$3
 server_nodes_json=$4
 compute_nodes_json=$5
 
-# Setting up the bundled SSH private key, DO NOT USE THIS outside your laptop!
-mkdir -p $HOME/.ssh/
-cp provision/extras/ansible-sandbox.pem /home/vagrant/.ssh/id_rsa
-chmod 600 /home/vagrant/.ssh/id_rsa
-echo "$(ssh-keygen -y -f /home/vagrant/.ssh/id_rsa) ansible-sandbox" > /home/vagrant/.ssh/id_rsa.pub
-
 # Install ansible
 sudo cp provision/extras/epel-release.repo /etc/yum.repos.d/
 sudo yum -q -y install ansible
@@ -25,36 +19,33 @@ cd /home/vagrant/provision
 server1_ip="$(echo ${server_nodes_json} | jq -r .[0].ip)"
 server2_ip="$(echo ${server_nodes_json} | jq -r .[1].ip)"
 
-# Origin-Jenkins setup
+### --- Begin Origin-Jenkins Setup --- ###
 scope='origin'
 # shellcheck source=origin/.scope
 source ${scope}/.scope
 export JENKINS_ADMIN_PASS=${ci_admin_pass}
 server_ip="$(echo ${ci_origin_json} | jq -r .ip)"
 export JENKINS_ADDR=http://${server_ip}:${JENKINS_PORT}
-
-# Settings:
-# authorized_keys to provide SSH access outside of Vagrant
 # dnsmasq to resolve everything using google dns and forward .consul
-ANSIBLE_TARGET="127.0.0.1" ANSIBLE_EXTRAVARS="{'authorized_keys':[{'user':'vagrant','file':'/home/vagrant/.ssh/id_rsa.pub'}],'dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true}" ./apl-wrapper.sh ansible/target-${scope}-jenkins.yml
-
-# Running jenkins setup script
+ANSIBLE_TARGET="127.0.0.1" ANSIBLE_EXTRAVARS="{'dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true}" ./apl-wrapper.sh ansible/target-${scope}-jenkins.yml
 ./jenkins-setup.sh
 echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
 JENKINS_BUILD_JOB=system-${scope}-job-seed ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
+### --- End Origin-Jenkins Setup --- ###
 
-# Getting the origin jenkins user SSH public key
-origin_key="$(sudo su -s /bin/bash -c 'cat $HOME/.ssh/id_rsa.pub' jenkins)"
+# Getting the origin jenkins user SSH public key, to whitelist it into factory and prod authorized_keys
+origin_jenkins_key="$(sudo su -s /bin/bash -c 'cat $HOME/.ssh/id_rsa.pub' jenkins)"
 
-# For all scopes, set the jenkins public key to authorized_keys and run the corresponding job 
+### --- Begin Factory/Prod Jenkins Deploy --- ###
 for scope in factory prod; do
   echo "waiting for ${scope}-jenkins-deploy to finish..."
   chmod 600 .vagrant/machines/${scope}/virtualbox/private_key
   server_ip="$(echo ${ci_nodes_json} | jq --arg hostname "$scope" '.[] | select(.hostname==$hostname)' | jq -re .ip)"
-  ssh $SSH_OPTS -i .vagrant/machines/${scope}/virtualbox/private_key ${server_ip} "if ! grep \"$origin_key\" \$HOME/.ssh/authorized_keys > /dev/null 2>&1; then mkdir -p \$HOME/.ssh; echo $origin_key >> \$HOME/.ssh/authorized_keys; fi"
+  ssh $SSH_OPTS -i .vagrant/machines/${scope}/virtualbox/private_key ${server_ip} "if ! grep \"$origin_jenkins_key\" \$HOME/.ssh/authorized_keys > /dev/null 2>&1; then mkdir -p \$HOME/.ssh; echo $origin_jenkins_key >> \$HOME/.ssh/authorized_keys; fi"
   sudo su -s /bin/bash -c "ssh $SSH_OPTS $(whoami)@${server_ip}" jenkins
   JENKINS_SCOPE=${scope} ANSIBLE_TARGET=vagrant@${server_ip} JENKINS_BUILD_JOB=${scope}-jenkins-deploy ./jenkins-query.sh ./common/jobs/build-jenkins-deploy-job.groovy
 done
+### --- End Factory/Prod Jenkins Deploy --- ###
 
 # Getting a list of nodes
 server_nodes="$(echo ${server_nodes_json} | jq -re .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')"

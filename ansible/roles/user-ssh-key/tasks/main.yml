@@ -5,7 +5,7 @@
   become_user: "{{run_as|default(ansible_user_id)}}"
 
 - name: "ssh-keygen"
-  shell: "ssh-keygen -b 2048 -t rsa -C 'ansible' -N '' -f {{user_ssh_key}}"
+  shell: "ssh-keygen -b 2048 -t rsa -C '{{run_as}}' -N '' -f {{user_ssh_key}}"
   when: ssh_key_check.stat.exists == false
   become: true
   become_user: "{{run_as|default(ansible_user_id)}}"
