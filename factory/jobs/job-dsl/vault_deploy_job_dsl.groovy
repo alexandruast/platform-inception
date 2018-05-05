@@ -2,7 +2,6 @@ def scopes = ['server']
 def jobPrefix='infra-generic-vault'
 def jobSuffix='deploy'
 scopes.each { scope ->
-  jobNames.add("${jobPrefix}-${scope}-${jobSuffix}")
   pipelineJob("${jobPrefix}-${scope}-${jobSuffix}") {
     description("Dynamically generated with job-dsl by $JOB_NAME\nAny changes to this item will be overwritten without notice.")
     def repo = 'https://github.com/alexandruast/platform-inception'
