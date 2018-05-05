@@ -35,6 +35,7 @@ node {
         tunnel_port=$(perl -e 'print int(rand(999)) + 58000')
         ssh $SSH_OPTS -f -N -M -S ssh-control-socket -L ${tunnel_port}:127.0.0.1:${JENKINS_PORT} ${ANSIBLE_TARGET}
         JENKINS_ADDR=http://127.0.0.1:${tunnel_port} ./jenkins-setup.sh
+        JENKINS_BUILD_JOB=system-${JENKINS_SCOPE}-job-seed ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
         ssh -S ssh-control-socket -O exit ${ANSIBLE_TARGET}
       '''
     }

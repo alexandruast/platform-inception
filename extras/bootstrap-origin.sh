@@ -54,7 +54,6 @@ for scope in factory prod; do
   ssh $SSH_OPTS -i .vagrant/machines/${scope}/virtualbox/private_key ${server_ip} "if ! grep \"$origin_key\" \$HOME/.ssh/authorized_keys > /dev/null 2>&1; then mkdir -p \$HOME/.ssh; echo $origin_key >> \$HOME/.ssh/authorized_keys; fi"
   sudo su -s /bin/bash -c "ssh $SSH_OPTS $(whoami)@${server_ip}" jenkins
   JENKINS_SCOPE=${scope} ANSIBLE_TARGET=vagrant@${server_ip} JENKINS_BUILD_JOB=${scope}-jenkins-deploy ./jenkins-query.sh ./common/jobs/build-jenkins-deploy-job.groovy
-  JENKINS_BUILD_JOB=system-${scope}-job-seed ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
 done
 
 # Getting a list of nodes
