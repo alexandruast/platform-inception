@@ -139,8 +139,6 @@ Vagrant.configure(2) do |config|
         vb.cpus = machine[:cpus]
       end  
       node.vm.network "private_network", ip: machine[:ip]
-      node.vm.provision "shell", inline: "rm -fr /home/vagrant/provision", privileged: false
-      node.vm.provision "file", source: "./", destination: "/home/vagrant/provision"
       node.vm.provision "shell", inline: bootstrap, privileged: false
       node.trigger.before :destroy do
         begin
@@ -162,8 +160,6 @@ Vagrant.configure(2) do |config|
         vb.cpus = machine[:cpus]
       end  
       node.vm.network "private_network", ip: machine[:ip]
-      node.vm.provision "shell", inline: "rm -fr /home/vagrant/provision", privileged: false
-      node.vm.provision "file", source: "./", destination: "/home/vagrant/provision"
       node.vm.provision "shell", inline: bootstrap, privileged: false
       node.trigger.before :destroy do
         begin
@@ -185,8 +181,6 @@ Vagrant.configure(2) do |config|
         vb.cpus = machine[:cpus]
       end  
       node.vm.network "private_network", ip: machine[:ip]
-      node.vm.provision "shell", inline: "rm -fr /home/vagrant/provision", privileged: false
-      node.vm.provision "file", source: "./", destination: "/home/vagrant/provision"
       node.vm.provision "shell", inline: bootstrap, privileged: false
       node.trigger.before :destroy do
         begin
