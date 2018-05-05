@@ -9,13 +9,15 @@
     - role: housekeeping
     - role: base
     - role: dnsmasq
-      dnsmasq_supersede: yes
+      dnsmasq_supersede: no
       dns_servers:
         - "/consul/127.0.0.1#8600"
-        - "172.28.27.162"
-        - "172.28.27.163"
+        - "8.8.8.8"
+        - "8.8.4.4"
+    - role: ansible
+    - role: mo
     - role: jq
-    - role: consul
-      service_mode: server
-    - role: nomad
-      service_mode: server
+    - role: java8-openjdk
+    - role: jenkins
+    - role: user-ssh-key
+      run_as: jenkins

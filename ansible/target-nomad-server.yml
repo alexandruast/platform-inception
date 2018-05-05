@@ -11,14 +11,11 @@
     - role: dnsmasq
       dnsmasq_supersede: yes
       dns_servers:
-        - "/consul/172.28.16.61"
-        - "/consul/172.28.16.62"
-        - "172.28.27.162"
-        - "172.28.27.163"
+        - "/consul/127.0.0.1#8600"
+        - "8.8.8.8"
+        - "8.8.4.4"
     - role: jq
-    - role: docker
-    - role: pumba
     - role: consul
-      service_mode: client
+      service_mode: server
     - role: nomad
-      service_mode: client
+      service_mode: server

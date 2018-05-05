@@ -1,23 +1,22 @@
 - hosts: all
   gather_facts: no
+  serial: "{{serial_value|default(1)}}"
 
   roles:
     - role: alive
     - role: gather-facts
     - role: check-sudo
     - role: housekeeping
-    - role: user-ssh-key
     - role: base
     - role: dnsmasq
       dnsmasq_supersede: yes
       dns_servers:
+        - "/consul/127.0.0.1#8600"
         - "8.8.8.8"
         - "8.8.4.4"
     - role: ansible
     - role: docker
     - role: docker-compose
-    - role: pumba
-    - role: jq
     - role: consul
       service_install: false
     - role: nomad
@@ -27,4 +26,10 @@
     - role: packer
     - role: terraform
     - role: terragrunt
-    - role: workstation
+    - role: mo
+    - role: jq
+    - role: pumba
+    - role: java8-openjdk
+    - role: jenkins
+    - role: user-ssh-key
+      run_as: jenkins

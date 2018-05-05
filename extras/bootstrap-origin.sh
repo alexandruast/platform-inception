@@ -21,30 +21,24 @@ sudo yum -q -y install ansible
 
 cd /home/vagrant/provision
 
-# Setting up base role
-ANSIBLE_TARGET="127.0.0.1" ./apl-wrapper.sh ansible/base.yml
-
 # Getting server nodes ip
 server1_ip="$(echo ${server_nodes_json} | jq -r .[0].ip)"
 server2_ip="$(echo ${server_nodes_json} | jq -r .[1].ip)"
-
-# Setting authorized_keys to provide SSH access outside of Vagrant
-ANSIBLE_TARGET="127.0.0.1" ANSIBLE_EXTRAVARS="{'authorized_keys':[{'user':'vagrant','file':'/home/vagrant/.ssh/id_rsa.pub'}]}" ./apl-wrapper.sh ansible/authorized-keys.yml
-
-# Setting up dnsmasq to provide DNS resolution - needed to be able to resolve .consul addresses
-ANSIBLE_TARGET="127.0.0.1" ANSIBLE_EXTRAVARS="{'dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true}" ./apl-wrapper.sh ansible/dnsmasq.yml
-
-# Installing hashicorp binaries: consul, nomad, vault, packer, terraform etc...
-ANSIBLE_TARGET="127.0.0.1" ./apl-wrapper.sh ansible/hashicorp-tools.yml
 
 # Origin-Jenkins setup
 scope='origin'
 # shellcheck source=origin/.scope
 source ${scope}/.scope
-export JENKINS_ADMIN_PASS=$ci_admin_pass
+export JENKINS_ADMIN_PASS=${ci_admin_pass}
 server_ip="$(echo ${ci_origin_json} | jq -r .ip)"
 export JENKINS_ADDR=http://${server_ip}:${JENKINS_PORT}
-ANSIBLE_TARGET='127.0.0.1' ./apl-wrapper.sh ansible/jenkins.yml
+
+# Settings:
+# authorized_keys to provide SSH access outside of Vagrant
+# dnsmasq to resolve everything using google dns and forward .consul
+ANSIBLE_TARGET="127.0.0.1" ANSIBLE_EXTRAVARS="{'authorized_keys':[{'user':'vagrant','file':'/home/vagrant/.ssh/id_rsa.pub'}],'dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true}" ./apl-wrapper.sh ansible/authorized-keys.yml ${scope}-jenkins.yml
+
+# Running jenkins setup script
 ./jenkins-setup.sh
 echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
 
@@ -67,11 +61,7 @@ done
 # Getting a list of nodes
 server_nodes="$(echo ${server_nodes_json} | jq -re .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')"
 compute_nodes="$(echo ${compute_nodes_json} | jq -re .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')"
-all_nodes="${server_nodes},${compute_nodes}"
-
 concat_json="$(echo ${server_nodes_json} | sed -e 's/]$/,/')$(echo ${compute_nodes_json} | sed -e 's/^\[//')"
-echo $concat_json
-
 nodes_count="$(echo $concat_json | jq -re .[].ip | wc -l)"
 nodes_count=$((nodes_count - 1))
 
@@ -90,13 +80,8 @@ for i in $(seq 0 $nodes_count); do
   ssh $SSH_OPTS ${ip}
 done
 
-# Install base role on all nodes
-ANSIBLE_TARGET=${all_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%'}" ./apl-wrapper.sh ansible/base.yml
-
 # Setting up server nodes
-ANSIBLE_TARGET=${server_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','dns_servers':['/consul/127.0.0.1#8600','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true}" ./apl-wrapper.sh ansible/dnsmasq.yml
-ANSIBLE_TARGET=${server_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_bind_ip':'{{ansible_host}}'}" ./apl-wrapper.sh ansible/consul-server.yml
-ANSIBLE_TARGET=${server_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_bind_ip':'{{ansible_host}}'}" ./apl-wrapper.sh ansible/nomad-server.yml
+ANSIBLE_TARGET=${server_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_bind_ip':'{{ansible_host}}'}" ./apl-wrapper.sh ansible/target-nomad-server.yml
 
 # Joining cluster members
 for i in $(echo $server_nodes | tr ',' ' '); do
@@ -106,10 +91,8 @@ for i in $(echo $server_nodes | tr ',' ' '); do
   fi
 done
 
-# Setting up vault
+# Setting up vault on server1
 ANSIBLE_TARGET=${server1_ip} ./apl-wrapper.sh ansible/vault-server.yml
 
 # Setting up compute nodes
-ANSIBLE_TARGET=${compute_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true}" ./apl-wrapper.sh ansible/dnsmasq.yml
-ANSIBLE_TARGET=${compute_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_bind_ip': '{{ansible_host}}'}" ./apl-wrapper.sh ansible/consul-client.yml
-ANSIBLE_TARGET=${compute_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_bind_ip': '{{ansible_host}}'}" ./apl-wrapper.sh ansible/nomad-client.yml
+ANSIBLE_TARGET=${compute_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true,'service_bind_ip': '{{ansible_host}}'}" ./apl-wrapper.sh ansible/target-nomad-compute.yml
