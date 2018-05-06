@@ -65,7 +65,7 @@ for scope in factory prod; do
   ssh ${SSH_OPTS} -i .vagrant/machines/${scope}/virtualbox/private_key ${server_ip} "if ! grep \"$jenkins_pk\" \$HOME/.ssh/authorized_keys > /dev/null 2>&1; then mkdir -p \$HOME/.ssh; echo $jenkins_pk >> \$HOME/.ssh/authorized_keys; fi"
   sudo su -s /bin/bash -c "ssh ${SSH_OPTS} vagrant@${server_ip} true" jenkins
   echo "waiting for ${scope}-jenkins-deploy job to finish..."
-  JENKINS_SCOPE=${scope} ANSIBLE_TARGET=vagrant@${server_ip} JENKINS_BUILD_JOB=${scope}-jenkins-deploy ./jenkins-query.sh ./common/jobs/build-jenkins-deploy-job.groovy
+  ANSIBLE_TARGET=vagrant@${server_ip} ANSIBLE_EXTRAVARS="{}" JENKINS_SCOPE=${scope} JENKINS_BUILD_JOB=${scope}-jenkins-deploy ./jenkins-query.sh ./common/jobs/build-jenkins-deploy-job.groovy
   echo "whitelisting ${scope}-jenkins SSH public key to server/compute nodes..."
   jenkins_pk="$(sudo su -s /bin/bash -c "ssh ${SSH_OPTS} vagrant@${server_ip} sudo cat \$HOME/.ssh/id_rsa.pub" jenkins)"
   for i in $(seq 0 ${nodes_count}); do
