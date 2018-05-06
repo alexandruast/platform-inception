@@ -13,3 +13,9 @@ service_init_conf: service-systemd.j2
 download_force: no
 
 repos_enabled: yes
+
+dnsmasq_supersede: no
+
+dns_servers:
+  - "8.8.8.8"
+  - "8.8.4.4"

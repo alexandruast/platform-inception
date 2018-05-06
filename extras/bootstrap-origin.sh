@@ -12,7 +12,7 @@ ci_nodes_json=$3
 server_nodes_json=$4
 compute_nodes_json=$5
 
-ansible_check_mode_var="'ansible_check_mode':'true',"
+ansible_check_mode_var="'ansible_check_mode':true,"
 
 # Getting jq here, manually - workaround for pseudo workstation on origin
 sudo curl -LSs https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -o /usr/local/bin/jq \
