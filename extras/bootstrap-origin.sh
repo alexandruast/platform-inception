@@ -87,7 +87,7 @@ tunnel_port=$(perl -e 'print int(rand(999)) + 58000')
 sudo su -s /bin/bash -c "ssh $SSH_OPTS -f -N -M -S \$HOME/ssh-control-socket -L ${tunnel_port}:127.0.0.1:${JENKINS_PORT} vagrant@${factory_ip}" jenkins
 # Nomad server deploy on all server nodes
 echo "waiting for infra-generic-nomad-server-deploy job to finish..."
-JENKINS_BUILD_JOB=infra-generic-nomad-server-deploy JENKINS_ADDR=http://127.0.0.1:${tunnel_port} ANSIBLE_EXTRAVARS="{}" ANSIBLE_TARGET=${server_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_bind_ip':'{{ansible_host}}'}" ./jenkins-query.sh ./common/jobs/build-infra-generic-deploy-job.groovy
+JENKINS_BUILD_JOB=infra-generic-nomad-server-deploy JENKINS_ADDR=http://127.0.0.1:${tunnel_port} ANSIBLE_EXTRAVARS="{}" ANSIBLE_TARGET=${server_nodes} ANSIBLE_SCOPE='server' ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_bind_ip':'{{ansible_host}}'}" ./jenkins-query.sh ./common/jobs/build-infra-generic-deploy-job.groovy
 
 # Joining server cluster members
 for i in $(echo $server_nodes | tr ',' ' '); do
@@ -99,9 +99,9 @@ done
 
 # Vault server deploy on server1
 echo "waiting for infra-generic-vault-server-deploy job to finish..."
-JENKINS_BUILD_JOB=infra-generic-vault-server-deploy JENKINS_ADDR=http://127.0.0.1:${tunnel_port} ANSIBLE_EXTRAVARS="{}" ANSIBLE_TARGET=${server1_ip} ./jenkins-query.sh ./common/jobs/build-infra-generic-deploy-job.groovy
+JENKINS_BUILD_JOB=infra-generic-vault-server-deploy JENKINS_ADDR=http://127.0.0.1:${tunnel_port} ANSIBLE_EXTRAVARS="{}" ANSIBLE_TARGET=${server1_ip} ANSIBLE_SCOPE='server' ./jenkins-query.sh ./common/jobs/build-infra-generic-deploy-job.groovy
 
 # Nomad compute deploy on all compute nodes
 echo "waiting for infra-generic-nomad-compute-deploy job to finish..."
-JENKINS_BUILD_JOB=infra-generic-nomad-compute-deploy JENKINS_ADDR=http://127.0.0.1:${tunnel_port} ANSIBLE_EXTRAVARS="{}" ANSIBLE_TARGET=${compute_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true,'service_bind_ip':'{{ansible_host}}'}" ./jenkins-query.sh ./common/jobs/build-infra-generic-deploy-job.groovy
+JENKINS_BUILD_JOB=infra-generic-nomad-compute-deploy JENKINS_ADDR=http://127.0.0.1:${tunnel_port} ANSIBLE_EXTRAVARS="{}" ANSIBLE_TARGET=${compute_nodes} ANSIBLE_SCOPE='compute' ANSIBLE_EXTRAVARS="{'serial_value':'100%','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true,'service_bind_ip':'{{ansible_host}}'}" ./jenkins-query.sh ./common/jobs/build-infra-generic-deploy-job.groovy
 
