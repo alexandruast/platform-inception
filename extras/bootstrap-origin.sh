@@ -3,7 +3,7 @@
 # This server is also the Origin-Jenkins
 set -eEo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
-trap 'sudo su -s /bin/bash -c "ssh -S ssh-control-socket -O exit ${factory_ip}" jenkins' EXIT
+trap 'sudo su -s /bin/bash -c "ssh -S ssh-control-socket -O exit vagrant@${factory_ip}" jenkins' EXIT
 SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
 
 ci_admin_pass=$1
