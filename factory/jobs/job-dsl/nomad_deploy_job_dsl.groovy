@@ -9,7 +9,7 @@ scopes.each { scope ->
     parameters {
       stringParam('ANSIBLE_TARGET', "user@192.0.2.255", "Which targets to use")
       choiceParam('NOMAD_SCOPE', ["$scope"], "Running in $scope scope only!")
-      stringParam('ANSIBLE_EXTRAVARS', "{'foo'='bar'}", "Optional: use extravars(single line JSON string only!)")
+      stringParam('ANSIBLE_EXTRAVARS', "{'foo':'bar'}", "Optional: use extravars(single line JSON string only!)")
     }
     definition {
       cpsScm {
