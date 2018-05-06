@@ -19,19 +19,20 @@ EOF
 }
 
 if [[ $# -lt 1 ]];then usage;exit 1; fi
-while getopts i:j:t: opt; do
+while getopts i:j:t:e:c: opt; do
   case $opt in
-    e) ANSIBLE_EXTRAVARS=${OPTARG};;
     i) ANSIBLE_TARGET=${OPTARG};;
     j) ANSIBLE_JUMPHOST=${OPTARG};;
     t) ANSIBLE_TAGS=${OPTARG};;
+    e) ANSIBLE_EXTRAVARS=${OPTARG};;
   esac
 done && shift $((OPTIND -1))
 if [[ $# -gt 1 ]];then usage;exit 1; fi
 readonly ANSIBLE_PLAYBOOK=$1
 readonly ANSIBLE_TAGS=${ANSIBLE_TAGS:-${ANSIBLE_TAGS_DEFAULT}}
 readonly ANSIBLE_PORT=${ANSIBLE_PORT:-${ANSIBLE_PORT_DEFAULT}}
-readonly ANSIBLE_EXTRAVARS=${ANSIBLE_EXTRAVARS:-dummy_foo=bar}
+readonly ANSIBLE_EXTRAVARS=${ANSIBLE_EXTRAVARS:-foo=bar}
+readonly ANSIBLE_CHECK_MODE=${ANSIBLE_CHECK_MODE:-false}
 readonly ANSIBLE_TARGET=${ANSIBLE_TARGET}
 readonly ANSIBLE_JUMPHOST=${ANSIBLE_JUMPHOST:-none}
 readonly ANSIBLE_DIR=$(dirname $ANSIBLE_PLAYBOOK)

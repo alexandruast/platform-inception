@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
+# This script tries to emulate a flow that's normally done from an operations workstation
+# This server is also the Origin-Jenkins
 set -eEo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
-trap 'sudo su -s /bin/bash -c "ssh -S ssh-control-socket -O exit ${server_ip:-localhost}" jenkins' EXIT
+trap 'sudo su -s /bin/bash -c "ssh -S ssh-control-socket -O exit ${factory_ip}" jenkins' EXIT
 SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
 
 ci_admin_pass=$1
@@ -9,6 +11,8 @@ ci_origin_json=$2
 ci_nodes_json=$3
 server_nodes_json=$4
 compute_nodes_json=$5
+
+ansible_check_mode_var="'ansible_check_mode':'true',"
 
 # Getting jq here, manually - workaround for pseudo workstation on origin
 sudo curl -LSs https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -o /usr/local/bin/jq \
@@ -25,9 +29,10 @@ if [ "${nodes_count}" -le 0 ]; then
   exit 1
 fi
 
-# Getting server nodes ip
+# Getting useful nodes ip
 server1_ip="$(echo ${server_nodes_json} | jq -r .[0].ip)"
 server2_ip="$(echo ${server_nodes_json} | jq -r .[1].ip)"
+factory_ip="$(echo ${ci_nodes_json} | jq --arg hostname "factory" '.[] | select(.hostname==$hostname)' | jq -re .ip)"
 
 # Install ansible
 sudo cp provision/extras/epel-release.repo /etc/yum.repos.d/
@@ -43,7 +48,7 @@ export JENKINS_ADMIN_PASS=${ci_admin_pass}
 server_ip="$(echo ${ci_origin_json} | jq -r .ip)"
 export JENKINS_ADDR=http://${server_ip}:${JENKINS_PORT}
 # dnsmasq to resolve everything using google dns and forward .consul
-ANSIBLE_TARGET="127.0.0.1" ANSIBLE_EXTRAVARS="{'dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true}" ./apl-wrapper.sh ansible/target-${scope}-jenkins.yml
+ANSIBLE_TARGET="127.0.0.1" ANSIBLE_EXTRAVARS="{${ansible_check_mode_var}'dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true}" ./apl-wrapper.sh ansible/target-${scope}-jenkins.yml
 ./jenkins-setup.sh
 echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
 JENKINS_BUILD_JOB=system-${scope}-job-seed ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
@@ -81,9 +86,9 @@ JENKINS_SCOPE="factory"
 source ./${JENKINS_SCOPE}/.scope
 tunnel_port=$(perl -e 'print int(rand(999)) + 58000')
 server_ip="$(echo ${ci_nodes_json} | jq --arg hostname "${JENKINS_SCOPE}" '.[] | select(.hostname==$hostname)' | jq -re .ip)"
-sudo su -s /bin/bash -c "ssh $SSH_OPTS -f -N -M -S ssh-control-socket -L ${tunnel_port}:127.0.0.1:${JENKINS_PORT} ${server_ip}" jenkins
+sudo su -s /bin/bash -c "ssh $SSH_OPTS -f -N -M -S \$HOME/ssh-control-socket -L ${tunnel_port}:127.0.0.1:${JENKINS_PORT} vagrant@${factory_ip}" jenkins
 # Nomad server deploy on all server nodes
-JENKINS_ADDR=http://127.0.0.1:${tunnel_port} JENKINS_BUILD_JOB=infra-generic-nomad-server-deploy ANSIBLE_TARGET=${server_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_bind_ip':'{{ansible_host}}'}" ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
+JENKINS_ADDR=http://127.0.0.1:${tunnel_port} JENKINS_BUILD_JOB=infra-generic-nomad-server-deploy ANSIBLE_TARGET=${server_nodes} ANSIBLE_EXTRAVARS="{${ansible_check_mode_var}'serial_value':'100%','service_bind_ip':'{{ansible_host}}'}" ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
 
 # Joining cluster members
 for i in $(echo $server_nodes | tr ',' ' '); do
@@ -97,5 +102,5 @@ done
 JENKINS_ADDR=http://127.0.0.1:${tunnel_port} JENKINS_BUILD_JOB=infra-generic-vault-server-deploy ANSIBLE_TARGET=${server1_ip} ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
 
 # Nomad compute deploy on all compute nodes
-JENKINS_ADDR=http://127.0.0.1:${tunnel_port} JENKINS_BUILD_JOB=infra-generic-nomad-compute-deploy ANSIBLE_TARGET=${compute_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true,'service_bind_ip':'{{ansible_host}}'}" ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
+JENKINS_ADDR=http://127.0.0.1:${tunnel_port} JENKINS_BUILD_JOB=infra-generic-nomad-compute-deploy ANSIBLE_TARGET=${compute_nodes} ANSIBLE_EXTRAVARS="{${ansible_check_mode_var}'serial_value':'100%','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true,'service_bind_ip':'{{ansible_host}}'}" ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
 

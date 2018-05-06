@@ -24,14 +24,14 @@
     dest: "{{jenkins_war}}"
     owner: "{{service_user}}"
     group: "{{service_group}}"
-    force: yes
+    force: "{{download_force}}"
   become: true
 
 - name: "systemd service config updated"
   template:
     src: "{{service_init_conf}}"
     dest: "/etc/systemd/system/{{service_name}}.service"
-    mode: 0644
+    mode: 0755
   become: true
   register: systemd_config
 

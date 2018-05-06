@@ -7,6 +7,7 @@ node {
         [ x"${JENKINS_ADMIN_PASS}" != 'x' ]
         [ x"${ANSIBLE_TARGET}" != 'x' ]
         [ x"${JENKINS_SCOPE}" != 'x' ]
+        [ x"${ANSIBLE_EXTRAVARS}" != 'x' ]
       '''
     }
     stage('prepare') {

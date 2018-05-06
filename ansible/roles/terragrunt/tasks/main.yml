@@ -2,7 +2,7 @@
   get_url:
     url:  https://github.com/gruntwork-io/terragrunt/releases/download/v0.14.9/terragrunt_linux_amd64
     dest: /usr/local/bin/terragrunt
-    force: yes
+    force: "{{download_force}}"
     mode: +x
   become: true
 

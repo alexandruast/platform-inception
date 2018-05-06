@@ -10,4 +10,6 @@ user_ssh_key: "$HOME/.ssh/id_rsa"
 
 service_init_conf: service-systemd.j2
 
+download_force: no
+
 repos_enabled: yes
