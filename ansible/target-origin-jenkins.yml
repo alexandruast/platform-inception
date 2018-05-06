@@ -9,7 +9,7 @@
     - role: housekeeping
     - role: base
     - role: dnsmasq
-      dnsmasq_supersede: no
+      dnsmasq_supersede: yes
       dns_servers:
         - "/consul/127.0.0.1#8600"
         - "8.8.8.8"
