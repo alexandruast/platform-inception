@@ -65,7 +65,7 @@ for scope in factory prod; do
   ssh ${SSH_OPTS} -i .vagrant/machines/${scope}/virtualbox/private_key ${server_ip} "if ! grep \"$jenkins_pk\" \$HOME/.ssh/authorized_keys > /dev/null 2>&1; then mkdir -p \$HOME/.ssh; echo $jenkins_pk >> \$HOME/.ssh/authorized_keys; fi"
   sudo su -s /bin/bash -c "ssh ${SSH_OPTS} vagrant@${server_ip} true" jenkins
   echo "waiting for ${scope}-jenkins-deploy job to finish..."
-  ANSIBLE_TARGET=vagrant@${server_ip} ANSIBLE_EXTRAVARS="{}" JENKINS_SCOPE=${scope} JENKINS_BUILD_JOB=${scope}-jenkins-deploy ./jenkins-query.sh ./common/jobs/build-jenkins-deploy-job.groovy
+  JENKINS_BUILD_JOB=${scope}-jenkins-deploy ANSIBLE_TARGET=vagrant@${server_ip} ANSIBLE_EXTRAVARS="{}" JENKINS_SCOPE=${scope} ./jenkins-query.sh ./common/jobs/build-jenkins-deploy-job.groovy
   echo "whitelisting ${scope}-jenkins SSH public key to server/compute nodes..."
   jenkins_pk="$(sudo su -s /bin/bash -c "ssh ${SSH_OPTS} vagrant@${server_ip} sudo cat \$HOME/.ssh/id_rsa.pub" jenkins)"
   for i in $(seq 0 ${nodes_count}); do
@@ -86,7 +86,7 @@ tunnel_port=$(perl -e 'print int(rand(999)) + 58000')
 server_ip="$(echo ${ci_nodes_json} | jq --arg hostname "${JENKINS_SCOPE}" '.[] | select(.hostname==$hostname)' | jq -re .ip)"
 sudo su -s /bin/bash -c "ssh $SSH_OPTS -f -N -M -S \$HOME/ssh-control-socket -L ${tunnel_port}:127.0.0.1:${JENKINS_PORT} vagrant@${factory_ip}" jenkins
 # Nomad server deploy on all server nodes
-JENKINS_ADDR=http://127.0.0.1:${tunnel_port} ANSIBLE_EXTRAVARS="{}" JENKINS_BUILD_JOB=infra-generic-nomad-server-deploy ANSIBLE_TARGET=${server_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_bind_ip':'{{ansible_host}}'}" ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
+JENKINS_BUILD_JOB=infra-generic-nomad-server-deploy JENKINS_ADDR=http://127.0.0.1:${tunnel_port} ANSIBLE_EXTRAVARS="{}" ANSIBLE_TARGET=${server_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_bind_ip':'{{ansible_host}}'}" ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
 
 # Joining cluster members
 for i in $(echo $server_nodes | tr ',' ' '); do
@@ -97,8 +97,8 @@ for i in $(echo $server_nodes | tr ',' ' '); do
 done
 
 # Vault server deploy on server1
-JENKINS_ADDR=http://127.0.0.1:${tunnel_port} ANSIBLE_EXTRAVARS="{}" JENKINS_BUILD_JOB=infra-generic-vault-server-deploy ANSIBLE_TARGET=${server1_ip} ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
+JENKINS_BUILD_JOB=infra-generic-vault-server-deploy JENKINS_ADDR=http://127.0.0.1:${tunnel_port} ANSIBLE_EXTRAVARS="{}" ANSIBLE_TARGET=${server1_ip} ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
 
 # Nomad compute deploy on all compute nodes
-JENKINS_ADDR=http://127.0.0.1:${tunnel_port} ANSIBLE_EXTRAVARS="{}" JENKINS_BUILD_JOB=infra-generic-nomad-compute-deploy ANSIBLE_TARGET=${compute_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true,'service_bind_ip':'{{ansible_host}}'}" ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
+JENKINS_BUILD_JOB=infra-generic-nomad-compute-deploy JENKINS_ADDR=http://127.0.0.1:${tunnel_port} ANSIBLE_EXTRAVARS="{}" ANSIBLE_TARGET=${compute_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true,'service_bind_ip':'{{ansible_host}}'}" ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
 
