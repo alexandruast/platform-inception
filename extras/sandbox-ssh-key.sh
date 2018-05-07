@@ -40,6 +40,5 @@ chmod 600 "$HOME/.ssh/id_rsa"
 echo "$(ssh-keygen -y -f "$HOME/.ssh/id_rsa") ansible-sandbox" > $HOME/.ssh/id_rsa.pub
 SANDBOX_PUBLIC_KEY="$(cat $HOME/.ssh/id_rsa.pub)"
 if ! grep "${SANDBOX_PUBLIC_KEY}" "$HOME/.ssh/authorized_keys" > /dev/null 2>&1; then
-  mkdir -p "$HOME/.ssh"
   echo "${SANDBOX_PUBLIC_KEY}" >> "$HOME/.ssh/authorized_keys"
 fi
