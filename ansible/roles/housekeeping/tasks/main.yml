@@ -35,4 +35,3 @@
   systemd: daemon_reload=yes
   become: true
   changed_when: false
-
