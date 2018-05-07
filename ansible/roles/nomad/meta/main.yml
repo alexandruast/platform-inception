@@ -1,3 +1,7 @@
 dependencies:
   - role: docker
+<<<<<<< HEAD
     when: service_mode is defined and service_mode == 'client'
+=======
+    when: service_mode is defined and service_mode == 'client'
+>>>>>>> devel
