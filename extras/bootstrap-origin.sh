@@ -128,6 +128,9 @@ ci_prod_json=$4
 server_nodes_json=$5
 compute_nodes_json=$6
 
+install_jq
+install_ansible
+
 origin_jenkins_ip="$(echo ${ci_origin_json} | jq -r .ip)"
 factory_jenkins_ip="$(echo ${ci_factory_json} | jq -r .ip)"
 prod_jenkins_ip="$(echo ${ci_prod_json} | jq -r .ip)"
@@ -136,11 +139,9 @@ server2_ip="$(echo ${server_nodes_json} | jq -r .[1].ip)"
 
 cd /home/vagrant/provision
 
-# install_jq
-# install_ansible
-# setup_origin_jenkins
-# overwrite_origin_keypair
-# deploy_factory_prod_jenkins
+setup_origin_jenkins
+overwrite_origin_keypair
+deploy_factory_prod_jenkins
 overwrite_factory_jenkins_keypair
 create_ssh_tunnel
 nomad_server_deploy
