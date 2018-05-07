@@ -101,7 +101,7 @@ tunnel_port=$(perl -e 'print int(rand(999)) + 58000')
 sudo su -s /bin/bash -c "ssh $SSH_OPTS -f -N -M -S \$HOME/ssh-control-socket -L ${tunnel_port}:127.0.0.1:${JENKINS_PORT} vagrant@${factory_ip}" jenkins
 # Nomad server deploy on all server nodes
 echo "waiting for infra-generic-nomad-server-deploy job to finish..."
-JENKINS_BUILD_JOB="infra-generic-nomad-server-deploy" JENKINS_ADDR="http://127.0.0.1:${tunnel_port}" ANSIBLE_EXTRAVARS="{}" ANSIBLE_TARGET="$(for i in $(echo ${server_nodes} | tr ',' ' ');do printf "vagrant@${i},"; done | sed 's/,$//')" ANSIBLE_SCOPE='server' ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_bind_ip':'{{ansible_host|regex_replace('^vagrant@','')}}'}" ./jenkins-query.sh ./common/jobs/build-infra-generic-deploy-job.groovy
+JENKINS_BUILD_JOB="infra-generic-nomad-server-deploy" JENKINS_ADDR="http://127.0.0.1:${tunnel_port}" ANSIBLE_EXTRAVARS="{}" ANSIBLE_TARGET="$(for i in $(echo ${server_nodes} | tr ',' ' ');do printf "vagrant@${i},"; done | sed 's/,$//')" ANSIBLE_SCOPE='server' ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_bind_ip':'{{ansible_host|regex_replace(\'^vagrant@\',\'\')}}'}" ./jenkins-query.sh ./common/jobs/build-infra-generic-deploy-job.groovy
 
 # Joining server cluster members
 for i in $(echo $server_nodes | tr ',' ' '); do
