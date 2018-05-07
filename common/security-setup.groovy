@@ -3,7 +3,7 @@ import hudson.security.csrf.DefaultCrumbIssuer
 import javaposse.jobdsl.plugin.GlobalJobDslSecurityConfiguration
 import jenkins.model.GlobalConfiguration
 
-def instance = Jenkins.get()
+instance = Jenkins.instance
 
 println "Disable CLI over remoting"
 instance.getDescriptor("jenkins.CLI").get().setEnabled(false)
