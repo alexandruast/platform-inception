@@ -1,9 +1,9 @@
 import jenkins.model.Jenkins
 sleep(10000)
 
-def instance = Jenkins.get()
-pm = Jenkins.instance.pluginManager
-uc = Jenkins.instance.updateCenter
+instance = Jenkins.instance
+pm = instance.pluginManager
+uc = instance.updateCenter
 
 Set<String> installPlugins = [
   "build-timeout",
