@@ -18,24 +18,23 @@ ci_origin = {
   :cpus => 1
 }
 
-ci_nodes = [
-  {
-    :hostname => "factory",
-    :ip => "192.168.169.172",
-    :box => box,
-    :memory => 800,
-    :cpus => 2
-  },
-  {
-    :hostname => "prod",
-    :ip => "192.168.169.173",
-    :box => box,
-    :memory => 500,
-    :cpus => 1
-  }
-]
+ci_factory = {
+  :hostname => "factory",
+  :ip => "192.168.169.172",
+  :box => box,
+  :memory => 800,
+  :cpus => 2
+}
 
-server_nodes = [
+ci_prod = {
+  :hostname => "prod",
+  :ip => "192.168.169.173",
+  :box => box,
+  :memory => 500,
+  :cpus => 1
+}
+
+nomad_servers = [
   {
     :hostname => "server1",
     :ip => "192.168.169.181",
@@ -131,7 +130,7 @@ SCRIPT
 
 Vagrant.configure(2) do |config|
   
-  ci_nodes.each do |machine|
+  [ci_factory,ci_prod].each do |machine|
     config.vm.define machine[:hostname] do |node|
       node.vm.box = machine[:box]
       node.vm.hostname = machine[:hostname]
@@ -141,6 +140,7 @@ Vagrant.configure(2) do |config|
         vb.cpus = machine[:cpus]
       end  
       node.vm.network "private_network", ip: machine[:ip]
+      node.vm.provision "shell", path: "./extras/sandbox-ssh-key.sh", privileged: false
       node.vm.provision "shell", inline: bootstrap, privileged: false
       node.trigger.before :destroy do
         begin
@@ -152,7 +152,7 @@ Vagrant.configure(2) do |config|
     end
   end
   
-  server_nodes.each do |machine|
+  nomad_servers.each do |machine|
     config.vm.define machine[:hostname] do |node|
       node.vm.box = machine[:box]
       node.vm.hostname = machine[:hostname]
@@ -162,6 +162,7 @@ Vagrant.configure(2) do |config|
         vb.cpus = machine[:cpus]
       end  
       node.vm.network "private_network", ip: machine[:ip]
+      node.vm.provision "shell", path: "./extras/sandbox-ssh-key.sh", privileged: false
       node.vm.provision "shell", inline: bootstrap, privileged: false
       node.trigger.before :destroy do
         begin
@@ -183,6 +184,7 @@ Vagrant.configure(2) do |config|
         vb.cpus = machine[:cpus]
       end  
       node.vm.network "private_network", ip: machine[:ip]
+      node.vm.provision "shell", path: "./extras/sandbox-ssh-key.sh", privileged: false
       node.vm.provision "shell", inline: bootstrap, privileged: false
       node.trigger.before :destroy do
         begin
@@ -203,6 +205,7 @@ Vagrant.configure(2) do |config|
         vb.cpus = ci_origin[:cpus]
     end
     node.vm.network "private_network", ip: ci_origin[:ip]
+    node.vm.provision "shell", path: "./extras/sandbox-ssh-key.sh", privileged: false
     node.vm.provision "shell", inline: "rm -fr /home/vagrant/provision", privileged: false
     node.vm.provision "file", source: "./", destination: "/home/vagrant/provision"
     node.vm.provision "shell", inline: bootstrap, privileged: false
@@ -212,8 +215,9 @@ Vagrant.configure(2) do |config|
       s.args = [
         ci_admin_pass,
         ci_origin.to_json.to_s,
-        ci_nodes.to_json.to_s,
-        server_nodes.to_json.to_s,
+        ci_factory.to_json.to_s,
+        ci_prod.to_json.to_s,
+        nomad_servers.to_json.to_s,
         compute_nodes.to_json.to_s
       ]
     end
@@ -223,8 +227,9 @@ Vagrant.configure(2) do |config|
       s.args = [
         ci_admin_pass,
         ci_origin.to_json.to_s,
-        ci_nodes.to_json.to_s,
-        server_nodes.to_json.to_s
+        ci_factory.to_json.to_s,
+        ci_prod.to_json.to_s,
+        nomad_servers.to_json.to_s
       ]
     end
     node.trigger.before :destroy do

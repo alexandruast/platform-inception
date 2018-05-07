@@ -2,6 +2,8 @@
 set -eEo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
+exit 0
+
 ci_admin_pass=$1
 ci_origin_json=$2
 ci_nodes_json=$3

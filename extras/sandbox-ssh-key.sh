@@ -1,3 +1,9 @@
+#!/usr/bin/env bash
+# Copy the bundled key to all machines - For Demo/Sandbox purposes only!
+set -eEo pipefail
+trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
+
+SANDBOX_PEM="$(cat <<EOF
 -----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEA5WaoYTGBXzQw77QiKHUUtR4Xt3bspwKnKp1/MC8LPz/7yKBi
 +zPk4abi4HE7X6hQ5NgNYRADLDSdgUmU6Bs5rd1q976dGBXRjYbOZUk14ChEDtrS
@@ -25,3 +31,15 @@ hQuCpQKBgQDeF9ImA1i7AvVf8v5lccQLlSfeQ/+cUqiRHPhDdVi0c7KO349cWRwC
 3tyGQGjm77jDGScosSSHiBAieDkVm/rTyw/gAazpWfR3O70X2naM9dlk8Sshv435
 9ZknpCOdrcUI/SXiuHyHtGL6GtIuhreUAcjsOJqXlf+n+nvOZZc1zw==
 -----END RSA PRIVATE KEY-----
+EOF
+)"
+
+mkdir -p "$HOME/.ssh/"
+echo "${SANDBOX_PEM}" > "$HOME/.ssh/id_rsa"
+chmod 600 "$HOME/.ssh/id_rsa"
+echo "$(ssh-keygen -y -f "$HOME/.ssh/id_rsa") ansible-sandbox" > $HOME/.ssh/id_rsa.pub
+SANDBOX_PUBLIC_KEY="$(cat $HOME/.ssh/id_rsa.pub)"
+if ! grep "${SANDBOX_PUBLIC_KEY}" "$HOME/.ssh/authorized_keys" > /dev/null 2>&1; then
+  mkdir -p "$HOME/.ssh"
+  echo "${SANDBOX_PUBLIC_KEY}" >> "$HOME/.ssh/authorized_keys"
+fi
