@@ -11,8 +11,5 @@
     name: "rsyslog"
     state: restarted
   become: true
-<<<<<<< HEAD
   when: rsyslog_config is changed
-=======
-  when: rsyslog_config is changed
->>>>>>> devel
+
