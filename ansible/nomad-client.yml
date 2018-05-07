@@ -1,0 +1,10 @@
+- hosts: all
+  gather_facts: no
+  serial: "{{serial_value|default(1)}}"
+
+  roles:
+    - role: alive
+    - role: gather-facts
+    - role: check-sudo
+    - role: nomad
+      service_mode: client

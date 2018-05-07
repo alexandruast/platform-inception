@@ -20,13 +20,13 @@
 - name: "waiting for connection"
   wait_for_connection:
     timeout: "{{ssh_connect_timeout}}"
-  when: machine_reboot is defined and machine_reboot|changed
+  when: machine_reboot is defined and machine_reboot is changed
 
 - name: "start services"
-  service:
+  systemd:
     name: "{{item}}"
     state: started
   become: true
   with_items:
     - "{{start_services|default([])}}"
-  when: machine_reboot is defined and machine_reboot|changed
+  when: machine_reboot is defined and machine_reboot is changed

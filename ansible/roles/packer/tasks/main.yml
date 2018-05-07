@@ -1,0 +1,7 @@
+- name: "service binaries downloaded and installed"
+  unarchive:
+    src:  https://releases.hashicorp.com/{{service_name}}/{{service_version}}/{{service_name}}_{{service_version}}_linux_amd64.zip
+    dest: /usr/local/bin/
+    mode: +x
+    remote_src: yes
+  become: true

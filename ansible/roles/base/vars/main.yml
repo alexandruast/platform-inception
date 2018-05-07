@@ -1,5 +1,5 @@
 etc_profile_vars:
-  - { key: "PATH", value: "/usr/local/bin:$PATH" }
+  - { key: "FOO", value: "BAR" }
 
 pam_limits:
   - domain: '*'

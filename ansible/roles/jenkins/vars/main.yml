@@ -4,7 +4,7 @@ jenkins_war:       /usr/local/share/jenkins.war
 jenkins_user_home: /home/jenkins
 
 service_name:      jenkins
-service_version:   2.108
+service_version:   2.120
 service_user:      "{{service_name}}"
 service_group:     "{{service_name}}"
 service_data_dir:  "/usr/local/share/{{service_name}}"

@@ -9,6 +9,13 @@
     - role: ansible
     - role: docker
     - role: docker-compose
+    - role: terraform
+    - role: terragrunt
+    - role: packer
+    - role: mo
+    - role: jq
+    - role: pumba
+    - role: java8-openjdk
     - role: jenkins
     - role: user-ssh-key
       run_as: jenkins

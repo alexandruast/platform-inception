@@ -2,7 +2,7 @@ nomad() {
   NOMAD_BINARY=$(which nomad)
   NOMAD_ADDR=${NOMAD_ADDR:-http://127.0.0.1:4646}
   case $1 in
-    st) shift; $NOMAD_BINARY status ;;
+    st) shift; $NOMAD_BINARY status "$@" ;;
     ns) shift; $NOMAD_BINARY server-members; $NOMAD_BINARY node-status ;;
     as) shift; $NOMAD_BINARY alloc-status "$@" ;;
     jn)

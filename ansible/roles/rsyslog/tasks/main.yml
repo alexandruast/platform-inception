@@ -7,8 +7,8 @@
   register: rsyslog_config
 
 - name: "service restarted"
-  service:
+  systemd:
     name: "rsyslog"
     state: restarted
   become: true
-  when: rsyslog_config|changed
+  when: rsyslog_config is changed

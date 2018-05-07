@@ -1,96 +1,151 @@
 #!/usr/bin/env bash
+# This script tries to emulate a flow that's normally done from an operations workstation
+# This server is also the Origin-Jenkins
 set -eEo pipefail
-trap '{ RC=$?; echo "[error] exit code $RC running $(eval echo $BASH_COMMAND)"; exit $RC; }'  ERR
-SSH_OPTS='-o LogLevel=quiet -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
+trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
+SSH_CONTROL_SOCKET="/tmp/ssh-control-socket-$(uuidgen)"
+trap 'sudo ssh -S "${SSH_CONTROL_SOCKET}" -O exit vagrant@${!ip_addr_var:-192.0.2.255}' EXIT
+
+SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
+
+setup_origin_jenkins() {
+scope='origin'
+# shellcheck source=origin/.scope
+source "${scope}/.scope"
+export JENKINS_ADMIN_PASS="${ci_admin_pass}"
+export JENKINS_ADDR="http://${origin_jenkins_ip}:${JENKINS_PORT}"
+# dnsmasq to resolve everything using google dns and forward .consul
+ANSIBLE_TARGET="127.0.0.1" \
+  ANSIBLE_EXTRAVARS="{'dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4']}" \
+  ./apl-wrapper.sh ansible/target-${scope}-jenkins.yml
+# Running Jenkins setup script
+./jenkins-setup.sh
+echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
+JENKINS_BUILD_JOB=system-${scope}-job-seed \
+  ./jenkins-query.sh \
+  ./common/jobs/build-simple-job.groovy
+}
+
+deploy_factory_prod_jenkins() {
+  for scope in factory prod; do
+    ip_addr_var="${scope}_jenkins_ip"
+    # shellcheck source=origin/.scope
+    source "${scope}/.scope"
+    export JENKINS_ADMIN_PASS="${ci_admin_pass}"
+    export JENKINS_ADDR="http://${origin_jenkins_ip}:${JENKINS_PORT}"
+    echo "waiting for ${scope}-jenkins-deploy job to finish..."
+    JENKINS_BUILD_JOB="${scope}-jenkins-deploy" \
+      ANSIBLE_TARGET="vagrant@${!ip_addr_var}" \
+      JENKINS_SCOPE="${scope}" \
+      ./jenkins-query.sh \
+      ./common/jobs/build-jenkins-deploy-job.groovy
+    echo "${scope}-jenkins is online: http://${!ip_addr_var}:${JENKINS_PORT} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
+  done
+}
+
+# Running infra-generic-nomad-server-deploy job on Factory-Jenkins
+nomad_server_deploy() {
+  echo "waiting for infra-generic-nomad-server-deploy job to finish..."
+  JENKINS_BUILD_JOB="infra-generic-nomad-server-deploy" \
+    JENKINS_ADDR="http://127.0.0.1:${tunnel_port}" \
+    JENKINS_ADMIN_PASS="${ci_admin_pass}" \
+    ANSIBLE_TARGET="$(echo ${server_nodes_json} | jq -r .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')" \
+    ANSIBLE_SCOPE='server' \
+    ANSIBLE_EXTRAVARS="{'ansible_user':'vagrant','service_bind_ip':'{{ansible_host}}'}" \
+    ./jenkins-query.sh ./common/jobs/build-infra-generic-deploy-job.groovy  
+}
+
+# Running infra-generic-vault-server-deploy job on Factory-Jenkins
+vault_server_deploy() {
+  echo "waiting for infra-generic-vault-server-deploy job to finish..."
+  JENKINS_BUILD_JOB="infra-generic-vault-server-deploy" \
+    JENKINS_ADDR="http://127.0.0.1:${tunnel_port}" \
+    JENKINS_ADMIN_PASS="${ci_admin_pass}" \
+    ANSIBLE_TARGET="${server1_ip}" \
+    ANSIBLE_SCOPE='server' \
+    ANSIBLE_EXTRAVARS="{'ansible_user':'vagrant'}" \
+    ./jenkins-query.sh ./common/jobs/build-infra-generic-deploy-job.groovy
+}
+
+# Running infra-generic-nomad-compute-deploy job on Factory-Jenkins
+nomad_compute_deploy() {
+  echo "waiting for infra-generic-nomad-compute-deploy job to finish..."
+  JENKINS_BUILD_JOB="infra-generic-nomad-compute-deploy" \
+    JENKINS_ADDR="http://127.0.0.1:${tunnel_port}" \
+    JENKINS_ADMIN_PASS="${ci_admin_pass}" \
+    ANSIBLE_SCOPE='compute' \
+    ANSIBLE_TARGET="$(echo ${compute_nodes_json} | jq -r .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')" \
+    ANSIBLE_EXTRAVARS="{'ansible_user':'vagrant'}" \
+    ANSIBLE_EXTRAVARS="{'ansible_user':'vagrant','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'service_bind_ip':'{{ansible_host}}'}" \
+    ./jenkins-query.sh ./common/jobs/build-infra-generic-deploy-job.groovy
+}
+
+# Establishes SSH tunnel to Factory-Jenkins
+create_ssh_tunnel() {
+  scope="factory"
+  ip_addr_var="${scope}_jenkins_ip"
+  # shellcheck source=factory/.scope
+  source "${scope}/.scope"
+  tunnel_port="$(perl -e 'print int(rand(999)) + 58000')"
+  sudo su -s /bin/bash -c "ssh ${SSH_OPTS} -f -N -M -S  ${SSH_CONTROL_SOCKET} -L ${tunnel_port}:127.0.0.1:${JENKINS_PORT} vagrant@${!ip_addr_var}" jenkins
+}
+
+# Joining consul/nomad server cluster members
+join_cluster_members() {
+  ssh ${SSH_OPTS} ${server1_ip} "consul join ${server2_ip}"
+  ssh ${SSH_OPTS} ${server1_ip} "NOMAD_ADDR=http://${server1_ip}:4646 nomad server-join ${server2_ip}"
+}
+
+install_jq() {
+  sudo curl -LSs https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -o /usr/local/bin/jq \
+  && sudo chmod +x /usr/local/bin/jq
+}
+
+install_ansible() {
+  sudo cp provision/extras/epel-release.repo /etc/yum.repos.d/
+  sudo yum -q -y install ansible
+}
+
+# Overwrites Origin-Jenkins ssh key pair, created by Ansible in previous steps
+overwrite_origin_keypair() {
+  cat /home/vagrant/.ssh/id_rsa | sudo tee /home/jenkins/.ssh/id_rsa >/dev/null
+  ssh-keygen -y -f "$HOME/.ssh/id_rsa" | sudo tee /home/jenkins/.ssh/id_rsa.pub >/dev/null
+}
+
+# Overwrites Factory/Prod-Jenkins ssh key pair, created by Ansible in previous steps
+overwrite_factory_jenkins_keypair() {
+  for scope in factory prod; do
+    ip_addr_var="${scope}_jenkins_ip"
+    cat /home/vagrant/.ssh/id_rsa | ssh ${SSH_OPTS} ${!ip_addr_var} sudo tee /home/jenkins/.ssh/id_rsa >/dev/null
+    ssh-keygen -y -f "$HOME/.ssh/id_rsa" | ssh ${SSH_OPTS} ${!ip_addr_var} sudo tee /home/jenkins/.ssh/id_rsa.pub >/dev/null
+  done
+}
 
 ci_admin_pass=$1
 ci_origin_json=$2
-ci_nodes_json=$3
-server_nodes_json=$4
-compute_nodes_json=$5
+ci_factory_json=$3
+ci_prod_json=$4
+server_nodes_json=$5
+compute_nodes_json=$6
 
-sudo yum -q -y update
-mkdir -p $HOME/.ssh/
-cp provision/extras/ansible-sandbox.pem /home/vagrant/.ssh/id_rsa
-chmod 600 /home/vagrant/.ssh/id_rsa
-echo "$(ssh-keygen -y -f /home/vagrant/.ssh/id_rsa) ansible-sandbox" > /home/vagrant/.ssh/id_rsa.pub
-sudo cp provision/extras/epel-release.repo /etc/yum.repos.d/
-sudo yum -q -y install ansible
+install_jq
+install_ansible
 
-cd /home/vagrant/provision
-ANSIBLE_TARGET="127.0.0.1" ./apl-wrapper.sh ansible/base.yml
-
+origin_jenkins_ip="$(echo ${ci_origin_json} | jq -r .ip)"
+factory_jenkins_ip="$(echo ${ci_factory_json} | jq -r .ip)"
+prod_jenkins_ip="$(echo ${ci_prod_json} | jq -r .ip)"
 server1_ip="$(echo ${server_nodes_json} | jq -r .[0].ip)"
 server2_ip="$(echo ${server_nodes_json} | jq -r .[1].ip)"
 
-ANSIBLE_TARGET="127.0.0.1" ANSIBLE_EXTRAVARS="{'authorized_keys':[{'user':'vagrant','file':'/home/vagrant/.ssh/id_rsa.pub'}]}" ./apl-wrapper.sh ansible/authorized-keys.yml
-ANSIBLE_TARGET="127.0.0.1" ANSIBLE_EXTRAVARS="{'dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true}" ./apl-wrapper.sh ansible/dnsmasq.yml
-ANSIBLE_TARGET="127.0.0.1" ./apl-wrapper.sh ansible/hashicorp-tools.yml
+cd /home/vagrant/provision
 
-scope='origin'
-# shellcheck source=origin/.scope
-source ${scope}/.scope
-export JENKINS_ADMIN_PASS=$ci_admin_pass
-server_ip="$(echo ${ci_origin_json} | jq -r .ip)"
-export JENKINS_ADDR=http://${server_ip}:${JENKINS_PORT}
-ANSIBLE_TARGET='127.0.0.1' ./apl-wrapper.sh ansible/jenkins.yml
-./jenkins-setup.sh
+setup_origin_jenkins
+overwrite_origin_keypair
+deploy_factory_prod_jenkins
+overwrite_factory_jenkins_keypair
+create_ssh_tunnel
+nomad_server_deploy
+join_cluster_members
+vault_server_deploy
+nomad_compute_deploy
 
-echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
-JENKINS_BUILD_JOB=system-${scope}-job-seed ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
-
-origin_key=$(sudo su -s /bin/bash -c 'cat $HOME/.ssh/id_rsa.pub' jenkins)
-for scope in factory prod; do
-  echo "waiting for ${scope}-jenkins-deploy to finish..."
-  chmod 600 .vagrant/machines/${scope}/virtualbox/private_key
-  server_ip="$(echo ${ci_nodes_json} | jq --arg hostname "$scope" '.[] | select(.hostname==$hostname)' | jq -re .ip)"
-  ssh $SSH_OPTS -i .vagrant/machines/${scope}/virtualbox/private_key ${server_ip} "if ! grep \"$origin_key\" \$HOME/.ssh/authorized_keys > /dev/null 2>&1; then mkdir -p \$HOME/.ssh; echo $origin_key >> \$HOME/.ssh/authorized_keys; fi"
-  sudo su -s /bin/bash -c "ssh $SSH_OPTS $(whoami)@${server_ip}" jenkins
-  JENKINS_SCOPE=${scope} ANSIBLE_TARGET=vagrant@${server_ip} JENKINS_BUILD_JOB=${scope}-jenkins-deploy ./jenkins-query.sh ./common/jobs/build-jenkins-deploy-job.groovy
-done
-
-server_nodes="$(echo ${server_nodes_json} | jq -re .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')"
-compute_nodes="$(echo ${compute_nodes_json} | jq -re .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')"
-all_nodes="${server_nodes},${compute_nodes}"
-
-concat_json="$(echo ${server_nodes_json} | sed -e 's/]$/,/')$(echo ${compute_nodes_json} | sed -e 's/^\[//')"
-echo $concat_json
-
-nodes_count="$(echo $concat_json | jq -re .[].ip | wc -l)"
-nodes_count=$((nodes_count - 1))
-
-if [ "${nodes_count}" -le 0 ]; then
-  echo "[error] nodes_count:${nodes_count}"
-  exit 1
-fi
-
-key="$(cat /home/vagrant/.ssh/id_rsa.pub)"
-
-for i in $(seq 0 $nodes_count); do
-  hostname="$(echo $concat_json | jq -re .[$i].hostname)"
-  ip="$(echo $concat_json | jq -re .[$i].ip)"
-  chmod 600 .vagrant/machines/${hostname}/virtualbox/private_key
-  ssh $SSH_OPTS -i .vagrant/machines/${hostname}/virtualbox/private_key ${ip} "if ! grep \"$key\" \$HOME/.ssh/authorized_keys > /dev/null 2>&1; then mkdir -p \$HOME/.ssh; echo $key >> \$HOME/.ssh/authorized_keys; fi"
-  ssh $SSH_OPTS $ip
-done
-
-ANSIBLE_TARGET=${all_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%'}" ./apl-wrapper.sh ansible/base.yml
-ANSIBLE_TARGET=${all_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','authorized_keys':[{'user':'vagrant','file':'/home/vagrant/.ssh/id_rsa.pub'}]}" ./apl-wrapper.sh ansible/authorized-keys.yml
-
-ANSIBLE_TARGET=${server_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','dns_servers':['/consul/127.0.0.1#8600','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true}" ./apl-wrapper.sh ansible/dnsmasq.yml
-ANSIBLE_TARGET=${server_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_mode':'server','service_bind_ip':'{{ansible_host}}'}" ./apl-wrapper.sh ansible/consul.yml
-ANSIBLE_TARGET=${server_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_mode':'server','service_bind_ip':'{{ansible_host}}'}" ./apl-wrapper.sh ansible/nomad.yml
-
-for i in $(echo $server_nodes | tr ',' ' '); do
-  if [ "$i" != "$server1_ip" ]; then
-    ssh $SSH_OPTS $i "consul join ${server1_ip}"
-    ssh $SSH_OPTS $i "NOMAD_ADDR=http://${i}:4646 nomad server-join ${server1_ip}"
-  fi
-done
-
-ANSIBLE_TARGET=${server1_ip} ./apl-wrapper.sh ansible/vault.yml
-VAULT_ADDR="http://${server1_ip}:8200" CONSUL_HTTP_ADDR="http://${server1_ip}:8500" ./extras/vault-demo.sh
-
-ANSIBLE_TARGET=${compute_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'dnsmasq_supersede':true}" ./apl-wrapper.sh ansible/dnsmasq.yml
-ANSIBLE_TARGET=${compute_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_mode':'client','service_bind_ip': '{{ansible_host}}'}" ./apl-wrapper.sh ansible/consul.yml
-ANSIBLE_TARGET=${compute_nodes} ANSIBLE_EXTRAVARS="{'serial_value':'100%','service_mode':'client','service_bind_ip': '{{ansible_host}}'}" ./apl-wrapper.sh ansible/nomad.yml

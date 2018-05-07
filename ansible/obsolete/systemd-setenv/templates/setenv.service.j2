@@ -1,0 +1,11 @@
+[Unit]
+Description=Set variables in global systemd environment
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/bash -c "/usr/bin/systemctl set-environment {% for var in systemctl_environment %}{{var.key}}={{var.value}} {% endfor %}"
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

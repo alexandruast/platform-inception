@@ -1,4 +1,4 @@
-- name: "ensure docker-compose is installed"
+- name: "docker-compose downloaded and installed"
   get_url:
     url:  "https://github.com/docker/compose/releases/download/1.19.0/docker-compose-Linux-x86_64"
     dest: "/usr/local/bin/docker-compose"

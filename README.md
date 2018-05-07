@@ -22,7 +22,7 @@ Origin-Jenkins is then used to provision Factory-Jenkins and Prod-Jenkins, and i
 Because it has root access to Origin-Prod, it should be an air-gapped, single purpose instance and only started and connected to network when needed.  
 Factory-Jenkins creates and manages all non-prod environments, where things get produced (Factory).  
 Prod-Jenkins creates and manages all prod environments, where things get deployed to public (Prod).  
-Sandbox infrastructure is provisioned via ansible from origin shell.
+Sandbox infrastructure is provisioned from Factory-Jenkins.
 
 #### Misc
 ```

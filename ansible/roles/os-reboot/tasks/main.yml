@@ -1,0 +1,10 @@
+- name: "machine reboot"
+  shell: sleep 4 && shutdown -r now 'Reboot triggered by Ansible'
+  async: 1
+  poll: 0
+  register: machine_reboot
+  become: true
+
+- name: "waiting for connection"
+  wait_for_connection:
+    timeout: "{{ssh_connect_timeout}}"

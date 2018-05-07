@@ -22,21 +22,23 @@
     - "{{user_dirs}}"
 
 - name: "base packages present"
-  yum:
+  package:
     name: "{{item}}"
     state: present
   become: true
   with_items:
     - "{{base_packages}}"
 
-- name: "hostname present in /etc/hosts"
+- name: "/etc/profile variables set"
   lineinfile:
-    dest: /etc/hosts
-    regexp: "^{{ansible_default_ipv4.address}}"
-    line: "{{ansible_default_ipv4.address}} {{ansible_fqdn}} {{ansible_hostname}}"
+    insertbefore: EOF
     state: present
-    backup: yes
+    regexp: "^export {{item.key}}="
+    line: "export {{item.key}}={{item.value}}"
+    dest: /etc/profile
   become: true
+  with_items:
+    - "{{etc_profile_vars}}"
 
 - name: "pam limits set"
   pam_limits:
@@ -58,8 +60,15 @@
   with_items:
     - "{{sysctl_entries}}"
 
+- name: "cron entries updated"
+  copy:
+    src: "{{item}}"
+    dest: "/etc/cron.d/"
+  with_fileglob: "{{role_path}}/files/etc/cron.d/*"
+  become: true
+
 - name: "unneeded services disabled and stopped"
-  service:
+  systemd:
     name: "{{item}}"
     enabled: no
     state: stopped
@@ -69,7 +78,7 @@
     - "{{disabled_services}}"
 
 - name: "base services enabled and started"
-  service:
+  systemd:
     name: "{{item}}"
     enabled: yes
     masked: no
@@ -77,3 +86,5 @@
   become: true
   with_items:
     - "{{base_services}}"
+
+

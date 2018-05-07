@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
-# Warning: this script is NOT POSIX compliant, and was never meant to be!
 # This script provides a convenient wrapper over ansible-playbook command
 set -eEo pipefail
-trap '{ RC=$?; echo "[error] exit code $RC running $(eval echo $BASH_COMMAND)"; exit $RC; }'  ERR
+trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
 readonly ANSIBLE_TAGS_DEFAULT='all'
 readonly ANSIBLE_PORT_DEFAULT=22
@@ -20,19 +19,20 @@ EOF
 }
 
 if [[ $# -lt 1 ]];then usage;exit 1; fi
-while getopts i:j:t: opt; do
+while getopts i:j:t:e:c: opt; do
   case $opt in
-    e) ANSIBLE_EXTRAVARS=${OPTARG};;
     i) ANSIBLE_TARGET=${OPTARG};;
     j) ANSIBLE_JUMPHOST=${OPTARG};;
     t) ANSIBLE_TAGS=${OPTARG};;
+    e) ANSIBLE_EXTRAVARS=${OPTARG};;
   esac
 done && shift $((OPTIND -1))
 if [[ $# -gt 1 ]];then usage;exit 1; fi
 readonly ANSIBLE_PLAYBOOK=$1
 readonly ANSIBLE_TAGS=${ANSIBLE_TAGS:-${ANSIBLE_TAGS_DEFAULT}}
 readonly ANSIBLE_PORT=${ANSIBLE_PORT:-${ANSIBLE_PORT_DEFAULT}}
-readonly ANSIBLE_EXTRAVARS=${ANSIBLE_EXTRAVARS:-dummy_foo=bar}
+readonly ANSIBLE_EXTRAVARS=${ANSIBLE_EXTRAVARS:-foo=bar}
+readonly ANSIBLE_CHECK_MODE=${ANSIBLE_CHECK_MODE:-false}
 readonly ANSIBLE_TARGET=${ANSIBLE_TARGET}
 readonly ANSIBLE_JUMPHOST=${ANSIBLE_JUMPHOST:-none}
 readonly ANSIBLE_DIR=$(dirname $ANSIBLE_PLAYBOOK)
@@ -48,10 +48,10 @@ esac
 
 case "${ANSIBLE_JUMPHOST}" in
   none)
-    connect_args=(${connect_args[@]} "--ssh-common-args='-o ForwardAgent=yes'")
+    connect_args=(${connect_args[@]} "--ssh-common-args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ForwardAgent=yes'")
     ;;
   *)
-    connect_args=(${connect_args[@]} "--ssh-common-args='-o ForwardAgent=yes -o ProxyCommand=\"ssh -W %h:%p -q ${ANSIBLE_JUMPHOST}\"'")
+    connect_args=(${connect_args[@]} "--ssh-common-args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ForwardAgent=yes -o ProxyCommand=\"ssh -W %h:%p -q ${ANSIBLE_JUMPHOST}\"'")
     ;;
 esac
 

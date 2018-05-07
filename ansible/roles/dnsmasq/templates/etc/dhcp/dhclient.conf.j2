@@ -1,6 +1,8 @@
 timeout 300;
+{% if dnsmasq_supersede is defined %}
 {% if dnsmasq_supersede %}
 supersede domain-name-servers 127.0.0.1;
 {% else %}
 prepend domain-name-servers 127.0.0.1;
+{% endif %}
 {% endif %}

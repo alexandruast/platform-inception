@@ -21,8 +21,9 @@ base_packages:
   - yum-utils
 
 base_services:
-  - ntpd
+  - chronyd
   - NetworkManager
 
 disabled_services:
+  - ntpd
   - firewalld

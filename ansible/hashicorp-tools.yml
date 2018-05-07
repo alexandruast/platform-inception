@@ -3,4 +3,13 @@
   serial: "{{serial_value|default(1)}}"
 
   roles:
-    - role: hashicorp-tools
+    - role: alive
+    - role: consul
+      service_install: false
+    - role: nomad
+      service_install: false
+    - role: vault
+      service_install: false
+    - role: packer
+    - role: terraform
+    - role: terragrunt

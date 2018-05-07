@@ -1,8 +1,8 @@
-- name: "ensure pumba is installed"
+- name: "pumba is downloaded and installed"
   get_url:
-    url:  https://github.com/gaia-adm/pumba/releases/download/0.4.7/pumba_linux_amd64
+    url:  https://github.com/gaia-adm/pumba/releases/download/0.4.8/pumba_linux_amd64
     dest: /usr/local/bin/pumba
-    force: no
+    force: "{{download_force}}"
     mode: +x
   become: true
 

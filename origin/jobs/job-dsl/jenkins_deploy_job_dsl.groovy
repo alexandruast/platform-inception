@@ -9,7 +9,7 @@ scopes.each { scope ->
     keepDependencies(false)
     parameters {
       nonStoredPasswordParam('JENKINS_ADMIN_PASS', "Password for ${scope} Jenkins admin user")
-      stringParam('ANSIBLE_TARGET', null, "Optional: override $scope ANSIBLE_TARGET")
+      stringParam('ANSIBLE_TARGET', "user@192.0.2.255", "Which target to use")
       choiceParam('JENKINS_SCOPE', ["$scope"], "Running in $scope scope only!")
     }
     definition {
