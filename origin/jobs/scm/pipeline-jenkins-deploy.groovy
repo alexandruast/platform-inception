@@ -14,7 +14,8 @@ node {
           SSH_USER=$(echo "${ANSIBLE_EXTRAVARS}" | tr "'" '"' | jq -r .ansible_user)
           if [[ "${SSH_USER}" != "" ]]; then
             SSH_TARGET="${SSH_USER}@${ANSIBLE_TARGET}"
-          fi
+          else
+            SSH_TARGET="${ANSIBLE_TARGET}"
         fi
         echo "SSH_TARGET=${SSH_TARGET}" >> .jenkins_env
       '''

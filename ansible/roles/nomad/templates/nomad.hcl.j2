@@ -21,7 +21,9 @@ server {
 client {
   enabled = true
   meta {
-    foo = "bar"
+    {% for key, value in service_meta.iteritems() %}
+    {{key}} = "{{value}}"
+    {% endfor %}
   }
 }
 {% endif %}
