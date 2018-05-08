@@ -24,7 +24,7 @@
     dest: "{{jenkins_war}}"
     owner: "{{service_user}}"
     group: "{{service_group}}"
-    force: "{{download_force}}"
+    force: "{{download_force|default(false)}}"
   become: true
 
 - name: "systemd service config updated"

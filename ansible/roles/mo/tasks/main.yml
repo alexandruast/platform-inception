@@ -2,7 +2,7 @@
   get_url:
     url:  https://raw.githubusercontent.com/tests-always-included/mo/master/mo
     dest: /usr/local/bin/mo
-    force: "{{download_force}}"
+    force: "{{download_force|default(false)}}"
     mode: +x
   become: true
 

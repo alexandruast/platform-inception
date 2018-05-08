@@ -10,19 +10,3 @@ user_ssh_key: "$HOME/.ssh/id_rsa"
 
 service_init_conf: service-systemd.j2
 
-# ansible force option on get_url
-download_force: no
-
-# install additional package repositories
-repos_enabled: yes
-
-# all targets will run in parallel
-serial_value: "100%"
-
-# to replace default dns in resolv.conf with dnsmasq
-dnsmasq_supersede: no
-
-# dnsmasq dns servers to use
-dns_servers:
-  - "8.8.8.8"
-  - "8.8.4.4"

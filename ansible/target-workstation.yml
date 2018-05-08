@@ -11,6 +11,7 @@
     - role: dnsmasq
       dnsmasq_supersede: yes
       dns_servers:
+        - "/consul/127.0.0.1#8600"
         - "8.8.8.8"
         - "8.8.4.4"
     - role: ansible
