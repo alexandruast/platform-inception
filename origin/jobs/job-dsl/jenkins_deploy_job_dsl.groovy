@@ -10,8 +10,8 @@ scopes.each { scope ->
     parameters {
       nonStoredPasswordParam('JENKINS_ADMIN_PASS', "Password for ${scope} Jenkins admin user")
       stringParam('ANSIBLE_TARGET', "user@192.0.2.255", "Which target to use")
-      choiceParam('JENKINS_SCOPE', ["$scope"], "Running in $scope scope only!")
-      stringParam('ANSIBLE_EXTRAVARS', "{'foo':'bar'}", "Optional: use extravars(single line JSON string only!)")
+      choiceParam('JENKINS_SCOPE', ["$scope"], "Running in $scope scope")
+      stringParam('ANSIBLE_EXTRAVARS', "{'foo':'bar'}", "Optional: JSON format single line, single quoutes")
     }
     definition {
       cpsScm {
