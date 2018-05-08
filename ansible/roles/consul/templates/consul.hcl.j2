@@ -4,7 +4,7 @@ client_addr = "0.0.0.0"
 bind_addr= "{{service_bind_ip}}"
 {% endif %}
 {% else %}
-bind_addr= "{%raw%}{{ GetAllInterfaces | attr \"address\" }}{%endraw%}"
+bind_addr= "{%raw%}{{ GetPrivateIP }}{%endraw%}"
 {% endif %}
 log_level = "DEBUG"
 data_dir = "{{service_data_dir}}"
