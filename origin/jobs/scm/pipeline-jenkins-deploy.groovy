@@ -16,6 +16,7 @@ node {
             SSH_TARGET="${SSH_USER}@${ANSIBLE_TARGET}"
           else
             SSH_TARGET="${ANSIBLE_TARGET}"
+          fi
         fi
         pwd
         echo "SSH_TARGET=${SSH_TARGET}" >> .jenkins_env
