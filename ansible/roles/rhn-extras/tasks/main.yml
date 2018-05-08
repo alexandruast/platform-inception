@@ -3,4 +3,4 @@
     shell: "subscription-manager repos --enable={{rhel_extras_repo}}"
     become: true
     changed_when: false
-  when: when: repos_enabled is defined and repos_enabled
+  when: repos_enabled is defined and repos_enabled
