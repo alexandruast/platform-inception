@@ -56,12 +56,6 @@
     become: true
     register: service_config
 
-  - name: "shell profile scripts are in place"
-    copy:
-      src: "{{item}}"
-      dest: "{{ansible_env.HOME}}/profile.d/"
-    with_fileglob: "{{role_path}}/files/profile.d/*"
-
   - name: "user belongs to docker groups"
     user:
       name: "{{service_user}}"

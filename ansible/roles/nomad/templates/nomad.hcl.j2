@@ -1,3 +1,4 @@
+#jinja2: lstrip_blocks: True
 bind_addr= "0.0.0.0"
 {% if service_bind_ip is defined %}
 {% if service_bind_ip %}
@@ -21,7 +22,9 @@ server {
 client {
   enabled = true
   meta {
-    foo = "bar"
+    {% for key, value in service_meta.iteritems() %}
+    {{key}} = "{{value}}"
+    {% endfor %}
   }
 }
 {% endif %}

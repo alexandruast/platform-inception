@@ -2,6 +2,9 @@
   gather_facts: no
   serial: "{{serial_value|default(1)}}"
 
+  vars:
+    - repos_enabled: true
+
   roles:
     - role: alive
     - role: gather-facts

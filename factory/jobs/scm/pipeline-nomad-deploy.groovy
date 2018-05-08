@@ -3,6 +3,7 @@ node {
     sh '''
       [ x"${ANSIBLE_TARGET}" != 'x' ]
       [ x"${ANSIBLE_SCOPE}" != 'x' ]
+      echo "ANSIBLE_EXTRAVARS=${ANSIBLE_EXTRAVARS}"
     '''
   }
   stage('prepare') {

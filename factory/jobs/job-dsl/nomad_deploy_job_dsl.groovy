@@ -8,8 +8,8 @@ scopes.each { scope ->
     keepDependencies(false)
     parameters {
       stringParam('ANSIBLE_TARGET', "user@192.0.2.255", "Which targets to use")
-      choiceParam('ANSIBLE_SCOPE', ["$scope"], "Running in $scope scope only!")
-      stringParam('ANSIBLE_EXTRAVARS', "{'foo':'bar'}", "Optional: use extravars(single line JSON string only!)")
+      choiceParam('ANSIBLE_SCOPE', ["$scope"], "Running in $scope scope")
+      stringParam('ANSIBLE_EXTRAVARS', "{'foo':'bar'}", "Optional: JSON format single line, single quoutes")
     }
     definition {
       cpsScm {
