@@ -2,7 +2,7 @@
   get_url:
     url:  https://github.com/gaia-adm/pumba/releases/download/0.4.8/pumba_linux_amd64
     dest: /usr/local/bin/pumba
-    force: "{{download_force}}"
+    force: "{{download_force|default(no)}}"
     mode: +x
   become: true
 
