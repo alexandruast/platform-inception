@@ -8,6 +8,15 @@ node {
         [ x"${ANSIBLE_TARGET}" != 'x' ]
         [ x"${JENKINS_SCOPE}" != 'x' ]
         echo "ANSIBLE_EXTRAVARS=${ANSIBLE_EXTRAVARS}"
+      '''
+    }
+    stage('prepare') {
+      checkout([$class: 'GitSCM', 
+        branches: [[name: '*/devel']], 
+        doGenerateSubmoduleConfigurations: false, 
+        submoduleCfg: [], 
+        userRemoteConfigs: [[url: 'https://github.com/alexandruast/platform-inception.git']]])
+      sh '''
         if [[ *"@"* == "${ANSIBLE_TARGET}" ]]; then
           SSH_TARGET="${ANSIBLE_TARGET}"
         else
@@ -20,13 +29,6 @@ node {
         fi
         echo "SSH_TARGET=${SSH_TARGET}" >> .jenkins_env
       '''
-    }
-    stage('prepare') {
-      checkout([$class: 'GitSCM', 
-        branches: [[name: '*/devel']], 
-        doGenerateSubmoduleConfigurations: false, 
-        submoduleCfg: [], 
-        userRemoteConfigs: [[url: 'https://github.com/alexandruast/platform-inception.git']]])
     }
     stage('provision') {
       sh '''#!/usr/bin/env bash
