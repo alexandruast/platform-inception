@@ -23,3 +23,6 @@
       service_mode: client
     - role: nomad
       service_mode: client
+      service_meta: {
+        foo: "bar"
+      }

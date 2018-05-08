@@ -10,6 +10,3 @@ service_env: {
 service_exec:     "/usr/local/bin/{{service_name}}"
 service_args:     "agent -config={{service_conf_dir}}"
 
-service_meta: {
-  foo:            "bar"
-}
