@@ -18,9 +18,7 @@ node {
             SSH_TARGET="${ANSIBLE_TARGET}"
           fi
         fi
-        pwd
         echo "SSH_TARGET=${SSH_TARGET}" >> .jenkins_env
-        ls -la
       '''
     }
     stage('prepare') {
