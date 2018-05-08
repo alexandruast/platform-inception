@@ -7,4 +7,4 @@
       tags: always
     - role: debug
       tags: always
-    - role: consul
+
