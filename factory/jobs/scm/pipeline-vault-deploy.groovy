@@ -2,7 +2,6 @@ node {
   stage('validate') {
     sh '''
       [ x"${ANSIBLE_TARGET}" != 'x' ]
-      [ x"${ANSIBLE_EXTRAVARS}" != 'x' ]
     '''
   }
   stage('prepare') {
