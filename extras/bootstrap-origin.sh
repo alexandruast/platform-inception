@@ -84,7 +84,7 @@ vault_server_deploy() {
     JENKINS_ADMIN_PASS="${ci_admin_pass}" \
     ANSIBLE_TARGET="${server1_ip}" \
     ANSIBLE_SCOPE='server' \
-    ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'serial_value':'100%','ansible_user':'vagrant'}" \
+    ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'serial_value':'100%','ansible_user':'vagrant','standalone_install':false}" \
     ./jenkins-query.sh ./common/jobs/build-infra-generic-deploy-job.groovy
 }
 
@@ -163,13 +163,13 @@ server2_ip="$(echo ${server_nodes_json} | jq -r .[1].ip)"
 
 cd /vagrant/
 
-setup_origin_jenkins
-overwrite_origin_keypair
-deploy_factory_prod_jenkins
-overwrite_factory_prod_jenkins_keypair
+# setup_origin_jenkins
+# overwrite_origin_keypair
+# deploy_factory_prod_jenkins
+# overwrite_factory_prod_jenkins_keypair
 create_ssh_tunnel
-nomad_server_deploy
-join_cluster_members
+# nomad_server_deploy
+# join_cluster_members
 vault_server_deploy
-nomad_compute_deploy
+# nomad_compute_deploy
 

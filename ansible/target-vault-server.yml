@@ -15,26 +15,11 @@
 
     - block:
       - include_role:
-          name: housekeeping
-      - include_role:
-          name: base
-      - include_role:
-          name: dnsmasq
-        vars:
-          dnsmasq_supersede: yes
-          dns_servers:
-            - "8.8.8.8"
-            - "8.8.4.4"
-      - include_role:
-          name: jq
+          name: base-minimal
       - include_role:
           name: setup-completed
-      when: not ansible_local.setup_completed|default(false) or force_setup|default(false)
+      when: standalone_install|default(true) and (not ansible_local.setup_completed|default(false) or force_setup|default(false))
 
-    - include_role:
-        name: consul
-      vars:
-        service_mode: client
     - include_role:
         name: vault
       vars:

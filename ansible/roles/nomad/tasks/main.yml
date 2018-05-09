@@ -1,8 +1,3 @@
-- name: "system information" 
-  debug:
-    msg:
-      - "service_mode: {{service_mode}}"
-
 - name: "service binaries downloaded and installed"
   unarchive:
     src:  https://releases.hashicorp.com/{{service_name}}/{{service_version}}/{{service_name}}_{{service_version}}_linux_amd64.zip

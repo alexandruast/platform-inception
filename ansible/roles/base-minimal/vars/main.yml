@@ -1,0 +1,6 @@
+etc_profile_vars:
+  - { key: "FOO", value: "BAR" }
+
+sysctl_entries:
+  - name: vm.swappiness
+    value: 10
