@@ -21,8 +21,8 @@
       - include_role:
           name: dnsmasq
         vars:
-          - dnsmasq_supersede: yes
-          - dns_servers:
+          dnsmasq_supersede: yes
+          dns_servers:
             - "8.8.8.8"
             - "8.8.4.4"
       - include_role:
@@ -36,11 +36,11 @@
     - include_role:
         name: consul
       vars:
-        - service_mode: client
+        service_mode: client
     - include_role:
         name: nomad
       vars:
-        - service_mode: client
-        - service_meta: {
-            foo: "bar"
-          }
+        service_mode: client
+        service_meta: {
+          foo: "bar"
+        }

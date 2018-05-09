@@ -21,8 +21,8 @@
       - include_role:
           name: dnsmasq
         vars:
-          - dnsmasq_supersede: yes
-          - dns_servers:
+          dnsmasq_supersede: yes
+          dns_servers:
             - "/consul/127.0.0.1#8600"
             - "8.8.8.8"
             - "8.8.4.4"
@@ -31,7 +31,7 @@
       - include_role:
           name: consul
         vars:
-          - service_mode: dev
+          service_mode: dev
       - include_role:
           name: mo
       - include_role:
@@ -41,7 +41,7 @@
       - include_role:
           name: user-ssh-key
         vars:
-          - run_as: jenkins
+          run_as: jenkins
       - include_role:
           name: setup-completed
       when: not ansible_local.setup_completed|default(false) or force_setup|default(false)
