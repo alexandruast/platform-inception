@@ -206,8 +206,6 @@ Vagrant.configure(2) do |config|
     end
     node.vm.network "private_network", ip: ci_origin[:ip]
     node.vm.provision "shell", path: "./extras/sandbox-ssh-key.sh", privileged: false
-    node.vm.provision "shell", inline: "rm -fr /home/vagrant/provision", privileged: false
-    node.vm.provision "file", source: "./", destination: "/home/vagrant/provision"
     node.vm.provision "shell", inline: bootstrap, privileged: false
     node.vm.provision "shell" do |s|
       s.path = "./extras/bootstrap-origin.sh"
