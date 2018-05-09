@@ -5,12 +5,12 @@
   vars:
     - repos_enabled: true
 
-  block:
-    roles:
-      - role: alive
-      - role: gather-facts
-      - role: check-sudo
-      - role: housekeeping
+  roles:
+    - role: alive
+    - role: gather-facts
+    - role: check-sudo
+    - role: housekeeping
+    - block:
       - role: base
       - role: dnsmasq
         dnsmasq_supersede: yes
@@ -38,4 +38,5 @@
       - role: user-ssh-key
         run_as: jenkins
       - role: setup-completed
-  when: ansible_local.setup_completed|default(false) or force_install|default(false)
+    when: ansible_local.setup_completed|default(false) or force_install|default(false)
+
