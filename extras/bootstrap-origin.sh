@@ -12,12 +12,13 @@ force_setup='false'
 
 backup_jenkins_workspace() {
   echo "backing up jenkins workspace..."
-  sudo tar -cpzf jenkins_backup.tar.gz --exclude=jenkins_backup.tar.gz --exclude=config.xml --one-file-system -C /usr/local/share/jenkins ./workspace ./jobs
+  sudo tar -cpzf /tmp/jenkins_backup.tar.gz --exclude=jenkins_backup.tar.gz --exclude=config.xml --one-file-system -C /usr/local/share/jenkins ./workspace ./jobs
 }
 
 restore_jenkins_workspace() {
   echo "restoring jenkins workspace..."
-  sudo tar -xpzf jenkins_backup.tar.gz -C /usr/local/share/jenkins --numeric-owner
+  sudo tar -xpzf /tmp/jenkins_backup.tar.gz -C /usr/local/share/jenkins --numeric-owner
+  rm -f /tmp/jenkins_backup.tar.gz
 }
 
 setup_origin_jenkins() {
