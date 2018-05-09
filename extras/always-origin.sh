@@ -13,8 +13,8 @@ factory_jenkins_ip="$(echo ${ci_factory_json} | jq -r .ip)"
 prod_jenkins_ip="$(echo ${ci_prod_json} | jq -r .ip)"
 server1_ip="$(echo ${server_nodes_json} | jq -r .[0].ip)"
 
-cd /home/vagrant/provision
-
+cd /vagrant/
+echo "waiting for origin/factory/prod jenkins to be online..."
 for scope in origin factory prod; do
   ip_addr_var="${scope}_jenkins_ip"
   export JENKINS_NULL='null'
@@ -27,10 +27,10 @@ for scope in origin factory prod; do
   echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
 done
 
-# Setting up vault demo
+echo "setting up vault demo..."
 VAULT_ADDR="http://${server1_ip}:8200" CONSUL_HTTP_ADDR="http://${server1_ip}:8500" ./extras/vault-demo.sh
 
-# Garbage collect nodes
+echo "starting garbage collection on nomad..."
 curl --silent -X PUT "http://${server1_ip}:4646/v1/system/gc"
 
 echo "Consul UI is available at http://${server1_ip}:8500"

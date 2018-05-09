@@ -11,14 +11,18 @@ SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/d
 force_setup='false'
 
 backup_jenkins_workspace() {
-  echo "backing up jenkins workspace..."
-  sudo tar -cpzf /tmp/jenkins_backup.tar.gz --exclude=jenkins_backup.tar.gz --exclude=config.xml --one-file-system -C /usr/local/share/jenkins ./workspace ./jobs
+  if  [[ -d "/usr/local/share/jenkins/workspace" ]]; then
+    echo "backing up jenkins workspace..."
+    sudo tar -cpzf /tmp/jenkins_backup.tar.gz --exclude=jenkins_backup.tar.gz --exclude=config.xml --one-file-system -C /usr/local/share/jenkins ./workspace ./jobs
+  fi
 }
 
 restore_jenkins_workspace() {
-  echo "restoring jenkins workspace..."
-  sudo tar -xpzf /tmp/jenkins_backup.tar.gz -C /usr/local/share/jenkins --numeric-owner
-  rm -f /tmp/jenkins_backup.tar.gz
+  if  [[ -f "/tmp/jenkins_backup.tar.gz" ]]; then
+    echo "restoring jenkins workspace..."
+    sudo tar -xpzf /tmp/jenkins_backup.tar.gz -C /usr/local/share/jenkins --numeric-owner
+    rm -f /tmp/jenkins_backup.tar.gz
+  fi
 }
 
 setup_origin_jenkins() {
