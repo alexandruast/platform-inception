@@ -43,12 +43,12 @@
       - include_role:
           name: java8-openjdk
       - include_role:
-          name: user-ssh-key
-        vars:
-          run_as: jenkins
-      - include_role:
           name: setup-completed
       when: not ansible_local.setup_completed|default(false) or force_setup|default(false)
 
     - include_role:
         name: jenkins
+    - include_role:
+        name: user-ssh-key
+      vars:
+        run_as: jenkins
