@@ -34,6 +34,9 @@
     - include_role:
         name: consul
       vars:
+        - service_install: true
         - service_mode: client
     - include_role:
         name: vault
+      vars:
+        - service_install: true

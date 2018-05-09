@@ -34,16 +34,10 @@
           name: docker-compose
       - include_role:
           name: consul
-        vars:
-          - service_install: false
       - include_role:
           name: nomad
-        vars:
-          - service_install: false
       - include_role:
           name: vault
-        vars:
-          - service_install: false
       - include_role:
           name: packer
       - include_role:
