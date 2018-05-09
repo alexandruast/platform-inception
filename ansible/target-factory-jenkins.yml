@@ -65,5 +65,5 @@
           - run_as: jenkins
       - include_role:
           name: setup-completed
-      when: ansible_local.setup_completed|default(false) or force_install|default(false)
+      when: not ansible_local.setup_completed|default(false) or force_setup|default(false)
 
