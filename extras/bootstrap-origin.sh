@@ -163,13 +163,13 @@ server2_ip="$(echo ${server_nodes_json} | jq -r .[1].ip)"
 
 cd /vagrant/
 
-# setup_origin_jenkins
-# overwrite_origin_keypair
-# deploy_factory_prod_jenkins
-# overwrite_factory_prod_jenkins_keypair
+setup_origin_jenkins
+overwrite_origin_keypair
+deploy_factory_prod_jenkins
+overwrite_factory_prod_jenkins_keypair
 create_ssh_tunnel
-# nomad_server_deploy
-# join_cluster_members
+nomad_server_deploy
+join_cluster_members
 vault_server_deploy
-# nomad_compute_deploy
+nomad_compute_deploy
 
