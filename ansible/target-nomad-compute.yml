@@ -36,12 +36,10 @@
     - include_role:
         name: consul
       vars:
-        - service_install: true
         - service_mode: client
     - include_role:
         name: nomad
       vars:
-        - service_install: true
         - service_mode: client
         - service_meta: {
             foo: "bar"
