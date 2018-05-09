@@ -10,11 +10,11 @@
         name: alive
     - include_role:
         name: gather-facts
-    - include_role:
-        name: check-sudo
-    - include_role:
-        name: housekeeping
     - block:
+      - include_role:
+          name: check-sudo
+      - include_role:
+        name: housekeeping
       - include_role:
           name: base
       - include_role:
