@@ -8,7 +8,7 @@ trap 'sudo ssh -S "${SSH_CONTROL_SOCKET}" -O exit vagrant@${!ip_addr_var:-192.0.
 
 SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
 
-force_setup='true'
+force_setup='false'
 
 backup_jenkins_workspace() {
   echo "backing up jenkins workspace..."
