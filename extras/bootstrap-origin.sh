@@ -80,7 +80,7 @@ vault_server_deploy() {
     JENKINS_ADMIN_PASS="${ci_admin_pass}" \
     ANSIBLE_TARGET="${server1_ip}" \
     ANSIBLE_SCOPE='server' \
-    ANSIBLE_EXTRAVARS="{'force_setup':false,'ansible_user':'vagrant'}" \
+    ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'ansible_user':'vagrant'}" \
     ./jenkins-query.sh ./common/jobs/build-infra-generic-deploy-job.groovy
 }
 
