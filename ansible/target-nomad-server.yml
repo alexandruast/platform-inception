@@ -10,9 +10,10 @@
         name: alive
     - include_role:
         name: gather-facts
+    - include_role:
+        name: check-sudo
+
     - block:
-      - include_role:
-          name: check-sudo
       - include_role:
           name: housekeeping
       - include_role:
@@ -28,11 +29,14 @@
       - include_role:
           name: jq
       - include_role:
-          name: consul
-        vars:
-          - service_mode: server
-      - include_role:
-          name: nomad
-        vars:
-          - service_mode: server
-      when: not ansible_local.setup_completed|default(false) or force_setup|default(false)
+          name: setup-completed
+        when: not ansible_local.setup_completed|default(false) or force_setup|default(false)
+
+    - include_role:
+        name: consul
+      vars:
+        - service_mode: server
+    - include_role:
+        name: nomad
+      vars:
+        - service_mode: server

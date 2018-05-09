@@ -10,9 +10,10 @@
         name: alive
     - include_role:
         name: gather-facts
+    - include_role:
+        name: check-sudo
+
     - block:
-      - include_role:
-          name: check-sudo
       - include_role:
           name: housekeeping
       - include_role:
@@ -34,8 +35,6 @@
       - include_role:
           name: java8-openjdk
       - include_role:
-          name: jenkins
-      - include_role:
           name: user-ssh-key
         vars:
           - run_as: jenkins
@@ -43,3 +42,5 @@
           name: setup-completed
       when: not ansible_local.setup_completed|default(false) or force_setup|default(false)
 
+    - include_role:
+        name: jenkins
