@@ -8,6 +8,15 @@ trap 'sudo ssh -S "${SSH_CONTROL_SOCKET}" -O exit vagrant@${!ip_addr_var:-192.0.
 
 SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
 
+backup_jenkins_workspace() {
+ sudo tar -cpzf jenkins_backup.tar.gz --exclude=jenkins_backup.tar.gz --one-file-system -C /usr/local/share/jenkins ./workspace
+}
+
+restore_jenkins_workspace() {
+  sudo rm -fr /usr/local/share/jenkins/workspace
+  sudo tar -xpzf jenkins_backup.tar.gz -C /usr/local/share/jenkins --numeric-owner
+}
+
 setup_origin_jenkins() {
 scope='origin'
 # shellcheck source=origin/.scope
@@ -19,7 +28,9 @@ ANSIBLE_TARGET="127.0.0.1" \
   ANSIBLE_EXTRAVARS="{'dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4']}" \
   ./apl-wrapper.sh ansible/target-${scope}-jenkins.yml
 # Running Jenkins setup script
+backup_jenkins_workspace
 ./jenkins-setup.sh
+restore_jenkins_workspace
 echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
 JENKINS_BUILD_JOB=system-${scope}-job-seed \
   ./jenkins-query.sh \

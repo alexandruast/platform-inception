@@ -1,3 +1,4 @@
+export JENKINS_HOME="/usr/local/share/jenkins"
 export JENKINS_PORT=8080
 export JENKINS_JAVA_OPTS="-Xmx400m -Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"
 export JENKINS_ADMIN_USER='admin'
