@@ -121,7 +121,7 @@ install_jq() {
 }
 
 install_ansible() {
-  sudo cp provision/extras/epel-release.repo /etc/yum.repos.d/
+  sudo cp /vagrant/extras/epel-release.repo /etc/yum.repos.d/
   sudo yum -q -y install ansible
 }
 
