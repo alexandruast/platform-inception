@@ -38,5 +38,5 @@
       - role: user-ssh-key
         run_as: jenkins
       - role: setup-completed
-    when: ansible_local.setup_completed|default(false) or force_install|default(false)
+      when: ansible_local.setup_completed|default(false) or force_install|default(false)
 
