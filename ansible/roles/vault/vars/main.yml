@@ -8,4 +8,6 @@ service_env: {
   GOMAXPROCS:     "${GOMAXPROCS:-2}",
 }
 service_exec:     "/usr/local/bin/{{service_name}}"
-service_args:     "server -config={{service_conf_dir}}"
+service_args_def: "server -config={{service_conf_dir}}"
+service_args_dev: "server -dev"
+service_args:     "{{ service_args_dev if service_mode == 'dev' else service_args_def }}"

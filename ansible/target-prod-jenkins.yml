@@ -29,6 +29,10 @@
       - include_role:
           name: ansible
       - include_role:
+          name: consul
+        vars:
+          - service_mode: dev
+      - include_role:
           name: terraform
       - include_role:
           name: terragrunt

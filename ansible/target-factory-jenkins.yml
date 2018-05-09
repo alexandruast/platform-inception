@@ -34,6 +34,8 @@
           name: docker-compose
       - include_role:
           name: consul
+        vars:
+          - service_mode: dev
       - include_role:
           name: nomad
       - include_role:
