@@ -68,7 +68,7 @@ nomad_server_deploy() {
     JENKINS_ADMIN_PASS="${ci_admin_pass}" \
     ANSIBLE_TARGET="$(echo ${server_nodes_json} | jq -r .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')" \
     ANSIBLE_SCOPE='server' \
-    ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'ansible_user':'vagrant','service_bind_ip':'{{ansible_host}}'}" \
+    ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'serial_value':'100%','ansible_user':'vagrant','service_bind_ip':'{{ansible_host}}'}" \
     ./jenkins-query.sh ./common/jobs/build-infra-generic-deploy-job.groovy  
 }
 
@@ -80,7 +80,7 @@ vault_server_deploy() {
     JENKINS_ADMIN_PASS="${ci_admin_pass}" \
     ANSIBLE_TARGET="${server1_ip}" \
     ANSIBLE_SCOPE='server' \
-    ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'ansible_user':'vagrant'}" \
+    ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'serial_value':'100%','ansible_user':'vagrant'}" \
     ./jenkins-query.sh ./common/jobs/build-infra-generic-deploy-job.groovy
 }
 
@@ -92,7 +92,7 @@ nomad_compute_deploy() {
     JENKINS_ADMIN_PASS="${ci_admin_pass}" \
     ANSIBLE_SCOPE='compute' \
     ANSIBLE_TARGET="$(echo ${compute_nodes_json} | jq -r .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')" \
-    ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'ansible_user':'vagrant','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'service_bind_ip':'{{ansible_host}}'}" \
+    ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'serial_value':'100%','ansible_user':'vagrant','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'service_bind_ip':'{{ansible_host}}'}" \
     ./jenkins-query.sh ./common/jobs/build-infra-generic-deploy-job.groovy
 }
 
