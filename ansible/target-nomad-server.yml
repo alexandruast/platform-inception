@@ -5,20 +5,34 @@
   vars:
     - repos_enabled: true
 
-  roles:
-    - role: alive
-    - role: gather-facts
-    - role: check-sudo
-    - role: housekeeping
-    - role: base
-    - role: dnsmasq
-      dnsmasq_supersede: yes
-      dns_servers:
-        - "/consul/127.0.0.1#8600"
-        - "8.8.8.8"
-        - "8.8.4.4"
-    - role: jq
-    - role: consul
-      service_mode: server
-    - role: nomad
-      service_mode: server
+  tasks:
+    - include_role:
+        name: alive
+    - include_role:
+        name: gather-facts
+    - block:
+      - include_role:
+          name: check-sudo
+      - include_role:
+          name: housekeeping
+      - include_role:
+          name: base
+      - include_role:
+          name: dnsmasq
+        vars:
+          - dnsmasq_supersede: yes
+          - dns_servers:
+            - "/consul/127.0.0.1#8600"
+            - "8.8.8.8"
+            - "8.8.4.4"
+      - include_role:
+          name: jq
+      - include_role:
+          name: consul
+        vars:
+          - service_mode: server
+      - include_role:
+          name: nomad
+        vars:
+          - service_mode: server
+      when: not ansible_local.setup_completed|default(false) or force_setup|default(false)
