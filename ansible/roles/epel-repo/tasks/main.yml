@@ -7,4 +7,4 @@
       gpgkey: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7Server"
       gpgcheck: yes
     become: true
-  when: repos_enabled is defined and repos_enabled
+  when: repos_enabled|default(false)

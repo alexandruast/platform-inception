@@ -57,13 +57,3 @@
   become: true
   tags: env
 
-- name: "custom fact for workstation setup completed"
-  copy:
-    src: facts/w_setup_completed.fact
-    dest: /etc/ansible/facts.d/w_setup_completed.fact
-  become: true
-
-- name: "reload ansible_local"
-  setup:
-    filter: ansible_local
-  tags: always

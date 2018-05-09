@@ -5,34 +5,37 @@
   vars:
     - repos_enabled: true
 
-  roles:
-    - role: alive
-    - role: gather-facts
-    - role: check-sudo
-    - role: housekeeping
-    - role: base
-    - role: dnsmasq
-      dnsmasq_supersede: yes
-      dns_servers:
-        - "/consul/127.0.0.1#8600"
-        - "8.8.8.8"
-        - "8.8.4.4"
-    - role: ansible
-    - role: docker
-    - role: docker-compose
-    - role: consul
-      service_install: false
-    - role: nomad
-      service_install: false
-    - role: vault
-      service_install: false
-    - role: packer
-    - role: terraform
-    - role: terragrunt
-    - role: mo
-    - role: jq
-    - role: pumba
-    - role: java8-openjdk
-    - role: jenkins
-    - role: user-ssh-key
-      run_as: jenkins
+  block:
+    roles:
+      - role: alive
+      - role: gather-facts
+      - role: check-sudo
+      - role: housekeeping
+      - role: base
+      - role: dnsmasq
+        dnsmasq_supersede: yes
+        dns_servers:
+          - "/consul/127.0.0.1#8600"
+          - "8.8.8.8"
+          - "8.8.4.4"
+      - role: ansible
+      - role: docker
+      - role: docker-compose
+      - role: consul
+        service_install: false
+      - role: nomad
+        service_install: false
+      - role: vault
+        service_install: false
+      - role: packer
+      - role: terraform
+      - role: terragrunt
+      - role: mo
+      - role: jq
+      - role: pumba
+      - role: java8-openjdk
+      - role: jenkins
+      - role: user-ssh-key
+        run_as: jenkins
+      - role: setup-completed
+  when: when: ansible_local.setup_completed|default(false) or force_install|default(false)

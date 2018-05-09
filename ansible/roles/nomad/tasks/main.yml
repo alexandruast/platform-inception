@@ -98,4 +98,4 @@
     become: true
     when: (systemd_config is changed or service_config is changed or docker_group is changed) and not service_started is changed
 
-  when: service_install is not defined or service_install
+  when: service_install|default(false)

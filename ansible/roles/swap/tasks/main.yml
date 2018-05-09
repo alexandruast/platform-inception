@@ -50,6 +50,5 @@
 
   - name: "swap turned on"
     command: "swapon -a"
-
   become: true
   when: swap_enabled_check.skipped is not defined and swap_enabled_check.stdout == '0' 

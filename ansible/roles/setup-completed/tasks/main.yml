@@ -1,0 +1,10 @@
+- name: "set fact"
+  copy:
+    src: facts/setup_completed.fact
+    dest: /etc/ansible/facts.d/setup_completed.fact
+  become: true
+
+- name: "reload ansible_local"
+  setup:
+    filter: ansible_local
+
