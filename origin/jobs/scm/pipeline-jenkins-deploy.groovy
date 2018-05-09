@@ -27,7 +27,8 @@ node {
             SSH_TARGET="${ANSIBLE_TARGET}"
           fi
         fi
-        echo "SSH_TARGET=${SSH_TARGET}" >> .jenkins_env
+        # echo "SSH_TARGET=${SSH_TARGET}" >> .jenkins_env
+        curl -Ss --request PUT --data "${SSH_TARGET}" http://consul.service.consul:8500/v1/kv/jenkins/pipeline_jenkins_deploy_ssh_target
       '''
     }
     stage('provision') {

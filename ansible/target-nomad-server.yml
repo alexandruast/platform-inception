@@ -21,8 +21,8 @@
       - include_role:
           name: dnsmasq
         vars:
-          - dnsmasq_supersede: yes
-          - dns_servers:
+          dnsmasq_supersede: yes
+          dns_servers:
             - "/consul/127.0.0.1#8600"
             - "8.8.8.8"
             - "8.8.4.4"
@@ -35,8 +35,8 @@
     - include_role:
         name: consul
       vars:
-        - service_mode: server
+        service_mode: server
     - include_role:
         name: nomad
       vars:
-        - service_mode: server
+        service_mode: server

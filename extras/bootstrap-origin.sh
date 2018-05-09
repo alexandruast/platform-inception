@@ -29,7 +29,7 @@ export JENKINS_ADMIN_PASS="${ci_admin_pass}"
 export JENKINS_ADDR="http://${origin_jenkins_ip}:${JENKINS_PORT}"
 # dnsmasq to resolve everything using google dns and forward .consul
 ANSIBLE_TARGET="127.0.0.1" \
-  ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4']}" \
+  ANSIBLE_EXTRAVARS="{'force_setup':${force_setup}}" \
   ./apl-wrapper.sh ansible/target-${scope}-jenkins.yml
 # Running Jenkins setup script
 backup_jenkins_workspace
