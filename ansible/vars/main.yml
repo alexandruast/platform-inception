@@ -1,10 +1,13 @@
 ssh_connect_timeout: 120
 
+artifacts_dir: "/artifacts"
+
 user_dirs:
   - "$HOME/profile.d"
 
 system_dirs:
   - /etc/ansible/facts.d
+  - "{{artifacts_dir}}"
 
 user_ssh_key: "$HOME/.ssh/id_rsa"
 

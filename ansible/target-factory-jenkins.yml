@@ -65,9 +65,9 @@
       when: not ansible_local.setup_completed|default(false) or force_setup|default(false)
 
     - include_role:
-        name: java8
+        name: java8-jre
       vars:
-        java_provider: openjdk
+        java_provider: oracle
 
     - include_role:
         name: jenkins

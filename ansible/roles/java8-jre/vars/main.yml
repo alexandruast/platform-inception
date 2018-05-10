@@ -1,0 +1,9 @@
+java8_openjdk_yum: java-1.8.0
+java8_oracle_yum: jre1.8.x86_64
+
+oracle_java_version_major: 8
+oracle_java_version_minor: 172
+oracle_java_version_build: 11
+
+oracle_java_installer: "jre-{{oracle_java_version_major}}u{{oracle_java_version_minor}}-b{{oracle_java_version_build}}-linux-x64.rpm"
+oracle_java_get_url: "http://download.oracle.com/otn-pub/java/jdk/{{oracle_java_version_major}}u{{oracle_java_version_minor}}-b{{oracle_java_version_build}}/a58eab1ec242421181065cdc37240b08/jre-{{oracle_java_version_major}}u{{oracle_java_version_minor}}-linux-x64.rpm"
