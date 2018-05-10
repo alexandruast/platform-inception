@@ -14,8 +14,8 @@ prod_jenkins_ip="$(echo ${ci_prod_json} | jq -r .ip)"
 server1_ip="$(echo ${server_nodes_json} | jq -r .[0].ip)"
 
 cd /vagrant/
-echo "waiting for origin/factory/prod jenkins to be online..."
 for scope in origin factory prod; do
+  echo "waiting for ${scope}-jenkins to be online..."
   ip_addr_var="${scope}_jenkins_ip"
   export JENKINS_NULL='null'
   for v in $(env | grep '^JENKINS_' | cut -f1 -d'='); do unset $v; done
