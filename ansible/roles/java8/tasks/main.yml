@@ -26,7 +26,7 @@
     register: temp_directory
     changed_when: false
 
-  - name: "{{oracle_java_installer}} package downloaded"
+  - name: "{{oracle_java_get_url}} package downloaded"
     get_url:
       url: "{{oracle_java_get_url}}"
       dest: "{{temp_directory.path}}/{{oracle_java_installer}}"
