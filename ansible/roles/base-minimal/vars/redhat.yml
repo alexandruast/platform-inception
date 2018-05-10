@@ -2,9 +2,11 @@ base_packages:
   - bash
   - curl
   - logrotate
+  - mc
   - ntp
   - sysstat
   - unzip
+  - vim
 
 base_services:
   - chronyd

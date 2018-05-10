@@ -163,6 +163,15 @@ server2_ip="$(echo ${server_nodes_json} | jq -r .[1].ip)"
 
 cd /vagrant/
 
+curr_ansible_dir_md5="$(tar -cf - -C /vagrant/ansible ./ | md5sum | cut -d' ' -f1)"
+
+if [[ -f "/tmp/ansible-dir-md5" ]]; then
+  prev_ansible_dir_md5="$(cat /tmp/ansible-dir-md5 | head -1 | cut -d' ' -f1)"
+  if [[ "${curr_ansible_dir_md5}" != "${prev_ansible_dir_md5}" ]]; then
+    force_setup='true'
+  fi
+fi
+
 setup_origin_jenkins
 overwrite_origin_keypair
 deploy_factory_prod_jenkins
@@ -173,3 +182,4 @@ join_cluster_members
 vault_server_deploy
 nomad_compute_deploy
 
+echo "${curr_ansible_dir_md5}" > /tmp/ansible-dir-md5
