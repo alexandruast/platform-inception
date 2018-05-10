@@ -61,7 +61,9 @@
           name: pumba
 
       - include_role:
-          name: java8-openjdk
+          name: java8
+        vars:
+          java_provider: openjdk
 
       - include_role:
           name: setup-completed
