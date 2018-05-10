@@ -4,6 +4,7 @@ base_packages:
   - logrotate
   - ntp
   - sysstat
+  - unzip
 
 base_services:
   - chronyd

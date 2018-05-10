@@ -28,14 +28,14 @@ node {
           fi
         fi
         # echo "SSH_TARGET=${SSH_TARGET}" >> .jenkins_env
-        curl -Ss --request PUT --data "${SSH_TARGET}" http://consul.service.consul:8500/v1/kv/jenkins/pipeline_jenkins_deploy_ssh_target
+        curl -Ss --request PUT --data "${SSH_TARGET}" http://127.0.0.1:8500/v1/kv/jenkins/pipeline_jenkins_deploy_ssh_target
       '''
     }
     stage('provision') {
       sh '''#!/usr/bin/env bash
         set -xeEo pipefail
         trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
-        SSH_TARGET="$( curl http://consul.service.consul:8500/v1/kv/jenkins/pipeline_jenkins_deploy_ssh_target?raw)"
+        SSH_TARGET="$( curl http://127.0.0.1:8500/v1/kv/jenkins/pipeline_jenkins_deploy_ssh_target?raw)"
         SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
         source ./${JENKINS_SCOPE}/.scope
         ssh $SSH_OPTS ${SSH_TARGET} "sudo yum -q -y install python libselinux-python"
@@ -46,7 +46,7 @@ node {
       sh '''#!/usr/bin/env bash
         set -xeEo pipefail
         trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
-        SSH_TARGET="$( curl http://consul.service.consul:8500/v1/kv/jenkins/pipeline_jenkins_deploy_ssh_target?raw)"
+        SSH_TARGET="$( curl http://127.0.0.1:8500/v1/kv/jenkins/pipeline_jenkins_deploy_ssh_target?raw)"
         SSH_CONTROL_SOCKET="/tmp/ssh-control-socket-$(uuidgen)"
         trap 'ssh -S "${SSH_CONTROL_SOCKET}" -O exit ${SSH_TARGET}' EXIT
         SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes -o ExitOnForwardFailure=yes'

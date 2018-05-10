@@ -9,10 +9,10 @@ vagrant up
 * Vagrant - latest release
 * 8GB RAM
 
-The first run will take approx. 60 minutes on 7th gen core i5  
+The first run will take approx. 30 minutes on 7th gen core i5  
 Subsequent runs will take much less:
-* vagrant provision: 5 to 10 minutes
-* vagrant up: 20 seconds
+* vagrant provision: 5 minutes
+* vagrant up: 30 seconds
 
 
 #### Description and Purpose - this is work in progress

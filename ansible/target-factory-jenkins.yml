@@ -8,58 +8,68 @@
   tasks:
     - include_role:
         name: alive
+
     - include_role:
         name: gather-facts
+
     - include_role:
         name: check-sudo
 
     - block:
       - include_role:
           name: housekeeping
+
       - include_role:
           name: base
-      - include_role:
-          name: dnsmasq
-        vars:
-          dnsmasq_supersede: yes
-          dns_servers:
-            - "/consul/127.0.0.1#8600"
-            - "8.8.8.8"
-            - "8.8.4.4"
+
       - include_role:
           name: ansible
+
       - include_role:
           name: docker
+
       - include_role:
           name: docker-compose
+
       - include_role:
           name: consul
         vars:
           service_mode: dev
+
       - include_role:
           name: nomad
+
       - include_role:
           name: vault
+
       - include_role:
           name: packer
+
       - include_role:
           name: terraform
+
       - include_role:
           name: terragrunt
+
       - include_role:
           name: mo
+
       - include_role:
           name: jq
+
       - include_role:
           name: pumba
+
       - include_role:
           name: java8-openjdk
+
       - include_role:
           name: setup-completed
       when: not ansible_local.setup_completed|default(false) or force_setup|default(false)
 
     - include_role:
         name: jenkins
+
     - include_role:
         name: user-ssh-key
       vars:

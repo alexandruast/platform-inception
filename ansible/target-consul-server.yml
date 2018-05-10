@@ -17,6 +17,9 @@
 
     - block:
       - include_role:
+          name: housekeeping
+
+      - include_role:
           name: base-minimal
 
       - include_role:
@@ -29,10 +32,5 @@
 
     - include_role:
         name: consul
-      vars:
-        service_mode: server
-
-    - include_role:
-        name: vault
       vars:
         service_mode: server
