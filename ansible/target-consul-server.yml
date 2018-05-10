@@ -23,6 +23,13 @@
           name: base-minimal
 
       - include_role:
+          name: dnsmasq
+        vars:
+          dnsmasq_supersede: no
+          dns_servers:
+            - "/consul/127.0.0.1#8600"
+
+      - include_role:
           name: jq
 
       - include_role:
