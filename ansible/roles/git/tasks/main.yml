@@ -1,0 +1,5 @@
+- name: "git package present"
+  package:
+    name: git
+    state: present
+  become: true
