@@ -5,9 +5,9 @@ trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 vault_reset() {
   consul kv delete -recurse vault && sleep 0.5
   echo "[info] vault data purged"
-  vault_init=$(curl --silent -X PUT -d "{\"secret_shares\":1,\"secret_threshold\":1}" ${VAULT_ADDR}/v1/sys/init)
-  VAULT_ROOT_TOKEN=$(echo ${vault_init} | jq -re .root_token)
-  VAULT_UNSEAL_KEY=$(echo ${vault_init} | jq -re .keys[0])
+  vault_init="$(curl --silent -X PUT -d "{\"secret_shares\":1,\"secret_threshold\":1}" ${VAULT_ADDR}/v1/sys/init)"
+  VAULT_ROOT_TOKEN="$(echo ${vault_init} | jq -re .root_token)"
+  VAULT_UNSEAL_KEY="$(echo ${vault_init} | jq -re .keys[0])"
   curl --silent -X PUT -d "{\"key\": \"${VAULT_UNSEAL_KEY}\"}" ${VAULT_ADDR}/v1/sys/unseal && sleep 0.25
   echo "[info] vault unsealed"
   curl --silent -X POST -H "X-Vault-Token:${VAULT_ROOT_TOKEN}" -d '{"type":"approle"}' ${VAULT_ADDR}/v1/sys/auth/approle
@@ -27,7 +27,7 @@ vault_reset() {
   echo "[info] APP_ADMIN_VAULT_TOKEN: ${APP_ADMIN_VAULT_TOKEN}"
   echo "[info] APP_F85B911A_VAULT_ROLE_ID: ${APP_F85B911A_VAULT_ROLE_ID}"
   echo "[info] APP_READ_VAULT_TOKEN: ${APP_READ_VAULT_TOKEN}"
-  token_renew_seconds=$(curl --silent -X POST -H "X-Vault-Token:${APP_ADMIN_VAULT_TOKEN}" -d '{"increment": "48h"}' "${VAULT_ADDR}/v1/auth/token/renew-self" | jq -re .auth.lease_duration)
+  token_renew_seconds="$(curl --silent -X POST -H "X-Vault-Token:${APP_ADMIN_VAULT_TOKEN}" -d '{"increment": "48h"}' "${VAULT_ADDR}/v1/auth/token/renew-self" | jq -re .auth.lease_duration)"
   echo "[info] test self token renewal passed, seconds=${token_renew_seconds}"
   # generate secret-id for approle and wrap it (will transfer to app at deploy)
   approle_secid_unwrap_token="$(curl --silent -X POST -H "X-Vault-Token:${APP_ADMIN_VAULT_TOKEN}" -H "X-Vault-Wrap-TTL:60" ${VAULT_ADDR}/v1/auth/approle/role/app-f85b911a/secret-id | jq -re .wrap_info.token)"
@@ -43,8 +43,8 @@ vault_reset() {
 }
 
 VAULT_ADDR="${VAULT_ADDR:-http://127.0.0.1:8200}"
-vault_init=$(curl --connect-timeout 4 --silent ${VAULT_ADDR}/v1/sys/init | jq -r .initialized)
-vault_sealed=$(curl --connect-timeout 4 --silent ${VAULT_ADDR}/v1/sys/seal-status | jq -r .sealed)
+vault_init="$(curl --connect-timeout 4 --silent ${VAULT_ADDR}/v1/sys/init | jq -r .initialized)"
+vault_sealed="$(curl --connect-timeout 4 --silent ${VAULT_ADDR}/v1/sys/seal-status | jq -r .sealed)"
 
 if [[ "${vault_init}" == "false" ]] || [[ "${vault_sealed}" == "true" ]]; then
   vault_reset
