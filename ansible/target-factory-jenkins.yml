@@ -61,13 +61,13 @@
           name: pumba
 
       - include_role:
-          name: java8
-        vars:
-          java_provider: openjdk
-
-      - include_role:
           name: setup-completed
       when: not ansible_local.setup_completed|default(false) or force_setup|default(false)
+
+    - include_role:
+        name: java8
+      vars:
+        java_provider: openjdk
 
     - include_role:
         name: jenkins
