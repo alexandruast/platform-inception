@@ -23,9 +23,6 @@
           name: base
 
       - include_role:
-          name: swap
-
-      - include_role:
           name: dnsmasq
         vars:
           dnsmasq_supersede: no
