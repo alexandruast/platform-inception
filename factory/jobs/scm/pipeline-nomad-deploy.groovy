@@ -4,6 +4,9 @@ node {
       [ x"${ANSIBLE_TARGET}" != 'x' ]
       [ x"${ANSIBLE_SCOPE}" != 'x' ]
       echo "ANSIBLE_EXTRAVARS=${ANSIBLE_EXTRAVARS}"
+      ansible --version
+      jq --version
+      curl http://127.0.0.1:8500/v1/status/leader
     '''
   }
   stage('prepare') {
