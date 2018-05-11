@@ -18,7 +18,7 @@
     - block:
       - block:
         - include_role:
-            name: base-minimal
+            name: base
 
         - include_role:
             name: dnsmasq
