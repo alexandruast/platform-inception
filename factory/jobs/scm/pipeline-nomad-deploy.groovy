@@ -18,21 +18,21 @@ node {
       sh '''#!/usr/bin/env bash
       set -xeEo pipefail
       trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
-      declare -a SSH_TARGETS
-      for s in $(echo "${ANSIBLE_TARGET}" | tr ',' ' '); do
+      declare -a SSH_TARGETS=()
+      for s in ${ANSIBLE_TARGET//,/ }; do
         if [[ *"@"* == "${s}" ]]; then
-          SSH_TARGETS=("${SSH_TARGETS}" "${s}")
+          SSH_TARGETS=(${SSH_TARGETS[@]} "${s}")
         else
           SSH_USER=$(echo "${ANSIBLE_EXTRAVARS}" | tr "'" '"' | jq -r .ansible_user)
           if [[ "${SSH_USER}" != "" ]]; then
-            SSH_TARGETS=("${SSH_TARGETS}" "${SSH_USER}@${s}")
+            SSH_TARGETS=(${SSH_TARGETS[@]} "${SSH_USER}@${s}")
           else
-            SSH_TARGETS=("${SSH_TARGETS}" "${s}")
+            SSH_TARGETS=(${SSH_TARGETS[@]} "${s}")
           fi
         fi
       done
-      SSH_TARGETS="$(echo "${SSH_TARGETS[*]}" | tr ' ' ',' | awk '{$1=$1};1' | sed -e 's/^,//' -e 's/,$//')"
-      curl -Ss --request PUT --data "${SSH_TARGETS}" http://127.0.0.1:8500/v1/kv/jenkins/pipeline_nomad_deploy_ssh_targets
+      SSH_TARGETS="$(echo "${SSH_TARGETS[*]}")"
+      curl -Ss --request PUT --data "${SSH_TARGETS/ /,}" http://127.0.0.1:8500/v1/kv/jenkins/pipeline_nomad_deploy_ssh_targets
       '''
   }
   stage('provision') {
@@ -41,7 +41,7 @@ node {
       trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
       SSH_TARGETS="$(curl -Ss http://127.0.0.1:8500/v1/kv/jenkins/pipeline_nomad_deploy_ssh_targets?raw)"
       SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
-      for s in $(echo "${SSH_TARGETS}" | tr ',' ' '); do
+      for s in ${SSH_TARGETS/,/ }; do
         ssh ${SSH_OPTS} ${s} "sudo yum -q -y install python libselinux-python"
       done
       ./apl-wrapper.sh ansible/target-nomad-${ANSIBLE_SCOPE}.yml

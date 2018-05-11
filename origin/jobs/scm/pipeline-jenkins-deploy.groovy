@@ -22,21 +22,21 @@ node {
       sh '''#!/usr/bin/env bash
       set -xeEo pipefail
       trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
-      declare -a SSH_TARGETS
-      for s in $(echo "${ANSIBLE_TARGET}" | tr ',' ' '); do
+      declare -a SSH_TARGETS=()
+      for s in ${ANSIBLE_TARGET//,/ }; do
         if [[ *"@"* == "${s}" ]]; then
-          SSH_TARGETS=("${SSH_TARGETS}" "${s}")
+          SSH_TARGETS=(${SSH_TARGETS[@]} "${s}")
         else
           SSH_USER=$(echo "${ANSIBLE_EXTRAVARS}" | tr "'" '"' | jq -r .ansible_user)
           if [[ "${SSH_USER}" != "" ]]; then
-            SSH_TARGETS=("${SSH_TARGETS}" "${SSH_USER}@${s}")
+            SSH_TARGETS=(${SSH_TARGETS[@]} "${SSH_USER}@${s}")
           else
-            SSH_TARGETS=("${SSH_TARGETS}" "${s}")
+            SSH_TARGETS=(${SSH_TARGETS[@]} "${s}")
           fi
         fi
       done
-      SSH_TARGETS="$(echo "${SSH_TARGETS[*]}" | tr ' ' ',' | awk '{$1=$1};1' | sed -e 's/^,//' -e 's/,$//')"
-      curl -Ss --request PUT --data "${SSH_TARGETS}" http://127.0.0.1:8500/v1/kv/jenkins/pipeline_jenkins_deploy_ssh_targets
+      SSH_TARGETS="$(echo "${SSH_TARGETS[*]}")"
+      curl -Ss --request PUT --data "${SSH_TARGETS/ /,}" http://127.0.0.1:8500/v1/kv/jenkins/pipeline_jenkins_deploy_ssh_targets
       '''
     }
     stage('provision') {
@@ -46,7 +46,7 @@ node {
         SSH_TARGETS="$(curl -Ss http://127.0.0.1:8500/v1/kv/jenkins/pipeline_jenkins_deploy_ssh_targets?raw)"
         SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
         source ./${JENKINS_SCOPE}/.scope
-        for s in $(echo "${SSH_TARGETS}" | tr ',' ' '); do
+        for s in ${SSH_TARGETS/,/ }; do
           ssh ${SSH_OPTS} ${s} "sudo yum -q -y install python libselinux-python"
         done
         ./apl-wrapper.sh ansible/target-${JENKINS_SCOPE}-jenkins.yml
@@ -61,7 +61,7 @@ node {
         trap 'for s in $(echo "${SSH_TARGETS}" | tr "," " "); do ssh -S "${SSH_CONTROL_SOCKET}" -O exit ${s}; done' EXIT
         SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes -o ExitOnForwardFailure=yes'
         source ./${JENKINS_SCOPE}/.scope
-        for s in $(echo "${SSH_TARGETS}" | tr ',' ' '); do
+        for s in ${SSH_TARGETS/,/ }; do
           tunnel_port=$(perl -e 'print int(rand(999)) + 58000')
           ssh ${SSH_OPTS} -f -N -M -S "${SSH_CONTROL_SOCKET}" -L ${tunnel_port}:127.0.0.1:${JENKINS_PORT} ${s}
           JENKINS_ADDR=http://127.0.0.1:${tunnel_port} ./jenkins-setup.sh
