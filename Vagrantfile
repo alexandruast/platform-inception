@@ -14,7 +14,7 @@ ci_origin = {
   :hostname => "origin",
   :ip => "192.168.169.171",
   :box => box,
-  :memory => 640,
+  :memory => 800,
   :cpus => 1
 }
 
