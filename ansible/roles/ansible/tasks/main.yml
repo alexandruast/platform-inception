@@ -1,5 +1,4 @@
-- name: "ansible pip package installed"
+- name: "{{ansible_pip_package}} pip package installed"
   pip:
-    name: ansible
-    version: "{{ansible_version}}"
+    name: {{ansible_pip_package}}
   become: true
