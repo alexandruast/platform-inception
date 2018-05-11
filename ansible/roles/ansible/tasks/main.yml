@@ -1,4 +1,4 @@
 - name: "{{ansible_pip_package}} pip package installed"
   pip:
-    name: {{ansible_pip_package}}
+    name: "{{ansible_pip_package}}"
   become: true
