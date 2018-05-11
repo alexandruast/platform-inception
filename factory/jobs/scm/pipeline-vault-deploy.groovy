@@ -30,7 +30,8 @@ node {
             fi
           fi
         done
-        curl -Ss --request PUT --data "$(IFS=$','; echo "${SSH_TARGETS[*]}")" http://127.0.0.1:8500/v1/kv/jenkins/pipeline_vault_deploy_ssh_targets
+        SSH_TARGETS="$(echo "${SSH_TARGETS[*]}" | tr ' ' ',' | awk '{$1=$1};1' | sed -e 's/^,//' -e 's/,$//')"
+        curl -Ss --request PUT --data "${SSH_TARGETS}" http://127.0.0.1:8500/v1/kv/jenkins/pipeline_vault_deploy_ssh_targets
       '''
   }
   stage('provision') {

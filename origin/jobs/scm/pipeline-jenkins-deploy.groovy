@@ -35,7 +35,8 @@ node {
           fi
         fi
       done
-      curl -Ss --request PUT --data "$(IFS=$','; echo "${SSH_TARGETS[*]}")" http://127.0.0.1:8500/v1/kv/jenkins/pipeline_jenkins_deploy_ssh_targets
+      SSH_TARGETS="$(echo "${SSH_TARGETS[*]}" | tr ' ' ',' | awk '{$1=$1};1' | sed -e 's/^,//' -e 's/,$//')"
+      curl -Ss --request PUT --data "${SSH_TARGETS}" http://127.0.0.1:8500/v1/kv/jenkins/pipeline_jenkins_deploy_ssh_targets
       '''
     }
     stage('provision') {
@@ -57,7 +58,7 @@ node {
         trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
         SSH_TARGETS="$(curl -Ss http://127.0.0.1:8500/v1/kv/jenkins/pipeline_jenkins_deploy_ssh_targets?raw)"
         SSH_CONTROL_SOCKET="/tmp/ssh-control-socket-$(uuidgen)"
-        trap 'for s in $(echo "${SSH_TARGETS}" | tr ',' ' '); do ssh -S "${SSH_CONTROL_SOCKET}" -O exit ${s}; done' EXIT
+        trap 'for s in $(echo "${SSH_TARGETS}" | tr "," " "); do ssh -S "${SSH_CONTROL_SOCKET}" -O exit ${s}; done' EXIT
         SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes -o ExitOnForwardFailure=yes'
         source ./${JENKINS_SCOPE}/.scope
         for s in $(echo "${SSH_TARGETS}" | tr ',' ' '); do
