@@ -87,5 +87,5 @@
     state: present
     backup: yes
   become: true
-  when: dhclient_pgrep.rc != 0
+  when: dhclient_pgrep.rc != 0 and dnsmasq_supersede is defined
 
