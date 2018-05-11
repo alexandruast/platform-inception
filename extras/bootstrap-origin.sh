@@ -122,8 +122,11 @@ install_jq() {
   && sudo chmod +x /usr/local/bin/jq
 }
 
+install_pip() {
+  curl -LSs "https://bootstrap.pypa.io/get-pip.py" | sudo python
+}
+
 install_ansible() {
-  sudo yum -q -y install python libselinux-python python-pip
   sudo pip install ansible==2.4.4.0
 }
 
@@ -150,8 +153,11 @@ ci_prod_json=$4
 server_nodes_json=$5
 compute_nodes_json=$6
 
-install_ansible
-install_jq
+sudo yum -q -y install python libselinux-python
+
+which pip >/dev/null || install_pip
+which ansible >/dev/null || install_ansible
+which jq >/dev/null || install_jq
 
 origin_jenkins_ip="$(echo ${ci_origin_json} | jq -r .ip)"
 factory_jenkins_ip="$(echo ${ci_factory_json} | jq -r .ip)"

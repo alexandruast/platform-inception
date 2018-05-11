@@ -33,7 +33,7 @@ node {
       trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
       SSH_TARGET="$(curl -Ss http://127.0.0.1:8500/v1/kv/jenkins/pipeline_nomad_deploy_ssh_target?raw)"
       SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
-      ssh ${SSH_OPTS} ${SSH_TARGET} "sudo yum -q -y install python libselinux-python python-pip"
+      ssh ${SSH_OPTS} ${SSH_TARGET} "sudo yum -q -y install python libselinux-python"
       ./apl-wrapper.sh ansible/target-nomad-${ANSIBLE_SCOPE}.yml
     '''
   }

@@ -1,4 +1,4 @@
-- name: "ansible package present"
+- name: "ansible pip package installed"
   pip:
   name: ansible
-  version: 2.4.4.0
+  version: "{{ansible_version}}"
