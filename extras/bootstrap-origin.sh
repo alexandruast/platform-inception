@@ -123,8 +123,8 @@ install_jq() {
 }
 
 install_ansible() {
-  sudo yum -q -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-  sudo yum -q -y install ansible
+  sudo yum -q -y install python libselinux-python python-pip
+  sudo pip install ansible==2.4.4.0
 }
 
 # Overwrites Origin-Jenkins ssh key pair, created by Ansible in previous steps
@@ -150,10 +150,8 @@ ci_prod_json=$4
 server_nodes_json=$5
 compute_nodes_json=$6
 
-sudo yum -q -y install python libselinux-python
-
-install_jq
 install_ansible
+install_jq
 
 origin_jenkins_ip="$(echo ${ci_origin_json} | jq -r .ip)"
 factory_jenkins_ip="$(echo ${ci_factory_json} | jq -r .ip)"

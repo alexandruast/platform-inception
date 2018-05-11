@@ -38,7 +38,7 @@ node {
         SSH_TARGET="$(curl -Ss http://127.0.0.1:8500/v1/kv/jenkins/pipeline_jenkins_deploy_ssh_target?raw)"
         SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
         source ./${JENKINS_SCOPE}/.scope
-        ssh ${SSH_OPTS} ${SSH_TARGET} "sudo yum -q -y install python libselinux-python"
+        ssh ${SSH_OPTS} ${SSH_TARGET} "sudo yum -q -y install python libselinux-python python-pip"
         ./apl-wrapper.sh ansible/target-${JENKINS_SCOPE}-jenkins.yml
       '''
     }

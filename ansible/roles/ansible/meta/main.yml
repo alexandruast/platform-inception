@@ -1,5 +1,0 @@
-dependencies:
-  - role: rhn-extras
-    when: ansible_distribution|lower == "redhat"
-  - role: epel-repo
-    when: ansible_distribution|lower == "centos" or ansible_distribution|lower == "amazon"
