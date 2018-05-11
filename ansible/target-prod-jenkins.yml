@@ -23,6 +23,9 @@
           name: base-minimal
 
       - include_role:
+          name: swap
+
+      - include_role:
           name: dnsmasq
 
       - include_role:

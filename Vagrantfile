@@ -125,6 +125,9 @@ if which subscription-manager; then
     sudo yum-config-manager --disable rhel-7-server-rt-beta-rpms
   fi
 fi
+sudo truncate -s 0 /etc/resolv.conf
+echo "nameserver 8.8.8.8" | sudo tee -a /etc/resolv.conf
+echo "nameserver 8.8.4.4" | sudo tee -a /etc/resolv.conf
 sudo yum -q -y install python libselinux-python
 SCRIPT
 
