@@ -18,7 +18,7 @@ node {
       set -xeEo pipefail
       trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
         declare -a SSH_TARGETS
-        for s in ${ANSIBLE_TARGET//,/ }; do
+        for s in $(echo "${ANSIBLE_TARGET}" | tr ',' ' '); do
           if [[ *"@"* == "${s}" ]]; then
             SSH_TARGETS=("${SSH_TARGETS}" "${s}")
           else
@@ -39,7 +39,7 @@ node {
       trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
       SSH_TARGETS="$(curl -Ss http://127.0.0.1:8500/v1/kv/jenkins/pipeline_vault_deploy_ssh_targets?raw)"
       SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
-      for s in ${SSH_TARGETS//,/ }; do
+      for s in $(echo "${SSH_TARGETS}" | tr ',' ' '); do
         ssh ${SSH_OPTS} ${s} "sudo yum -q -y install python libselinux-python"
       done
       ./apl-wrapper.sh ansible/target-vault-server.yml
