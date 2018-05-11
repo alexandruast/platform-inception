@@ -25,7 +25,7 @@
       - include_role:
           name: dnsmasq
         vars:
-          dnsmasq_supersede: no
+          dnsmasq_resolv: prepend
           dns_servers:
             - "/consul/192.0.2.255#8600"
 

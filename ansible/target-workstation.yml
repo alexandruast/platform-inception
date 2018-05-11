@@ -12,7 +12,7 @@
     - role: user-ssh-key
     - role: base
     - role: dnsmasq
-      dnsmasq_supersede: yes
+      dnsmasq_resolv: supersede
       dns_servers:
         - "/consul/127.0.0.1#8600"
         - "8.8.8.8"

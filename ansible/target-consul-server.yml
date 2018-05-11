@@ -25,7 +25,7 @@
       - include_role:
           name: dnsmasq
         vars:
-          dnsmasq_supersede: no
+          dnsmasq_resolv: no
           dns_servers:
             - "/consul/127.0.0.1#8600"
 
