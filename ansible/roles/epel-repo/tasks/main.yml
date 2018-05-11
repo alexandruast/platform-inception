@@ -1,10 +1,20 @@
 - block:
-  - name: "epel-release yum repository added"
-    yum_repository:
-      name: epel-release
-      description: "Extra Packages for Enterprise Linux 7"
-      baseurl: "https://dl.fedoraproject.org/pub/epel/7Server/x86_64"
-      gpgkey: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7Server"
-      gpgcheck: yes
+  - name: "stat {{artifacts_dir}}/{{epel_release_installer}}"
+    stat: path="{{artifacts_dir}}/{{epel_release_installer}}"
+    become: true
+    register: epel_release_isntaller_check
+
+  - name: "{{epel_release_installer_url}} package downloaded"
+    get_url:
+      url: "{{epel_release_installer_url}}"
+      dest: "{{artifacts_dir}}/{{epel_release_installer}}"
+      force: "{{download_force|default(false)}}"
+    become: true
+    when: epel_release_installer_check.stat.exists == false
+
+  - name: "{{epel_release_installer}} package installed"
+    yum:
+      name: "{{artifacts_dir}}/{{epel_release_installer}}"
+      state: present
     become: true
   when: repos_enabled|default(false)

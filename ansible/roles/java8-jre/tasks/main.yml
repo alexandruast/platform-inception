@@ -34,7 +34,6 @@
       dest: "{{artifacts_dir}}/{{oracle_java_installer}}"
       headers: 'Cookie:oraclelicense=accept-securebackup-cookie'
       force: "{{download_force|default(false)}}"
-      mode: +x
     become: true
     when: oracle_java_installer_check.stat.exists == false
 
