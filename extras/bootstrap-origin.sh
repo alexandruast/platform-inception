@@ -125,6 +125,7 @@ install_jq() {
 install_ansible() {
   sudo cp /vagrant/extras/epel-release.repo /etc/yum.repos.d/
   sudo yum -q -y install ansible
+  sudo rm -f /etc/yum.repos.d/
 }
 
 # Overwrites Origin-Jenkins ssh key pair, created by Ansible in previous steps
