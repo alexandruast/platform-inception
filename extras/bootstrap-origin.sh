@@ -152,7 +152,7 @@ server_nodes_json=$5
 compute_nodes_json=$6
 
 install_jq
-install_ansible
+#install_ansible
 
 origin_jenkins_ip="$(echo ${ci_origin_json} | jq -r .ip)"
 factory_jenkins_ip="$(echo ${ci_factory_json} | jq -r .ip)"
