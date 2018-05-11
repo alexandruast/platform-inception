@@ -5,7 +5,9 @@ no-dhcp-interface=*
 {% if dnsmasq_bind is defined %}
 {% if dnsmasq_bind == 'dynamic' %}
 bind-dynamic
-{% elseif dnsmasq_bind == 'localhost' %}
+{% endif %}
+{% else %}
+{% if dnsmasq_resolv is defined %}
 listen-address=127.0.0.1
 bind-interfaces
 {% endif %}
