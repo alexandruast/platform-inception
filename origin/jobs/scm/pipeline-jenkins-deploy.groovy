@@ -38,7 +38,7 @@ node {
         SSH_TARGET="$(curl -Ss http://127.0.0.1:8500/v1/kv/jenkins/pipeline_jenkins_deploy_ssh_target?raw)"
         SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
         source ./${JENKINS_SCOPE}/.scope
-        ssh $SSH_OPTS ${SSH_TARGET} "sudo yum -q -y install python libselinux-python"
+        ssh ${SSH_OPTS} ${SSH_TARGET} "sudo yum -q -y install python libselinux-python"
         ./apl-wrapper.sh ansible/target-${JENKINS_SCOPE}-jenkins.yml
       '''
     }
@@ -52,7 +52,7 @@ node {
         SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes -o ExitOnForwardFailure=yes'
         source ./${JENKINS_SCOPE}/.scope
         tunnel_port=$(perl -e 'print int(rand(999)) + 58000')
-        ssh $SSH_OPTS -f -N -M -S "${SSH_CONTROL_SOCKET}" -L ${tunnel_port}:127.0.0.1:${JENKINS_PORT} ${SSH_TARGET}
+        ssh ${SSH_OPTS} -f -N -M -S "${SSH_CONTROL_SOCKET}" -L ${tunnel_port}:127.0.0.1:${JENKINS_PORT} ${SSH_TARGET}
         JENKINS_ADDR=http://127.0.0.1:${tunnel_port} ./jenkins-setup.sh
         JENKINS_BUILD_JOB=system-${JENKINS_SCOPE}-job-seed JENKINS_ADDR=http://127.0.0.1:${tunnel_port} ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
       '''

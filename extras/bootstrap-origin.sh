@@ -150,8 +150,10 @@ ci_prod_json=$4
 server_nodes_json=$5
 compute_nodes_json=$6
 
+sudo yum -q -y install python libselinux-python
+
 install_jq
-#install_ansible
+install_ansible
 
 origin_jenkins_ip="$(echo ${ci_origin_json} | jq -r .ip)"
 factory_jenkins_ip="$(echo ${ci_factory_json} | jq -r .ip)"

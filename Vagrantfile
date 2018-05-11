@@ -125,7 +125,6 @@ if which subscription-manager; then
     sudo yum-config-manager --disable rhel-7-server-rt-beta-rpms
   fi
 fi
-sudo yum -q -y install python libselinux-python
 SCRIPT
 
 Vagrant.configure(2) do |config|
