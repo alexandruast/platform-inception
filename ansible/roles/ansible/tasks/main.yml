@@ -2,3 +2,4 @@
   pip:
     name: ansible
     version: "{{ansible_version}}"
+  become: true
