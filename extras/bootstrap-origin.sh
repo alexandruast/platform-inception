@@ -174,8 +174,6 @@ if [[ -f "/tmp/ansible-dir-md5" ]]; then
   if [[ "${curr_ansible_dir_md5}" != "${prev_ansible_dir_md5}" ]]; then
     force_setup='true'
   fi
-else
-  echo "${curr_ansible_dir_md5}" > /tmp/ansible-dir-md5
 fi
 
 setup_origin_jenkins
@@ -189,3 +187,4 @@ vault_server_deploy
 nomad_compute_deploy
 
 echo "${curr_ansible_dir_md5}" > /tmp/ansible-dir-md5
+

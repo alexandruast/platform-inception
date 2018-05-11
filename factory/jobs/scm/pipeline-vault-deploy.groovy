@@ -14,7 +14,9 @@ node {
       doGenerateSubmoduleConfigurations: false, 
       submoduleCfg: [], 
       userRemoteConfigs: [[url: 'https://github.com/alexandruast/platform-inception.git']]])
-      sh '''
+      sh '''#!/usr/bin/env bash
+      set -xeEo pipefail
+      trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
         declare -a SSH_TARGETS
         for s in ${ANSIBLE_TARGET//,/ }; do
           if [[ *"@"* == "${s}" ]]; then
