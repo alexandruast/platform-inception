@@ -5,7 +5,7 @@ service_group:    "{{service_name}}"
 service_data_dir: "/usr/local/share/{{service_name}}"
 service_conf_dir: "/etc/{{service_name}}.d"
 service_env: {
-  GOMAXPROCS:     "${GOMAXPROCS:-2}"
+  GOMAXPROCS:     "${GOMAXPROCS:-2}",
   CONSUL_UI_BETA: "true"
 }
 service_exec:     "/usr/local/bin/{{service_name}}"
