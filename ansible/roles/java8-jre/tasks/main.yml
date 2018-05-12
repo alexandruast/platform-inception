@@ -30,7 +30,6 @@
       headers: 'Cookie:oraclelicense=accept-securebackup-cookie'
       force: no
     become: true
-    when: oracle_java_installer_check.stat.exists == false
 
   - name: "{{oracle_java_installer}} package installed"
     yum:
