@@ -124,5 +124,5 @@
     mode: +x
     remote_src: yes
   become: true
-  when: not service_mode|default(false)
+  when: not service_mode|default(false) and service_archive is changed
 

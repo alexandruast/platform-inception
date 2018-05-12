@@ -15,10 +15,10 @@
     - include_role:
         name: check-sudo
 
-    - block:
-      - include_role:
-          name: housekeeping
+    - include_role:
+        name: housekeeping
 
+    - block:
       - include_role:
           name: base
 

@@ -15,10 +15,10 @@
     - include_role:
         name: check-sudo
 
-    - block:
-      - include_role:
-          name: housekeeping
+    - include_role:
+        name: housekeeping
 
+    - block:
       - include_role:
           name: base
 
@@ -33,14 +33,15 @@
           name: jq
 
       - include_role:
-          name: docker
-
-      - include_role:
-          name: pumba
-
-      - include_role:
           name: setup-completed
+
       when: not ansible_local.setup_completed|default(false) or force_setup|default(false)
+
+    - include_role:
+        name: docker
+
+    - include_role:
+        name: pumba
 
     - include_role:
         name: consul

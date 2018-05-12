@@ -15,6 +15,9 @@
     - include_role:
         name: check-sudo
 
+    - include_role:
+        name: housekeeping
+
     - block:
       - block:
         - include_role:
