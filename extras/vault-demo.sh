@@ -43,8 +43,8 @@ vault_reset() {
 }
 
 VAULT_ADDR="${VAULT_ADDR:-http://127.0.0.1:8200}"
-vault_init="$(curl --connect-timeout 4 --silent ${VAULT_ADDR}/v1/sys/init | jq -r .initialized)"
-vault_sealed="$(curl --connect-timeout 4 --silent ${VAULT_ADDR}/v1/sys/seal-status | jq -r .sealed)"
+vault_init="$(curl --connect-timeout 4 --silent ${VAULT_ADDR}/v1/sys/init | jq -re .initialized)"
+vault_sealed="$(curl --connect-timeout 4 --silent ${VAULT_ADDR}/v1/sys/seal-status | jq -re .sealed)"
 
 if [[ "${vault_init}" == "false" ]] || [[ "${vault_sealed}" == "true" ]]; then
   vault_reset
