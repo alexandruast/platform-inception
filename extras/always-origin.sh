@@ -28,12 +28,12 @@ for scope in origin factory prod; do
   echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
 done
 
-# setting up vault demo
-VAULT_ADDR="http://${server1_ip}:8200" CONSUL_HTTP_ADDR="http://${server1_ip}:8500" ./extras/vault-demo.sh
+# setting up vault
+VAULT_CLUSTER_IPS="$(echo ${server_nodes_json} | jq -re .[].ip)" ./extras/vault-init.sh
 
 # garbage collection nodes
 curl --silent -X PUT "http://${server1_ip}:4646/v1/system/gc"
 
-echo "Consul UI is available at http://${server1_ip}:8500"
-echo "Nomad UI is available at http://${server1_ip}:4646"
-echo "Vault is available at http://${server1_ip}:8200"
+echo "Consul API/UI is available at http://${server1_ip}:8500"
+echo "Nomad API/UI is available at http://${server1_ip}:4646"
+echo "Vault API is available at http://${server1_ip}:8200"

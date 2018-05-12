@@ -2,10 +2,10 @@
 set -eEo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
-curl -Ssf -X DELETE ${CONSUL_HTTP_ADDR}/v1/kv/vault?recurse >/dev/null
+VAULT_ADDR="http://$(echo "${VAULT_CLUSTER_IPS}" | head -1):8200"
+CONSUL_HTTP_ADDR="http://$(echo "${VAULT_CLUSTER_IPS}" | head -1):8500"
 
-VAULT_ADDR="${VAULT_ADDR:-http://127.0.0.1:8200}"
-CONSUL_HTTP_ADDR="${CONSUL_HTTP_ADDR:-http://127.0.0.1:8500}"
+curl -Ssf -X DELETE ${CONSUL_HTTP_ADDR}/v1/kv/vault?recurse >/dev/null
 
 APP_POLICY='app-f85b911a'
 
@@ -17,10 +17,13 @@ vault_reset() {
   vault_init="$(curl -Ssf -X PUT -d "{\"secret_shares\":1,\"secret_threshold\":1}" ${VAULT_ADDR}/v1/sys/init)"
   VAULT_ROOT_TOKEN="$(echo ${vault_init} | jq -re .root_token)"
   VAULT_UNSEAL_KEY="$(echo ${vault_init} | jq -re .keys[0])"
-  curl -Ssf -X PUT -d "{\"key\": \"${VAULT_UNSEAL_KEY}\"}" ${VAULT_ADDR}/v1/sys/unseal >/dev/null
+  # unseal all servers
+  for s in ${VAULT_CLUSTER_IPS}; do
+    curl -Ssf -X PUT -d "{\"key\": \"${VAULT_UNSEAL_KEY}\"}" http://${s}:8200/v1/sys/unseal >/dev/null
+  done
   # sleep is required here, unseal is not instant
   sleep 0.25
-  echo "[info] vault unsealed"
+  echo "[info] vault servers unsealed"
   curl -Ssf -X POST -H "X-Vault-Token:${VAULT_ROOT_TOKEN}" -d "{\"type\":\"approle\"}" ${VAULT_ADDR}/v1/sys/auth/approle
   echo "[info] vault enabled approle backend"
   curl -Ssf -X PUT -H "X-Vault-Token:${VAULT_ROOT_TOKEN}" -d "{\"type\":\"syslog\"}" ${VAULT_ADDR}/v1/sys/audit/syslog

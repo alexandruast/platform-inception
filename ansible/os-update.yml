@@ -6,5 +6,4 @@
     - role: alive
     - role: gather-facts
     - role: check-sudo
-    - role: housekeeping
     - role: os-update

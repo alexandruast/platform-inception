@@ -16,6 +16,11 @@
   when:  reboot_hint.rc != 0
   register: machine_reboot
   become: true
+  
+- name: "sleep for 10 seconds"
+  wait_for: timeout=10
+  delegate_to: localhost
+  changed_when: false
 
 - name: "waiting for connection"
   wait_for_connection:
