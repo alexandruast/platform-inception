@@ -1,6 +1,6 @@
 - name: "service binaries downloaded and installed"
   get_url:
-    url:  "https://github.com/tests-always-included/{{service_name}}/blob/{{service_version}}/{{service_name}}"
+    url:  "https://raw.githubusercontent.com/tests-always-included/{{service_name}}/{{service_version}}/{{service_name}}"
     dest: "{{artifacts_dir}}/{{service_name}}-{{service_version}}"
     force: no
   register: service_archive
