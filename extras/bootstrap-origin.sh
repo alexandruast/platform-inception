@@ -38,7 +38,7 @@ deploy_factory_prod_jenkins() {
     JENKINS_BUILD_JOB="${scope}-jenkins-deploy" \
       ANSIBLE_TARGET="vagrant@${!ip_addr_var}" \
       JENKINS_SCOPE="${scope}" \
-      ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'dnsmasq_resolv':'supersede','dns_servers':['8.8.8.8','8.8.4.4']}" \
+      ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'dnsmasq_resolv':'supersede','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4']}" \
       ./jenkins-query.sh \
       ./common/jobs/build-jenkins-deploy-job.groovy
     echo "${scope}-jenkins is online: http://${!ip_addr_var}:${JENKINS_PORT} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
@@ -63,7 +63,7 @@ vault_server_deploy() {
   JENKINS_BUILD_JOB="infra-generic-vault-server-deploy" \
     JENKINS_ADDR="http://127.0.0.1:${tunnel_port}" \
     JENKINS_ADMIN_PASS="${ci_admin_pass}" \
-    ANSIBLE_TARGET="${server1_ip}" \
+    ANSIBLE_TARGET="$(echo ${server_nodes_json} | jq -re .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')" \
     ANSIBLE_SCOPE='server' \
     ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'serial_value':'100%','ansible_user':'vagrant','standalone_install':false}" \
     ./jenkins-query.sh ./common/jobs/build-infra-generic-deploy-job.groovy
