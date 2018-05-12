@@ -10,20 +10,6 @@ SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/d
 
 force_setup='false'
 
-backup_jenkins() {
-  if sudo test -d "/usr/local/share/jenkins/jobs"; then
-    echo "backing up jenkins..."
-    sudo tar -cpzf /tmp/jenkins_backup.tar.gz --exclude=jenkins_backup.tar.gz --exclude=config.xml --one-file-system -C /usr/local/share/jenkins ./jobs
-  fi
-}
-
-restore_jenkins() {
-  if  [[ -f "/tmp/jenkins_backup.tar.gz" ]]; then
-    echo "restoring jenkins..."
-    sudo tar -xpzf /tmp/jenkins_backup.tar.gz -C /usr/local/share/jenkins --numeric-owner
-  fi
-}
-
 setup_origin_jenkins() {
 scope='origin'
 # shellcheck source=origin/.scope
@@ -33,11 +19,7 @@ export JENKINS_ADDR="http://${origin_jenkins_ip}:${JENKINS_PORT}"
 ANSIBLE_TARGET="127.0.0.1" \
   ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'dnsmasq_resolv':'supersede','dns_servers':['8.8.8.8','8.8.4.4']}" \
   ./apl-wrapper.sh ansible/target-${scope}-jenkins.yml
-backup_jenkins
 ./jenkins-setup.sh
-restore_jenkins
-./jenkins-query.sh ./common/safe-restart.groovy
-./jenkins-query.sh ./common/is-online.groovy
 echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
 echo "waiting for system-${scope}-job-seed job to complete..."
 JENKINS_BUILD_JOB=system-${scope}-job-seed \
@@ -179,7 +161,6 @@ if [[ -f "/tmp/ansible-dir-md5" ]]; then
 fi
 
 setup_origin_jenkins
-exit 0
 overwrite_origin_keypair
 deploy_factory_prod_jenkins
 overwrite_factory_prod_jenkins_keypair
