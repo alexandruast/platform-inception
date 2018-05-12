@@ -1,5 +1,3 @@
-https://github.com/tests-always-included/mo/blob/2.0.4/mo
-
 - name: "service binaries downloaded and installed"
   get_url:
     url:  "https://github.com/tests-always-included/{{service_name}}/blob/{{service_version}}/{{service_name}}"
