@@ -24,7 +24,7 @@ node {
       sh '''#!/usr/bin/env bash
         set -xeEo pipefail
         trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
-        trap 'ssh -S ssh-control-socket -O exit ${ANSIBLE_TARGET}; done' EXIT
+        trap 'ssh -S ssh-control-socket -O exit ${ANSIBLE_TARGET}' EXIT
         SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes -o ExitOnForwardFailure=yes'
         ssh ${SSH_OPTS} ${ANSIBLE_TARGET} "sudo yum -q -y install python libselinux-python"
         source ./${JENKINS_SCOPE}/.scope

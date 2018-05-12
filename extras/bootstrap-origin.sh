@@ -53,9 +53,9 @@ deploy_factory_prod_jenkins() {
     export JENKINS_ADDR="http://${origin_jenkins_ip}:${JENKINS_PORT}"
     echo "waiting for ${scope}-jenkins-deploy job to complete..."
     JENKINS_BUILD_JOB="${scope}-jenkins-deploy" \
-      ANSIBLE_TARGET="${!ip_addr_var}" \
+      ANSIBLE_TARGET="vagrant@${!ip_addr_var}" \
       JENKINS_SCOPE="${scope}" \
-      ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'ansible_user':'vagrant','dnsmasq_resolv':'supersede','dns_servers':['8.8.8.8','8.8.4.4']}" \
+      ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'dnsmasq_resolv':'supersede','dns_servers':['8.8.8.8','8.8.4.4']}" \
       ./jenkins-query.sh \
       ./common/jobs/build-jenkins-deploy-job.groovy
     echo "${scope}-jenkins is online: http://${!ip_addr_var}:${JENKINS_PORT} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
