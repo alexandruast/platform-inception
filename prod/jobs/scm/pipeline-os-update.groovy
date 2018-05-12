@@ -15,7 +15,7 @@ node {
   }
   stage('update') {
     sh '''
-      ./apl-wrapper.sh ansible/rhel-update.yml
+      ./apl-wrapper.sh ansible/os-update.yml
     '''
   }
   stage('cleanup') {
