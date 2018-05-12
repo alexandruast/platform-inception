@@ -1,8 +1,18 @@
-- name: "binary is downloaded and installed"
+https://github.com/tests-always-included/mo/blob/2.0.4/mo
+
+- name: "service binaries downloaded and installed"
   get_url:
-    url:  https://raw.githubusercontent.com/tests-always-included/mo/master/mo
-    dest: /usr/local/bin/mo
-    force: "{{download_force|default(false)}}"
-    mode: +x
+    url:  "https://github.com/tests-always-included/{{service_name}}/blob/{{service_version}}/{{service_name}}"
+    dest: "{{artifacts_dir}}/{{service_name}}-{{service_version}}"
+    force: no
+  register: service_archive
   become: true
 
+- name: "service binaries installed"
+  copy:
+    src:  "{{artifacts_dir}}/{{service_name}}-{{service_version}}"
+    dest: "/usr/local/bin/{{service_name}}"
+    mode: +x
+    remote_src: yes
+  become: true
+  when: service_archive.changed

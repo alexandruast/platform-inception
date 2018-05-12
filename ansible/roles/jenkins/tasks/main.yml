@@ -1,3 +1,11 @@
+- name: "service binaries downloaded and installed"
+  get_url:
+    url:  "http://mirrors.jenkins.io/war/{{service_version}}/jenkins.war"
+    dest: "{{artifacts_dir}}/{{service_name}}-{{service_version}}.war"
+    force: no
+  register: service_archive
+  become: true
+
 - name: "service group present"
   group:
     name: "{{service_group}}"
@@ -16,15 +24,6 @@
     mode: 0750
     owner:  "{{service_user}}"
     group:  "{{service_group}}"
-  become: true
-
-- name: "service binaries downloaded and installed"
-  get_url:
-    url:  "http://mirrors.jenkins.io/war/{{service_version}}/jenkins.war"
-    dest: "{{jenkins_war}}"
-    owner: "{{service_user}}"
-    group: "{{service_group}}"
-    force: "{{download_force|default(false)}}"
   become: true
 
 - name: "systemd service config updated"
@@ -69,17 +68,40 @@
     enabled: yes
   become: true
 
-- name: "service started"
-  systemd:
-    name: "{{service_name}}"
-    state: started
-  become: true
-  register: service_started
+- block:
+  - name: "service stopped"
+    systemd:
+      name: "{{service_name}}"
+      state: stopped
+    become: true
+
+  - name: "service binaries installed"
+    copy:
+      src:  "{{artifacts_dir}}/{{service_name}}-{{service_version}}.war"
+      dest: "{{jenkins_war}}"
+      owner:  "{{service_user}}"
+      group:  "{{service_group}}"
+      remote_src: yes
+    become: true
+
+  - name: "service started"
+    systemd:
+      name: "{{service_name}}"
+      state: started
+    register: service_started
+    become: true
+  
+  when: service_archive.changed
 
 - name: "restart service"
   systemd:
     name: "{{service_name}}"
     state: restarted
   become: true
-  when: ((systemd_config is changed or docker_group is changed) and not service_started is changed) or oracle_java_installed.changed|default(false) or openjdk_java_installed.changed|default(false)
+  when: (systemd_config is changed 
+    or service_config is changed 
+    or docker_group is changed 
+    or oracle_java_installed.changed|default(false) 
+    or openjdk_java_installed.changed|default(false)) 
+    and not service_started is changed
 
