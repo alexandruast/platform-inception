@@ -1,7 +1,7 @@
 - name: "service archive downloaded"
   get_url:
-    url:  "https://releases.hashicorp.com/{{service_name}}/{{service_version}}/{{service_name}}-{{service_version}}-linux-amd64.zip"
-    dest: "{{artifacts_dir}}/{{service_name}}-{{service_version}}-linux-amd64.zip"
+    url:  "https://releases.hashicorp.com/{{service_name}}/{{service_version}}/{{service_name}}_{{service_version}}_linux_amd64.zip"
+    dest: "{{artifacts_dir}}/{{service_name}}_{{service_version}}_linux_amd64.zip"
     force: no
   register: service_archive
   become: true
@@ -71,7 +71,7 @@
   
     - name: "service binaries installed"
       unarchive:
-        src:  "{{artifacts_dir}}/{{service_name}}-{{service_version}}-linux-amd64.zip"
+        src:  "{{artifacts_dir}}/{{service_name}}_{{service_version}}_linux_amd64.zip"
         dest: /usr/local/bin/
         mode: +x
         remote_src: yes
@@ -97,7 +97,7 @@
 
 - name: "service binaries installed"
   unarchive:
-    src:  "{{artifacts_dir}}/{{service_name}}-{{service_version}}-linux-amd64.zip"
+    src:  "{{artifacts_dir}}/{{service_name}}_{{service_version}}_linux_amd64.zip"
     dest: /usr/local/bin/
     mode: +x
     remote_src: yes
