@@ -14,11 +14,11 @@
 
     - include_role:
         name: check-sudo
+        
+    - include_role:
+        name: housekeeping
 
     - block:
-      - include_role:
-          name: housekeeping
-
       - include_role:
           name: base
 
@@ -32,17 +32,6 @@
           name: ansible
 
       - include_role:
-          name: consul
-        vars:
-          service_mode: dev
-
-      - include_role:
-          name: terraform
-
-      - include_role:
-          name: terragrunt
-
-      - include_role:
           name: mo
 
       - include_role:
@@ -52,6 +41,17 @@
           name: setup-completed
 
       when: not ansible_local.setup_completed|default(false) or force_setup|default(false)
+
+    - include_role:
+        name: consul
+      vars:
+        service_mode: dev
+
+    - include_role:
+        name: terraform
+
+    - include_role:
+        name: terragrunt
 
     - include_role:
         name: java8-jre

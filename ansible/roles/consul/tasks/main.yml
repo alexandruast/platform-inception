@@ -2,15 +2,8 @@
   get_url:
     url:  "https://releases.hashicorp.com/{{service_name}}/{{service_version}}/{{service_name}}_{{service_version}}_linux_amd64.zip"
     dest: "{{artifacts_dir}}/{{service_name}}_{{service_version}}_linux_amd64.zip"
-    force: "{{download_force|default(false)}}"
-  become: true
-
-- name: "service binaries installed"
-  unarchive:
-    src:  "{{artifacts_dir}}/{{service_name}}_{{service_version}}_linux_amd64.zip"
-    dest: /usr/local/bin/
-    mode: +x
-    remote_src: yes
+    force: no
+  register: service_archive
   become: true
 
 - block:
@@ -68,14 +61,31 @@
       name: "{{service_name}}"
       enabled: yes
     become: true
+
+  - block:
+    - name: "service stopped"
+      systemd:
+        name: "{{service_name}}"
+        state: stopped
+      become: true
+  
+    - name: "service binaries installed"
+      unarchive:
+        src:  "{{artifacts_dir}}/{{service_name}}_{{service_version}}_linux_amd64.zip"
+        dest: /usr/local/bin/
+        mode: +x
+        remote_src: yes
+      become: true
+  
+    - name: "service started"
+      systemd:
+        name: "{{service_name}}"
+        state: started
+      register: service_started
+      become: true
     
-  - name: "service started"
-    systemd:
-      name: "{{service_name}}"
-      state: started
-    become: true
-    register: service_started
-    
+    when: service_archive.changed
+
   - name: "restart service"
     systemd:
       name: "{{service_name}}"

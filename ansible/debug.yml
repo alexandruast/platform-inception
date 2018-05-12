@@ -7,4 +7,6 @@
       tags: always
     - role: debug
       tags: always
+    - role: consul
+      service_mode: server
 

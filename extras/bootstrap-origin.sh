@@ -127,7 +127,7 @@ install_pip() {
 }
 
 install_ansible() {
-  sudo pip install ansible==2.4.4.0
+  sudo pip install ansible==2.5.2
 }
 
 # Overwrites Origin-Jenkins ssh key pair, created by Ansible in previous steps
