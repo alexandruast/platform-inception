@@ -11,7 +11,7 @@ SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/d
 force_setup='false'
 
 backup_jenkins() {
-  if  [[ -d "/usr/local/share/jenkins/jobs" ]]; then
+  if sudo test -d "/usr/local/share/jenkins/jobs"; then
     echo "backing up jenkins..."
     sudo tar -cpzf /tmp/jenkins_backup.tar.gz --exclude=jenkins_backup.tar.gz --exclude=config.xml --one-file-system -C /usr/local/share/jenkins ./jobs
   fi
@@ -21,7 +21,6 @@ restore_jenkins() {
   if  [[ -f "/tmp/jenkins_backup.tar.gz" ]]; then
     echo "restoring jenkins..."
     sudo tar -xpzf /tmp/jenkins_backup.tar.gz -C /usr/local/share/jenkins --numeric-owner
-    rm -f /tmp/jenkins_backup.tar.gz
   fi
 }
 
@@ -43,8 +42,6 @@ JENKINS_BUILD_JOB=system-${scope}-job-seed \
   ./jenkins-query.sh \
   ./common/jobs/build-simple-job.groovy
 }
-
-exit
 
 deploy_factory_prod_jenkins() {
   for scope in factory prod; do
@@ -171,6 +168,7 @@ cd /vagrant/
 
 curr_ansible_dir_md5="$(tar -cf - -C /vagrant/ansible ./ | md5sum | cut -d' ' -f1)"
 
+# if ansible dir content changed, force_setup is true
 if [[ -f "/tmp/ansible-dir-md5" ]]; then
   prev_ansible_dir_md5="$(cat /tmp/ansible-dir-md5 | head -1 | cut -d' ' -f1)"
   if [[ "${curr_ansible_dir_md5}" != "${prev_ansible_dir_md5}" ]]; then
@@ -179,6 +177,7 @@ if [[ -f "/tmp/ansible-dir-md5" ]]; then
 fi
 
 setup_origin_jenkins
+exit 0
 overwrite_origin_keypair
 deploy_factory_prod_jenkins
 overwrite_factory_prod_jenkins_keypair
