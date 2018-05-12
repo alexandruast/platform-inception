@@ -94,3 +94,13 @@
     when: (systemd_config is changed or service_config is changed) and not service_started is changed
 
   when: service_mode|default(false)
+
+- name: "service binaries installed"
+  unarchive:
+    src:  "{{artifacts_dir}}/{{service_name}}_{{service_version}}_linux_amd64.zip"
+    dest: /usr/local/bin/
+    mode: +x
+    remote_src: yes
+  become: true
+  when: not service_mode|default(false)
+

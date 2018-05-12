@@ -1,9 +1,9 @@
-- name: "service binaries downloaded and installed"
-  unarchive:
-    src:  https://releases.hashicorp.com/{{service_name}}/{{service_version}}/{{service_name}}_{{service_version}}_linux_amd64.zip
-    dest: /usr/local/bin/
-    mode: +x
-    remote_src: yes
+- name: "service archive downloaded"
+  get_url:
+    url:  "https://releases.hashicorp.com/{{service_name}}/{{service_version}}/{{service_name}}_{{service_version}}_linux_amd64.zip"
+    dest: "{{artifacts_dir}}/{{service_name}}_{{service_version}}_linux_amd64.zip"
+    force: no
+  register: service_archive
   become: true
 
 - block:
@@ -84,12 +84,29 @@
       enabled: yes
     become: true
 
-  - name: "service started"
-    systemd:
-      name: "{{service_name}}"
-      state: started
-    become: true
-    register: service_started
+  - block:
+    - name: "service stopped"
+      systemd:
+        name: "{{service_name}}"
+        state: stopped
+      become: true
+  
+    - name: "service binaries installed"
+      unarchive:
+        src:  "{{artifacts_dir}}/{{service_name}}_{{service_version}}_linux_amd64.zip"
+        dest: /usr/local/bin/
+        mode: +x
+        remote_src: yes
+      become: true
+  
+    - name: "service started"
+      systemd:
+        name: "{{service_name}}"
+        state: started
+      register: service_started
+      become: true
+    
+    when: service_archive.changed
     
   - name: "restart service"
     systemd:
@@ -99,3 +116,13 @@
     when: (systemd_config is changed or service_config is changed or docker_group is changed) and not service_started is changed
 
   when: service_mode|default(false)
+
+- name: "service binaries installed"
+  unarchive:
+    src:  "{{artifacts_dir}}/{{service_name}}_{{service_version}}_linux_amd64.zip"
+    dest: /usr/local/bin/
+    mode: +x
+    remote_src: yes
+  become: true
+  when: not service_mode|default(false)
+
