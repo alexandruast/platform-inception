@@ -36,6 +36,8 @@ ANSIBLE_TARGET="127.0.0.1" \
 backup_jenkins
 ./jenkins-setup.sh
 restore_jenkins
+./jenkins-query.sh ./common/safe-restart.groovy
+./jenkins-query.sh ./common/is-online.groovy
 echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
 echo "waiting for system-${scope}-job-seed job to complete..."
 JENKINS_BUILD_JOB=system-${scope}-job-seed \
