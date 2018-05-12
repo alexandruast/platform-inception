@@ -1,15 +1,14 @@
 node {
-  stage('validate') {
+  stage('validation') {
     sh '''
       [ x"${ANSIBLE_TARGET}" != 'x' ]
       [ x"${ANSIBLE_SCOPE}" != 'x' ]
       echo "ANSIBLE_EXTRAVARS=${ANSIBLE_EXTRAVARS}"
       ansible --version
       jq --version
-      curl -Ss http://127.0.0.1:8500/v1/status/leader
     '''
   }
-  stage('prepare') {
+  stage('preparation') {
     checkout([$class: 'GitSCM', 
       branches: [[name: '*/devel']], 
       doGenerateSubmoduleConfigurations: false, 
@@ -32,25 +31,19 @@ node {
         fi
       done
       SSH_TARGETS="$(echo "${SSH_TARGETS[*]}")"
-      curl -Ss --request PUT --data "${SSH_TARGETS/ /,}" http://127.0.0.1:8500/v1/kv/jenkins/pipeline_nomad_deploy_ssh_targets
+      echo "SSH_TARGETS=${SSH_TARGETS/ /,}" >> .environment
       '''
-  }
-  stage('provision') {
-    sh '''#!/usr/bin/env bash
-      set -xeEo pipefail
-      trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
-      SSH_TARGETS="$(curl -Ss http://127.0.0.1:8500/v1/kv/jenkins/pipeline_nomad_deploy_ssh_targets?raw)"
-      SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
-      for s in ${SSH_TARGETS/,/ }; do
-        ssh ${SSH_OPTS} ${s} "sudo yum -q -y install python libselinux-python"
-      done
-      ./apl-wrapper.sh ansible/target-nomad-${ANSIBLE_SCOPE}.yml
-    '''
   }
   stage('deploy') {
     sh '''#!/usr/bin/env bash
       set -xeEo pipefail
       trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
+      source .environment
+      SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
+      for s in ${SSH_TARGETS/,/ }; do
+        ssh ${SSH_OPTS} ${s} "sudo yum -q -y install python libselinux-python"
+      done
+      ./apl-wrapper.sh ansible/target-nomad-${ANSIBLE_SCOPE}.yml
     '''
   }
   stage('cleanup') {
