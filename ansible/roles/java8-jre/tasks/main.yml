@@ -23,17 +23,12 @@
   when: java_provider == 'openjdk'
 
 - block:
-  - name: "stat {{artifacts_dir}}/{{oracle_java_installer}}"
-    stat: path="{{artifacts_dir}}/{{oracle_java_installer}}"
-    become: true
-    register: oracle_java_installer_check
-
   - name: "{{oracle_java_get_url}} package downloaded"
     get_url:
       url: "{{oracle_java_get_url}}"
       dest: "{{artifacts_dir}}/{{oracle_java_installer}}"
       headers: 'Cookie:oraclelicense=accept-securebackup-cookie'
-      force: "{{download_force|default(false)}}"
+      force: no
     become: true
     when: oracle_java_installer_check.stat.exists == false
 

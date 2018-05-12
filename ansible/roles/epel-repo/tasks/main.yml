@@ -17,4 +17,5 @@
       name: "{{artifacts_dir}}/{{epel_release_installer}}"
       state: present
     become: true
+
   when: repos_enabled|default(false)
