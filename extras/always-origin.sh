@@ -8,10 +8,10 @@ ci_factory_json=$3
 ci_prod_json=$4
 server_nodes_json=$5
 
-origin_jenkins_ip="$(echo ${ci_origin_json} | jq -r .ip)"
-factory_jenkins_ip="$(echo ${ci_factory_json} | jq -r .ip)"
-prod_jenkins_ip="$(echo ${ci_prod_json} | jq -r .ip)"
-server1_ip="$(echo ${server_nodes_json} | jq -r .[0].ip)"
+origin_jenkins_ip="$(echo ${ci_origin_json} | jq -re .ip)"
+factory_jenkins_ip="$(echo ${ci_factory_json} | jq -re .ip)"
+prod_jenkins_ip="$(echo ${ci_prod_json} | jq -re .ip)"
+server1_ip="$(echo ${server_nodes_json} | jq -re .[0].ip)"
 
 cd /vagrant/
 

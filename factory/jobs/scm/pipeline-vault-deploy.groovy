@@ -21,7 +21,7 @@ node {
         if [[ *"@"* == "${s}" ]]; then
           SSH_TARGETS=(${SSH_TARGETS[@]} "${s}")
         else
-          SSH_USER=$(echo "${ANSIBLE_EXTRAVARS}" | tr "'" '"' | jq -r .ansible_user)
+          SSH_USER=$(echo "${ANSIBLE_EXTRAVARS}" | tr "'" '"' | jq -re .ansible_user)
           if [[ "${SSH_USER}" != "" ]]; then
             SSH_TARGETS=(${SSH_TARGETS[@]} "${SSH_USER}@${s}")
           else

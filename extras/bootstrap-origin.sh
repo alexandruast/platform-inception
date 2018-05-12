@@ -51,7 +51,7 @@ nomad_server_deploy() {
   JENKINS_BUILD_JOB="infra-generic-nomad-server-deploy" \
     JENKINS_ADDR="http://127.0.0.1:${tunnel_port}" \
     JENKINS_ADMIN_PASS="${ci_admin_pass}" \
-    ANSIBLE_TARGET="$(echo ${server_nodes_json} | jq -r .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')" \
+    ANSIBLE_TARGET="$(echo ${server_nodes_json} | jq -re .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')" \
     ANSIBLE_SCOPE='server' \
     ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'serial_value':'100%','ansible_user':'vagrant','dnsmasq_resolv':'supersede','dns_servers':['/consul/127.0.0.1#8600','8.8.8.8','8.8.4.4'],'service_bind_ip':'{{ansible_host}}'}" \
     ./jenkins-query.sh ./common/jobs/build-infra-generic-deploy-job.groovy  
@@ -76,7 +76,7 @@ nomad_compute_deploy() {
     JENKINS_ADDR="http://127.0.0.1:${tunnel_port}" \
     JENKINS_ADMIN_PASS="${ci_admin_pass}" \
     ANSIBLE_SCOPE='compute' \
-    ANSIBLE_TARGET="$(echo ${compute_nodes_json} | jq -r .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')" \
+    ANSIBLE_TARGET="$(echo ${compute_nodes_json} | jq -re .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')" \
     ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'serial_value':'100%','ansible_user':'vagrant','dnsmasq_resolv':'supersede','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'service_bind_ip':'{{ansible_host}}'}" \
     ./jenkins-query.sh ./common/jobs/build-infra-generic-deploy-job.groovy
 }
@@ -142,11 +142,11 @@ which pip >/dev/null || install_pip
 which ansible >/dev/null || install_ansible
 which jq >/dev/null || install_jq
 
-origin_jenkins_ip="$(echo ${ci_origin_json} | jq -r .ip)"
-factory_jenkins_ip="$(echo ${ci_factory_json} | jq -r .ip)"
-prod_jenkins_ip="$(echo ${ci_prod_json} | jq -r .ip)"
-server1_ip="$(echo ${server_nodes_json} | jq -r .[0].ip)"
-server2_ip="$(echo ${server_nodes_json} | jq -r .[1].ip)"
+origin_jenkins_ip="$(echo ${ci_origin_json} | jq -re .ip)"
+factory_jenkins_ip="$(echo ${ci_factory_json} | jq -re .ip)"
+prod_jenkins_ip="$(echo ${ci_prod_json} | jq -re .ip)"
+server1_ip="$(echo ${server_nodes_json} | jq -re .[0].ip)"
+server2_ip="$(echo ${server_nodes_json} | jq -re .[1].ip)"
 
 cd /vagrant/
 
