@@ -51,7 +51,7 @@ if [[ $web_status != 200 ]]; then
 fi
 
 # Get CSRF status from jenkins
-CSRF="$(curl --connect-timeout $connect_timeout ${auth_args[*]} -s ${JENKINS_ADDR}/api/json?pretty=true | jq -re '.useCrumbs' | awk '{print tolower($0)}')"
+CSRF="$(curl --connect-timeout $connect_timeout ${auth_args[*]} -s ${JENKINS_ADDR}/api/json?pretty=true | jq -r '.useCrumbs' | awk '{print tolower($0)}')"
 
 if [[ $CSRF == "true" ]]; then
   token=$(curl --connect-timeout $connect_timeout ${auth_args[*]} -s ${JENKINS_ADDR}/crumbIssuer/api/json | jq -re '.crumbRequestField + "=" + .crumb')
