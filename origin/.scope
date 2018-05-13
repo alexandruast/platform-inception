@@ -5,16 +5,17 @@ export JENKINS_ADMIN_USER='admin'
 declare -a ARR_JENKINS_SETUP_SCRIPTS
 ARR_JENKINS_SETUP_SCRIPTS=(
   "common/is-online.groovy"
-  "common/quiet-enable.groovy"
+  "common/safe-restart.groovy"
   "common/jobs-backup.groovy"
-  "origin/plugins-install.groovy"
-  "common/useradd-admin.groovy"
   "common/jobs-delete.groovy"
   "common/views-delete.groovy"
-  "origin/jobs/origin-job-dsl-import.groovy"
+  "origin/plugins-install.groovy"
+  "common/useradd-admin.groovy"
   "common/security-setup.groovy"
   "common/jobs-restore.groovy"
+  "origin/jobs/origin-job-dsl-import.groovy"
   "common/safe-restart.groovy"
   "common/is-online.groovy"
+  "common/quiet-cancel.groovy"
 )
 export JENKINS_SETUP_SCRIPTS="${ARR_JENKINS_SETUP_SCRIPTS[*]}"
