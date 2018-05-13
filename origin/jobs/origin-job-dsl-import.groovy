@@ -7,8 +7,8 @@ job_name = 'system-origin-job-seed'
 job_description = "Dynamically created by jenkins-setup\nAny changes to this item will be overwritten without notice."
 git_repository = 'https://github.com/alexandruast/platform-inception'
 git_branch = '*/devel'
-set_targets = "origin/jobs/job-dsl/**/*.groovy,
-               common/jobs/job-dsl/group_all/**/*.groovy"
+set_targets = "origin/jobs/job-dsl/**/*.groovy,"
+            + "common/jobs/job-dsl/group_all/**/*.groovy"
 
 jenkins = Jenkins.instance
 
