@@ -1,5 +1,4 @@
 node {
-  properties([disableConcurrentBuilds()])
   wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs:[
     [password: "params.JENKINS_ADMIN_PASS", var: 'JENKINS_ADMIN_PASS']
   ]]) {
