@@ -7,6 +7,7 @@ ARR_JENKINS_SETUP_SCRIPTS=(
   "common/is-online.groovy"
   "common/safe-restart.groovy"
   "common/is-online.groovy"
+  "common/jobs-backup.groovy"
   "common/jobs-delete.groovy"
   "common/views-delete.groovy"
   "factory/plugins-install.groovy"

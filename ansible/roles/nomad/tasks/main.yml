@@ -98,15 +98,15 @@
         mode: +x
         remote_src: yes
       become: true
-  
-    - name: "service started"
-      systemd:
-        name: "{{service_name}}"
-        state: started
-      register: service_started
-      become: true
-    
+
     when: service_archive.changed
+
+  - name: "service started"
+    systemd:
+      name: "{{service_name}}"
+      state: started
+    register: service_started
+    become: true
     
   - name: "restart service"
     systemd:
