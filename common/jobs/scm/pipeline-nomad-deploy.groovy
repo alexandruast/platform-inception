@@ -1,5 +1,4 @@
 node {
-  properties([disableConcurrentBuilds()])
   stage('validation') {
     sh '''
       [ x"${ANSIBLE_TARGET}" != 'x' ]
