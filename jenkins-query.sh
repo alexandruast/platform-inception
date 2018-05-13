@@ -3,7 +3,7 @@
 set -eEo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 which mo >/dev/null 2>&1
-readonly max_timeout=120
+readonly max_timeout=180
 readonly connect_timeout=5
 declare -a auth_args EXCEPTIONS PASS
 
