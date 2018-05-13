@@ -5,6 +5,7 @@ export JENKINS_ADMIN_USER='admin'
 declare -a ARR_JENKINS_SETUP_SCRIPTS
 ARR_JENKINS_SETUP_SCRIPTS=(
   "common/is-online.groovy"
+  "common/quiet-enable.groovy"
   "common/jobs-backup.groovy"
   "origin/plugins-install.groovy"
   "common/useradd-admin.groovy"
