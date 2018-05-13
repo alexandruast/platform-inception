@@ -3,12 +3,11 @@ import hudson.plugins.git.GitSCM
 import hudson.plugins.git.BranchSpec
 import javaposse.jobdsl.plugin.*
 
-job_name = 'system-origin-job-seed'
-job_description = "Dynamically created by jenkins-setup\nAny changes to this item will be overwritten without notice."
-git_repository = 'https://github.com/alexandruast/platform-inception'
-git_branch = '*/devel'
-set_targets = "origin/jobs/job-dsl/**/*.groovy,
-               common/jobs/job-dsl/group_all/**/*.groovy"
+job_name='system-factory-job-seed'
+job_description="Dynamically created by jenkins-setup\nAny changes to this item will be overwritten without notice."
+git_repository='https://github.com/alexandruast/platform-inception'
+git_branch='*/devel'
+targets_dir='factory/jobs/job-dsl'
 
 jenkins = Jenkins.instance
 
@@ -29,7 +28,7 @@ job.scm.branches = [new BranchSpec(git_branch)]
 job.getBuildersList().clear()
 
 dslBuilder = new ExecuteDslScripts()
-dslBuilder.setTargets(set_targets)
+dslBuilder.setTargets("$targets_dir/**/*.groovy")
 dslBuilder.setRemovedJobAction(RemovedJobAction.DISABLE)
 dslBuilder.setRemovedViewAction(RemovedViewAction.IGNORE)
 dslBuilder.setLookupStrategy(LookupStrategy.JENKINS_ROOT)

@@ -12,7 +12,7 @@ pipelineJob("infra-generic-os-update") {
         git {
           remote { url(repo) }
           branches('devel')
-          scriptPath("origin/jobs/scm/pipeline-os-update.groovy")
+          scriptPath("common/jobs/scm/pipeline-os-update.groovy")
           extensions {
             cleanBeforeCheckout()
           }
