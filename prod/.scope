@@ -13,10 +13,10 @@ ARR_JENKINS_SETUP_SCRIPTS=(
   "prod/plugins-install.groovy"
   "common/useradd-admin.groovy"
   "common/security-setup.groovy"
+  "prod/jobs/prod-job-dsl-import.groovy"
   "common/jobs-restore.groovy"
   "common/safe-restart.groovy"
   "common/is-online.groovy"
-  "prod/jobs/prod-job-dsl-import.groovy"
   "common/quiet-cancel.groovy"
 )
 export JENKINS_SETUP_SCRIPTS="${ARR_JENKINS_SETUP_SCRIPTS[*]}"
