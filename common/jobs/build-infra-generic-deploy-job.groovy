@@ -2,6 +2,7 @@ def instance = Hudson.instance
 def job = instance.getItem("{{JENKINS_BUILD_JOB}}")
 def params = [
   new StringParameterValue("ANSIBLE_TARGET", "{{ANSIBLE_TARGET}}"),
+  new StringParameterValue("ANSIBLE_SERVICE", "{{ANSIBLE_SERVICE}}"),
   new StringParameterValue("ANSIBLE_SCOPE", "{{ANSIBLE_SCOPE}}"),
   new StringParameterValue("ANSIBLE_EXTRAVARS", "{{ANSIBLE_EXTRAVARS}}")
 ]

@@ -25,6 +25,7 @@ Prod-Jenkins creates and manages all prod environments, where things get deploye
 Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory-Jenkins.
 
 #### Changelog
+one generic service_deploy_job_dsl.groovy with maps, instead of three  
 moved from triggers plugin to built-in triggers  
 added jenkins job for consul server  
 fixed service start in ansible playbooks for services  

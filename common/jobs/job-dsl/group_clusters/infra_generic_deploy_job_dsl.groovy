@@ -14,6 +14,7 @@ services.each { service, scopes ->
       keepDependencies(false)
       parameters {
         stringParam('ANSIBLE_TARGET', "192.0.2.255", "Which targets to use")
+        choiceParam('ANSIBLE_SERVICE', ["$service"], "Which service to deploy")
         choiceParam('ANSIBLE_SCOPE', ["$scope"], "Running in $scope scope")
         stringParam('ANSIBLE_EXTRAVARS', "{'ansible_user':'ec2-user'}", "Optional: JSON format single line, single quoutes")
       }
@@ -23,7 +24,7 @@ services.each { service, scopes ->
             git {
               remote { url(repo) }
               branches('devel')
-              scriptPath("common/jobs/scm/pipeline-${service}-deploy.groovy")
+              scriptPath("common/jobs/scm/pipeline-infra-generic-deploy.groovy")
               extensions {
                 cleanBeforeCheckout()
               }

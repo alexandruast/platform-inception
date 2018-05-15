@@ -2,6 +2,7 @@ node {
   stage('validation') {
     sh '''
       [ x"${ANSIBLE_TARGET}" != 'x' ]
+      [ x"${ANSIBLE_SERVICE}" != 'x' ]
       [ x"${ANSIBLE_SCOPE}" != 'x' ]
       echo "ANSIBLE_EXTRAVARS=${ANSIBLE_EXTRAVARS}"
       ansible --version
@@ -36,7 +37,7 @@ node {
       for s in ${SSH_TARGETS[@]}; do
         ssh ${SSH_OPTS} ${s} "sudo yum -q -y install python libselinux-python"
       done
-      ./apl-wrapper.sh ansible/target-nomad-${ANSIBLE_SCOPE}.yml
+      ./apl-wrapper.sh ansible/target-${ANSIBLE_SERVICE}-${ANSIBLE_SCOPE}.yml
     '''
   }
   stage('cleanup') {
