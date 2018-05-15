@@ -22,7 +22,34 @@ Origin-Jenkins is then used to provision Factory-Jenkins and Prod-Jenkins, and i
 Because it has root access to Origin-Prod, it should be an air-gapped, single purpose instance and only started and connected to network when needed.  
 Factory-Jenkins creates and manages all non-prod environments, where things get produced (Factory).  
 Prod-Jenkins creates and manages all prod environments, where things get deployed to public (Prod).  
-Sandbox infrastructure is provisioned from Factory-Jenkins.
+Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory-Jenkins.
+
+#### Changelog
+added jenkins job for consul server  
+fixed service start in ansible playbooks for services  
+start a pipeline on a server, backup, destroy server, resume on newly created one  
+refactored scope directories, moved common roles out  
+PERFORMANCE_OPTIMIZED mode set for pipelines  
+jenkins job for os updates  
+made vault ha with two servers, to be as close as possible with production  
+primary consul dns servers in factory/prod jenkins dnsmasq  
+refactored vault demo  
+implemented jenkins backup/restore at the instance level  
+force_setup flag saves 2 minutes on each run, on average, but breaks idempotency - added variable into each target playbook so it runs all roles by default, but can be overriden (when in use by vagrant, in this scenario)  
+cached all downloads locally with precopy, now updates work properly  
+simplified pipelines: jenkins deploy restricted to one target  
+ansible now handles upgrades to all components  
+added swap playbook to all targets, again - because it won't work otherwise with distros that have zero swap (amazon linux)  
+fix for ansible dir diff - force setup  
+removed base-minimal role, as the main base role makes it redundant, it has too many problems with dependencies  
+removed install python and libselinux-python from vagrantfile, moved to provision script and jenkins job scripts  
+added ssh install python and libselinux-python to all scm machine deploy jobs  
+moved to official epel-release install via yum instead of .repo file  
+added dnsmasq to all targets, and control behavior from playbook variables  
+selectable java jre between openjdk and oracle  
+force_setup set to true if the ansible dir changed, even if previously set to false  
+local consul in dev mode as ephemeral key value store in jenkins  
+accelerated provisioning by using setup_completed facts  
 
 #### Misc
 ```
