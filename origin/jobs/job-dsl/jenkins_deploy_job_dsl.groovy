@@ -9,9 +9,9 @@ scopes.each { scope ->
     keepDependencies(false)
     parameters {
       nonStoredPasswordParam('JENKINS_ADMIN_PASS', "Password for ${scope} Jenkins admin user")
-      stringParam('ANSIBLE_TARGET', "user@192.0.2.255", "Which target to use")
+      stringParam('ANSIBLE_TARGET', "192.0.2.255", "Which target to use")
       choiceParam('JENKINS_SCOPE', ["$scope"], "Running in $scope scope")
-      stringParam('ANSIBLE_EXTRAVARS', "{'foo':'bar'}", "Optional: JSON format single line, single quoutes")
+      stringParam('ANSIBLE_EXTRAVARS', "{'ansible_user':'ec2-user'}", "Optional: JSON format single line, single quoutes")
     }
     definition {
       cpsScm {

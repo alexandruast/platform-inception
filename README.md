@@ -25,6 +25,7 @@ Prod-Jenkins creates and manages all prod environments, where things get deploye
 Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory-Jenkins.
 
 #### Changelog
+moved from triggers plugin to built-in triggers  
 added jenkins job for consul server  
 fixed service start in ansible playbooks for services  
 start a pipeline on a server, backup, destroy server, resume on newly created one  

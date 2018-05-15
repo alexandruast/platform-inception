@@ -3,11 +3,11 @@
 
 ENV["LC_ALL"] = "en_US.UTF-8"
 
-required_plugins = [ 'vagrant-triggers' ]
+required_plugins = []
 
 ci_admin_pass = "welcome1"
-box = "bento/centos-7.4"
-# box = "moonphase/amazonlinux2"
+# box = "bento/centos-7.4"
+box = "moonphase/amazonlinux2"
 # box = "xianlin/rhel-7"
 
 ci_origin = {
@@ -121,8 +121,7 @@ if [ -d "/home/vagrant/provision" ];then
 fi
 if which subscription-manager; then
   if ! sudo subscription-manager status 2>/dev/null; then
-    sudo subscription-manager register --username=#{rhel_subscription_username.strip} --password=#{rhel_subscription_password.strip} --auto-attach
-    sudo yum-config-manager --disable rhel-7-server-rt-beta-rpms
+    sudo subscription-manager register --username=#{rhel_subscription_username.strip} --password=#{rhel_subscription_password.strip} --auto-attach --force
   fi
 fi
 SCRIPT
@@ -141,9 +140,10 @@ Vagrant.configure(2) do |config|
       node.vm.network "private_network", ip: machine[:ip]
       node.vm.provision "shell", path: "./extras/sandbox-ssh-key.sh", privileged: false
       node.vm.provision "shell", inline: bootstrap, privileged: false
-      node.trigger.before :destroy do
+      node.trigger.before :destroy do |trigger|
+        trigger.on_error = :continue
         begin
-          run_remote "if which subscription-manager; then sudo subscription-manager unregister; fi"
+          trigger.run_remote = { inline: "if which subscription-manager; then sudo subscription-manager unregister; fi" } if box.include? "rhel"
         rescue
           puts "If something went wrong, please remove the vm manually from https://access.redhat.com/management/subscriptions"
         end
@@ -163,9 +163,10 @@ Vagrant.configure(2) do |config|
       node.vm.network "private_network", ip: machine[:ip]
       node.vm.provision "shell", path: "./extras/sandbox-ssh-key.sh", privileged: false
       node.vm.provision "shell", inline: bootstrap, privileged: false
-      node.trigger.before :destroy do
+      node.trigger.before :destroy do |trigger|
+        trigger.on_error = :continue
         begin
-          run_remote "if which subscription-manager; then sudo subscription-manager unregister; fi"
+          trigger.run_remote = { inline: "if which subscription-manager; then sudo subscription-manager unregister; fi" } if box.include? "rhel"
         rescue
           puts "If something went wrong, please remove the vm manually from https://access.redhat.com/management/subscriptions"
         end
@@ -185,9 +186,10 @@ Vagrant.configure(2) do |config|
       node.vm.network "private_network", ip: machine[:ip]
       node.vm.provision "shell", path: "./extras/sandbox-ssh-key.sh", privileged: false
       node.vm.provision "shell", inline: bootstrap, privileged: false
-      node.trigger.before :destroy do
+      node.trigger.before :destroy do |trigger|
+        trigger.on_error = :continue
         begin
-          run_remote "if which subscription-manager; then sudo subscription-manager unregister; fi"
+          trigger.run_remote = { inline: "if which subscription-manager; then sudo subscription-manager unregister; fi" } if box.include? "rhel"
         rescue
           puts "If something went wrong, please remove the vm manually from https://access.redhat.com/management/subscriptions"
         end
@@ -229,9 +231,10 @@ Vagrant.configure(2) do |config|
         nomad_servers.to_json.to_s
       ]
     end
-    node.trigger.before :destroy do
+    node.trigger.before :destroy do |trigger|
+      trigger.on_error = :continue
       begin
-        run_remote "if which subscription-manager; then sudo subscription-manager unregister; fi"
+        trigger.run_remote = { inline: "if which subscription-manager; then sudo subscription-manager unregister; fi" } if box.include? "rhel"
       rescue
         puts "If something went wrong, please remove the vm manually from https://access.redhat.com/management/subscriptions"
       end

@@ -3,8 +3,8 @@ pipelineJob("infra-generic-os-update") {
   def repo = 'https://github.com/alexandruast/platform-inception'
   keepDependencies(false)
   parameters {
-    stringParam('ANSIBLE_TARGET', "user@192.0.2.255", "Which targets to use")
-    stringParam('ANSIBLE_EXTRAVARS', "{'foo':'bar'}", "Optional: JSON format single line, single quoutes")
+    stringParam('ANSIBLE_TARGET', "192.0.2.255", "Which targets to use")
+    stringParam('ANSIBLE_EXTRAVARS', "{'ansible_user':'ec2-user'}", "Optional: JSON format single line, single quoutes")
   }
   definition {
     cpsScm {
