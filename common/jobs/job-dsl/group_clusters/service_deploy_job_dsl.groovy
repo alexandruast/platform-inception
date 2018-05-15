@@ -4,10 +4,10 @@ def services = [
   vault  : ['server']
 ]
 
-services.each { service ->
-  def jobPrefix="infra-generic-${service.key}"
+services.each { service, scopes ->
+  def jobPrefix="infra-generic-${service}"
   def jobSuffix='deploy'
-  service.value { scope ->
+  scopes.each { scope ->
     pipelineJob("${jobPrefix}-${scope}-${jobSuffix}") {
       description("Dynamically generated with job-dsl by $JOB_NAME\nAny changes to this item will be overwritten without notice.")
       def repo = 'https://github.com/alexandruast/platform-inception'
@@ -23,7 +23,7 @@ services.each { service ->
             git {
               remote { url(repo) }
               branches('devel')
-              scriptPath("common/jobs/scm/pipeline-${service.key}-deploy.groovy")
+              scriptPath("common/jobs/scm/pipeline-${service}-deploy.groovy")
               extensions {
                 cleanBeforeCheckout()
               }
