@@ -116,6 +116,6 @@
     uri:
       url: http://127.0.0.1:8200/v1/sys/seal-status
       status_code: 200
-    when: bootstrap_enabled|default(false)
+    when: not bootstrap_enabled|default(false)
 
   when: service_mode|default(false)
