@@ -25,6 +25,7 @@ Prod-Jenkins creates and manages all prod environments, where things get deploye
 Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory-Jenkins.
 
 #### Changelog
+added fabio docker container
 fixed binary not copied to destination if missing and already downloaded in ansible roles
 added api checks for consul/nomad/vault services in ansible roles - it should fail the playbook on first target if a service update fails
 one generic service_deploy_job_dsl.groovy with maps, instead of three  
