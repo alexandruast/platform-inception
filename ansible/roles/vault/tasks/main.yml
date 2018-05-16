@@ -6,6 +6,32 @@
   register: service_archive
   become: true
 
+- name: "service binary check"
+  stat:
+    path: "/usr/local/bin/{{service_name}}"
+  register: service_binary_check
+  changed_when: false
+
+- name: "service binaries installed"
+  unarchive:
+    src:  "{{artifacts_dir}}/{{service_name}}_{{service_version}}_linux_amd64.zip"
+    dest: /usr/local/bin/
+    mode: +x
+    remote_src: yes
+  become: true
+  register: service_binary
+  when: service_archive is changed
+    or not service_binary_check.stat.exists
+    
+- name: "service granted mlock syscall"
+  capabilities:
+    capability: cap_ipc_lock=+ep
+    path: "/usr/local/bin/{{service_name}}"
+  become: true
+  changed_when: false
+  when: service_archive is changed
+    or not service_binary_check.stat.exists
+
 - block:
   - name: "service group present"
     group:
@@ -61,30 +87,6 @@
       name: "{{service_name}}"
       enabled: yes
     become: true
-    
-  - block:
-    - name: "service stopped"
-      systemd:
-        name: "{{service_name}}"
-        state: stopped
-      become: true
-  
-    - name: "service binaries installed"
-      unarchive:
-        src:  "{{artifacts_dir}}/{{service_name}}_{{service_version}}_linux_amd64.zip"
-        dest: /usr/local/bin/
-        mode: +x
-        remote_src: yes
-      become: true
-
-    - name: "service granted mlock syscall"
-      capabilities:
-        capability: cap_ipc_lock=+ep
-        path: "/usr/local/bin/{{service_name}}"
-      become: true
-      changed_when: false
-
-    when: service_archive.changed
 
   - name: "service started"
     systemd:
@@ -97,16 +99,23 @@
     systemd:
       name: "{{service_name}}"
       state: restarted
+    register: service_restarted
     become: true
-    when: (systemd_config is changed or service_config is changed) and not service_started is changed
+    when: (systemd_config is changed
+      or service_binary is changed
+      or service_config is changed)
+      and not service_started is changed
+
+  # Pause to wait for service to start
+  - pause:
+      seconds: 4
+    when: service_started is changed
+      or service_restarted is changed
+
+  - name: "service status check"
+    uri:
+      url: http://127.0.0.1:8500/v1/status/leader
+      status_code: 200
+    when: service_enabled is not changed
 
   when: service_mode|default(false)
-
-- name: "service binaries installed"
-  unarchive:
-    src:  "{{artifacts_dir}}/{{service_name}}_{{service_version}}_linux_amd64.zip"
-    dest: /usr/local/bin/
-    mode: +x
-    remote_src: yes
-  become: true
-  when: not service_mode|default(false) and service_archive is changed

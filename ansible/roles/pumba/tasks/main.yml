@@ -6,6 +6,12 @@
   register: service_archive
   become: true
 
+- name: "service binary check"
+  stat:
+    path: "/usr/local/bin/{{service_name}}"
+  register: service_binary_check
+  changed_when: false
+
 - name: "service binaries installed"
   copy:
     src:  "{{artifacts_dir}}/{{service_name}}-{{service_version}}"
@@ -14,3 +20,4 @@
     mode: +x
   become: true
   when: service_archive.changed
+    or not service_binary_check.stat.exists

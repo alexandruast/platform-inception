@@ -6,8 +6,8 @@ ENV["LC_ALL"] = "en_US.UTF-8"
 required_plugins = []
 
 ci_admin_pass = "welcome1"
-# box = "bento/centos-7.4"
-box = "moonphase/amazonlinux2"
+box = "bento/centos-7.4"
+# box = "moonphase/amazonlinux2"
 # box = "xianlin/rhel-7"
 
 ci_origin = {
