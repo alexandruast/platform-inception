@@ -114,7 +114,7 @@
 
   - name: "service status check"
     uri:
-      url: http://127.0.0.1:8500/v1/status/leader
+      url: http://127.0.0.1:8200/v1/sys/seal-status
       status_code: 200
     when: service_enabled is not changed
 
