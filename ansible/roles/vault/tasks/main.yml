@@ -112,10 +112,11 @@
     when: service_started is changed
       or service_restarted is changed
 
+  # https://www.vaultproject.io/api/system/health.html
   - name: "service status check"
     uri:
-      url: http://127.0.0.1:8200/v1/sys/seal-status
-      status_code: 200
+      url: http://127.0.0.1:8200/v1/sys/health
+      status_code: 200, 429, 472, 501, 503
     when: not bootstrap_enabled|default(false)
 
   when: service_mode|default(false)
