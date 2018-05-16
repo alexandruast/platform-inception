@@ -128,7 +128,7 @@
 
   - name: "service status check"
     uri:
-      url: http://127.0.0.1:8500/v1/status/leader
+      url: http://127.0.0.1:4646/v1/status/leader
       status_code: 200
     when: service_enabled is not changed
   
