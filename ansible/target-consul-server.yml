@@ -34,6 +34,9 @@
           name: jq
       
       - include_role:
+          name: td-agent-bit
+
+      - include_role:
           name: rsyslog
 
       - include_role:

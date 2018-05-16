@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
+set -euEo pipefail
+trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
+
 touch /var/log/fluentd.pos_file
 CONFIG="/fluentd/etc/fluent.conf"
 config_md5_current="$(md5sum ${CONFIG})"
+
 {
   while true; do
     inotifywait -e modify,move,create,delete ${CONFIG}
@@ -14,4 +18,5 @@ config_md5_current="$(md5sum ${CONFIG})"
     fi
   done;
 } &
-exec "$@"
+
+exec gosu fluentd "$@"

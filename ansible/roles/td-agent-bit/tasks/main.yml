@@ -1,0 +1,24 @@
+- name: "yum repository file copied"
+  copy:
+    src: "{{role_path}}/files/td-agent-bit.repo"
+    dest: "/etc/yum.repos.d/"
+  become: true
+
+- name: "package installed"
+  package:
+    name: td-agent-bit
+    state: present
+  become: true
+
+- name: "service enabled"
+  systemd:
+    name: td-agent-bit
+    enabled: yes
+  become: true
+
+- name: "service started"
+  systemd:
+    name: td-agent-bit
+    state: started
+  register: service_started
+  become: true

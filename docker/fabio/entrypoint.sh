@@ -6,3 +6,4 @@ DOCKER_HOST_IP="$(/sbin/route -n | awk '/UG[ \t]/{print $2}')"
 export FABIO_registry_consul_addr="http://${DOCKER_HOST_IP}:8500"
 
 exec gosu fabio "$@"
+
