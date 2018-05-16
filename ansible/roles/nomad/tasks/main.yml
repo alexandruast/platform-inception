@@ -130,7 +130,7 @@
     uri:
       url: http://127.0.0.1:4646/v1/status/leader
       status_code: 200
-    when: service_enabled is not changed
+    when: bootstrap_enabled|default(false)
   
   when: service_mode|default(false)
 
