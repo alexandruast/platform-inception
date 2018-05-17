@@ -44,8 +44,8 @@ node {
     ANSIBLE_TARGET=127.0.0.1 \
       ANSIBLE_EXTRAVARS="{'pwd':'$(pwd)'}" \
       ./apl-wrapper.sh ansible/nomad-job.yml
-    nomad validate nomad-job.hcl
     cd "./pods/${POD_NAME}"
+    nomad validate nomad-job.hcl
     docker-compose --no-ansi build --no-cache
     docker-compose --no-ansi push
     '''
