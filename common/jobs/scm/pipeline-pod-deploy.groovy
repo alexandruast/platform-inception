@@ -3,7 +3,6 @@ node {
     sh '''
       [ x"${POD_NAME}" != 'x' ]
       [ x"${POD_ENVIRONMENT}" != 'x' ]
-      [ x"${POD_VERSION}" != 'x' ]
       echo "ANSIBLE_EXTRAVARS=${ANSIBLE_EXTRAVARS}"
       ansible --version
       docker --version
@@ -27,13 +26,17 @@ node {
     REGISTRY_CREDENTIALS="platformdemo:63hu8y1L7X3BBel8"
     REGISTRY_USERNAME="${REGISTRY_CREDENTIALS%:*}"
     REGISTRY_PASSWORD="${REGISTRY_CREDENTIALS#*:}"
-    export REGISTRY_ADDRESS="docker.io"
-    export REPOSITORY_NAME="platformdemo"
+    REGISTRY_ADDRESS="docker.io"
+    REPOSITORY_NAME="platformdemo"
+    POD_VERSION="$(date "+%Y%m%d%H%M%S")"
     echo "[info] ${REGISTRY_ADDRESS} docker registry login..."
     docker login "${REGISTRY_ADDRESS}" \
       --username="${REGISTRY_USERNAME}" \
       --password-stdin <<< ${REGISTRY_PASSWORD} >/dev/null
     cd "./pods/${POD_NAME}"
+    export REGISTRY_ADDRESS
+    export REPOSITORY_NAME
+    export POD_VERSION
     docker-compose --no-ansi build
     docker-compose --no-ansi push
     echo ""
