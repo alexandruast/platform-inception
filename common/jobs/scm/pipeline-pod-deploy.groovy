@@ -38,7 +38,9 @@ node {
     export REGISTRY_ADDRESS
     export REPOSITORY_NAME
     export POD_VERSION
-    docker-compose --no-ansi build
+    docker system prune -f
+    docker volume prune -f
+    docker-compose --no-ansi build --no-cache
     docker-compose --no-ansi push
     '''
   }
