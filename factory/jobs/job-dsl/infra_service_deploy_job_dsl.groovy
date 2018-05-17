@@ -13,7 +13,7 @@ def jobSuffix='deploy'
 services.each { service ->
   environments.each { environment ->
     pipelineJob("${environment}-${service}-${jobSuffix}") {
-      description("Dynamically generated with job-dsl by $JOB_NAME\nAny changes to this item will be overwritten without notice.")
+      description("Dynamically generated with job-dsl by ${JOB_NAME}\nAny changes to this item will be overwritten without notice.")
       def repo = 'https://github.com/alexandruast/platform-inception'
       keepDependencies(false)
       parameters {

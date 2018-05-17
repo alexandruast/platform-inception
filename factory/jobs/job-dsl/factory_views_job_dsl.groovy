@@ -1,13 +1,12 @@
-def defaultViews = [
-  'factory',
+def views = [
   'devel',
   'staging',
   'integration'
 ]
 
-defaultViews.each { view ->
+views.each { view ->
   listView(view) {
-    description("Dynamically generated with job-dsl by $JOB_NAME\nAny changes to this item will be overwritten without notice.")
+    description("Dynamically generated with job-dsl by ${JOB_NAME}\nAny changes to this item will be overwritten without notice.")
     filterBuildQueue()
     filterExecutors()
     jobs {
