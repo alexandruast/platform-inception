@@ -22,6 +22,8 @@ job "{{ansible_env.POD_NAME}}-{{ansible_env.POD_VERSION}}" {
         check {
           type = "http"
           path = "/health"
+          interval = "10s"
+          timeout  = "2s"
           check_restart {
             limit = 3
             grace = "10s"
