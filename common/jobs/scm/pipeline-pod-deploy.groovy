@@ -34,6 +34,8 @@ node {
       --username="${REGISTRY_USERNAME}" \
       --password-stdin <<< ${REGISTRY_PASSWORD} >/dev/null
     export REGISTRY_ADDRESS
+    export REGISTRY_USERNAME
+    export REGISTRY_PASSWORD
     export REPOSITORY_NAME
     export POD_VERSION
     export POD_NAME
