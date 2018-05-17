@@ -6,6 +6,8 @@ node {
       [ x"${SERVICE_VERSION}" != 'x' ]
       echo "ANSIBLE_EXTRAVARS=${ANSIBLE_EXTRAVARS}"
       ansible --version
+      docker --version
+      docker-compose --version
     '''
   }
   stage('preparation') {
@@ -28,14 +30,13 @@ node {
     DOCKER_REPOSITORY_NAME="platformdemo"
     DOCKER_SERVICE_NAME="${SERVICE_NAME}"
     DOCKER_SERVICE_VERSION="$(date "+%Y%m%d%H%M%S")"
-    DOCKER_SERVICE_IMAGE="${DOCKER_REGISTRY_ADDRESS}/${DOCKER_REPOSITORY_NAME}/${DOCKER_SERVICE_NAME}:${DOCKER_SERVICE_VERSION}"
     echo "[info] ${DOCKER_REGISTRY_ADDRESS} docker registry login..."
     docker login "${DOCKER_REGISTRY_ADDRESS}" \
       --username="${DOCKER_REGISTRY_USERNAME}" \
       --password-stdin <<< ${DOCKER_REGISTRY_PASSWORD} >/dev/null
     cd "./services/${SERVICE_NAME}"
-    docker build -t ${DOCKER_SERVICE_IMAGE} ./
-    docker push ${DOCKER_SERVICE_IMAGE}
+    docker-compose build
+    docker-compose push
     '''
   }
   stage('deploy-service') {
