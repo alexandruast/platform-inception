@@ -21,6 +21,7 @@ node {
     sh '''#!/usr/bin/env bash
     set -xeuEo pipefail
     trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
+    trap 'docker-compose down --rmi all --volumes' EXIT
     CONSUL_ADDR="${CONSUL_ADDR:-http://127.0.0.1:8500}"
     VAULT_ADDR="${VAULT_ADDR:-http://127.0.0.1:8200}"
     REGISTRY_CREDENTIALS="platformdemo:63hu8y1L7X3BBel8"
@@ -39,10 +40,9 @@ node {
     export POD_VERSION
     docker-compose --no-ansi build
     docker-compose --no-ansi push
-    echo ""
     '''
   }
-  stage('deploy-job') {
+  stage('deploy-pod') {
     sh '''#!/usr/bin/env bash
     set -xeuEo pipefail
     trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
