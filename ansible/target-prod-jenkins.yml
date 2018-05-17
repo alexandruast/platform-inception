@@ -55,6 +55,9 @@
         service_mode: dev
 
     - include_role:
+        name: nomad
+
+    - include_role:
         name: terraform
 
     - include_role:

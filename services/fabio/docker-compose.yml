@@ -1,7 +1,0 @@
-version: '2'
-
-services:
-  fabio:
-    image: ${DOCKER_REGISTRY_ADDRESS}/${DOCKER_REPOSITORY_NAME}/${DOCKER_SERVICE_NAME}:${DOCKER_SERVICE_VERSION}
-    build: ./fabio
-  

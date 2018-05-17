@@ -1,4 +1,4 @@
-def services = [
+def pods = [
   'fabio',
   'fluentd'
 ]
@@ -10,16 +10,16 @@ def environments = [
 ]
 
 def jobSuffix='deploy'
-services.each { service ->
+pods.each { pod ->
   environments.each { environment ->
-    pipelineJob("${environment}-${service}-${jobSuffix}") {
+    pipelineJob("${environment}-${pod}-${jobSuffix}") {
       description("Dynamically generated with job-dsl by ${JOB_NAME}\nAny changes to this item will be overwritten without notice.")
       def repo = 'https://github.com/alexandruast/platform-inception'
       keepDependencies(false)
       parameters {
-        choiceParam('SERVICE_ENVIRONMENT', ["${environment}"], "Running in $environment environment")
-        choiceParam('SERVICE_NAME', ["${service}"], "Service name")
-        choiceParam('SERVICE_VERSION', ["latest"], "Service version")
+        choiceParam('POD_ENVIRONMENT', ["${environment}"], "Running in $environment environment")
+        choiceParam('POD_NAME', ["${pod}"], "Pod name")
+        choiceParam('POD_VERSION', ["latest"], "Pod version")
         stringParam('ANSIBLE_EXTRAVARS', "{'ansible_user':'ec2-user'}", "Optional: JSON format single line, single quoutes")
       }
       definition {
@@ -28,7 +28,7 @@ services.each { service ->
             git {
               remote { url(repo) }
               branches('devel')
-              scriptPath("common/jobs/scm/pipeline-infra-service-deploy.groovy")
+              scriptPath("common/jobs/scm/pipeline-pod-deploy.groovy")
               extensions {
                 cleanBeforeCheckout()
               }

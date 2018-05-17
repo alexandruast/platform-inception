@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  fluentd:
+    image: ${DOCKER_REGISTRY_ADDRESS}/${DOCKER_REPOSITORY_NAME}/fluentd:${DOCKER_SERVICE_VERSION}
+    build: ./fluentd
+    ports:
+      - "9999:9999"
+      - "9998:9998"
