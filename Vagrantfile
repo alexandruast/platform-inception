@@ -2,6 +2,7 @@
 # vi: set ft=ruby :
 
 ENV["LC_ALL"] = "en_US.UTF-8"
+ENV["VAGRANT_DISABLE_VBOXSYMLINKCREATE"] = "1"
 
 required_plugins = []
 
