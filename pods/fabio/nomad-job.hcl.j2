@@ -1,4 +1,5 @@
 job "{{ansible_env.POD_NAME}}-{{ansible_env.POD_VERSION}}" {
+  datacenters = ["dc1"]
   type = "system"
   update {
     max_parallel = 1
@@ -26,7 +27,7 @@ job "{{ansible_env.POD_NAME}}-{{ansible_env.POD_VERSION}}" {
           timeout  = "2s"
           check_restart {
             limit = 3
-            grace = "10s"
+            grace = "30s"
             ignore_warnings = false
           }
         }
