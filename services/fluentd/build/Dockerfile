@@ -2,12 +2,14 @@ FROM fluent/fluentd:v1.2-debian
 
 ARG GOSU_VERSION=1.10
 
-COPY misc/* /tmp/
-
 RUN apt-get -y -qq update \
 && apt-get -y -qq install --no-install-recommends curl procps inotify-tools \
 && useradd -M -s /bin/false fluentd \
 && chown -R fluentd:fluentd /fluentd
+
+COPY [ \
+"gosu-${GOSU_VERSION}.sha256", \
+"/tmp/" ]
 
 RUN curl -LSs https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64 -o /usr/local/bin/gosu-amd64 \
 && cd /usr/local/bin \
@@ -23,7 +25,9 @@ RUN gem install fluent-plugin-concat \
 && gem install fluent-plugin-rewrite-tag-filter \
 && gem sources --clear-all
 
-COPY entrypoint.sh /entrypoint.sh
+COPY fluent.conf /fluentd/etc/
+
+COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]

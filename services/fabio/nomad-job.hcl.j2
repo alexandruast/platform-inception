@@ -1,0 +1,47 @@
+job "fabio-{{ansible_env.DOCKER_SERVICE_VERSION}}" {
+  type = "service"
+  update {
+    max_parallel = 1
+    healthy_deadline = "10s"
+    auto_revert      = true
+    stagger          = "10s"
+  }
+  group "fabio" {
+    count = {{ansible_env.SERVICE_COUNT}}
+    task "fabio-{{ansible_env.DOCKER_SERVICE_VERSION}}" {
+      driver = "docker"
+      config {
+        image = "{{ansible_env.DOCKER_SERVICE_IMAGE}}"
+        auth {
+          server_address = "{{ansible_env.DOCKER_REGISTRY_ADDRESS}}"
+          username = "{{ansible_env.DOCKER_REGISTRY_USERNAME}}"
+          password = "{{ansible_env.DOCKER_REGISTRY_PASSWORD}}"
+        }
+      }
+      service {
+        port = "http"
+        check {
+          type = "http"
+          port = "/health"
+        }
+        check_restart {
+          limit = 3
+          grace = "10s"
+          ignore_warnings = false
+        }
+      }
+      resources {
+        memory = 30
+        network {
+          mbits = 100
+          port "ui" {
+            static = 9998
+          }
+          port "http" {
+            static = 9999
+          }
+        }
+      }
+    }
+  }
+}
