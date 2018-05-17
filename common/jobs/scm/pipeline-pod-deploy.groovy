@@ -3,7 +3,6 @@ node {
     sh '''
       [ x"${POD_NAME}" != 'x' ]
       [ x"${POD_ENVIRONMENT}" != 'x' ]
-      echo "ANSIBLE_EXTRAVARS=${ANSIBLE_EXTRAVARS}"
       ansible --version
       docker --version
       docker-compose --version
