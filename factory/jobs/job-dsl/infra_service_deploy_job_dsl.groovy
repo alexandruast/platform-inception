@@ -28,7 +28,7 @@ services.each { service ->
             git {
               remote { url(repo) }
               branches('devel')
-              scriptPath("origin/jobs/scm/pipeline-infra-service-deploy.groovy")
+              scriptPath("common/jobs/scm/pipeline-infra-service-deploy.groovy")
               extensions {
                 cleanBeforeCheckout()
               }
