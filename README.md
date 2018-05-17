@@ -25,6 +25,8 @@ Prod-Jenkins creates and manages all prod environments, where things get deploye
 Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory-Jenkins.
 
 #### Changelog
+decision to have int/qa/prod environments, qa for performance testing
+decision to have the development/sandbox local in vagrant
 decision to bake the configuration into containers, reason is otherwise we will lose dev/prod parity because application configuration can be anything  
 added build-docker-image script  
 added td-agent-bit to target nodes  

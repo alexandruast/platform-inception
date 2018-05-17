@@ -1,7 +1,7 @@
 def views = [
-  'devel',
-  'staging',
-  'integration'
+  'sandbox',
+  'integration',
+  'qa'
 ]
 
 views.each { view ->

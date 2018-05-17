@@ -4,9 +4,9 @@ def services = [
 ]
 
 def environments = [
-  'devel',
-  'staging',
-  'integration'
+  'sandbox',
+  'integration',
+  'qa'
 ]
 
 def jobSuffix='deploy'

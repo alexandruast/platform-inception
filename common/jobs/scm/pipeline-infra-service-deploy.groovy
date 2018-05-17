@@ -15,7 +15,7 @@ node {
       submoduleCfg: [], 
       userRemoteConfigs: [[url: 'https://github.com/alexandruast/platform-inception.git']]])
   }
-  stage('build') {
+  stage('build-image') {
     sh '''#!/usr/bin/env bash
     set -xeuEo pipefail
     trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
@@ -33,11 +33,12 @@ node {
     docker login "${DOCKER_REGISTRY_ADDRESS}" \
       --username="${DOCKER_REGISTRY_USERNAME}" \
       --password-stdin <<< ${DOCKER_REGISTRY_PASSWORD} >/dev/null
+    cd "./services/${SERVICE_NAME}"
     docker build -t ${DOCKER_SERVICE_IMAGE} ./
     docker push ${DOCKER_SERVICE_IMAGE}
     '''
   }
-  stage('deploy') {
+  stage('deploy-service') {
     sh '''#!/usr/bin/env bash
     set -xeuEo pipefail
     trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
