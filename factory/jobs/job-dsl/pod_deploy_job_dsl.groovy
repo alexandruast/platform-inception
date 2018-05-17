@@ -17,7 +17,7 @@ pods.each { pod ->
       def repo = 'https://github.com/alexandruast/platform-inception'
       keepDependencies(false)
       parameters {
-        choiceParam('POD_ENVIRONMENT', ["${environment}"], "Running in $environment environment")
+        choiceParam('POD_ENVIRONMENT', ["${environment}"], "Running in environment")
         choiceParam('POD_NAME', ["${pod}"], "Pod name")
       }
       definition {
