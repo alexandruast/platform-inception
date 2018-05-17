@@ -1,17 +1,17 @@
-def listViews = [
+def defaultViews = [
   'factory',
   'devel',
   'staging',
   'integration'
 ]
 
-listViews.each { listView ->
-  listView(listView) {
+defaultViews.each { view ->
+  listView(view) {
     description("Dynamically generated with job-dsl by $JOB_NAME\nAny changes to this item will be overwritten without notice.")
     filterBuildQueue()
     filterExecutors()
     jobs {
-      regex("${listView}-.+")
+      regex("${view}-.+")
     }
     columns {
       status()
