@@ -23,10 +23,10 @@ node {
     trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
     CONSUL_ADDR="${CONSUL_ADDR:-http://127.0.0.1:8500}"
     VAULT_ADDR="${VAULT_ADDR:-http://127.0.0.1:8200}"
-    export DOCKER_REGISTRY_ADDRESS="docker.io"
     DOCKER_REGISTRY_CREDENTIALS="platformdemo:63hu8y1L7X3BBel8"
     DOCKER_REGISTRY_USERNAME="${DOCKER_REGISTRY_CREDENTIALS%:*}"
     DOCKER_REGISTRY_PASSWORD="${DOCKER_REGISTRY_CREDENTIALS#*:}"
+    export DOCKER_REGISTRY_ADDRESS="docker.io"
     export DOCKER_REPOSITORY_NAME="platformdemo"
     export DOCKER_SERVICE_NAME="${SERVICE_NAME}"
     export DOCKER_SERVICE_VERSION="$(date "+%Y%m%d%H%M%S")"
@@ -35,8 +35,8 @@ node {
       --username="${DOCKER_REGISTRY_USERNAME}" \
       --password-stdin <<< ${DOCKER_REGISTRY_PASSWORD} >/dev/null
     cd "./services/${SERVICE_NAME}"
-    docker-compose build
-    docker-compose push
+    docker-compose --no-ansi build
+    docker-compose --no-ansi push
     '''
   }
   stage('deploy-service') {
