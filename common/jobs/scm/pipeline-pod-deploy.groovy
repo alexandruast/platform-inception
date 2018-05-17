@@ -39,6 +39,7 @@ node {
     export REPOSITORY_NAME
     export POD_VERSION
     docker-compose --no-ansi build
+    dfdhfkdfhkh
     docker-compose --no-ansi push
     '''
   }
