@@ -19,7 +19,6 @@ pods.each { pod ->
       parameters {
         choiceParam('POD_ENVIRONMENT', ["${environment}"], "Running in $environment environment")
         choiceParam('POD_NAME', ["${pod}"], "Pod name")
-        choiceParam('POD_VERSION', ["latest"], "Pod version")
         stringParam('ANSIBLE_EXTRAVARS', "{'ansible_user':'ec2-user'}", "Optional: JSON format single line, single quoutes")
       }
       definition {
