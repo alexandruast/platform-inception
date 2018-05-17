@@ -22,11 +22,11 @@ job "{{ansible_env.POD_NAME}}-{{ansible_env.POD_VERSION}}" {
         check {
           type = "http"
           port = "/health"
-        }
-        check_restart {
-          limit = 3
-          grace = "10s"
-          ignore_warnings = false
+          check_restart {
+            limit = 3
+            grace = "10s"
+            ignore_warnings = false
+          }
         }
       }
       resources {
