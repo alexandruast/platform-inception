@@ -1,0 +1,4 @@
+- name: "nomad job file updated"
+  template:
+    src: "{{pwd}}/pods/{{ansible_env.POD_NAME}}/nomad-job.hcl.j2"
+    dest: "{{pwd}}/pods/{{ansible_env.POD_NAME}}/nomad-job.hcl"

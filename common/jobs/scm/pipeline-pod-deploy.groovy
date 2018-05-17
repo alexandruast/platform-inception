@@ -33,12 +33,17 @@ node {
     docker login "${REGISTRY_ADDRESS}" \
       --username="${REGISTRY_USERNAME}" \
       --password-stdin <<< ${REGISTRY_PASSWORD} >/dev/null
-    cd "./pods/${POD_NAME}"
     export REGISTRY_ADDRESS
     export REPOSITORY_NAME
     export POD_VERSION
+    export POD_NAME
     docker system prune -f
     docker volume prune -f
+    ANSIBLE_TARGET=127.0.0.1 \
+      ANSIBLE_EXTRAVARS="{'pwd':'$(pwd)'}" \
+      ./apl-wrapper.sh ansible/nomad-job.yml
+    nomad job validate nomad-job.hcl
+    cd "./pods/${POD_NAME}"
     docker-compose --no-ansi build --no-cache
     docker-compose --no-ansi push
     '''
@@ -51,7 +56,7 @@ node {
     SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes -o ExitOnForwardFailure=yes'
     tunnel_port=$(perl -e 'print int(rand(999)) + 58000')
     ssh ${SSH_OPTS} -f -N -M -S ssh-control-socket -L ${tunnel_port}:127.0.0.1:4646 vagrant@192.168.169.181
-    NOMAD_ADDR=http://127.0.0.1:${tunnel_port} nomad status
+    NOMAD_ADDR=http://127.0.0.1:${tunnel_port} nomad run nomad-job.hcl
     '''
   }
   stage('cleanup') {
