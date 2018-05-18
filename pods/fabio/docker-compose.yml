@@ -3,7 +3,7 @@ version: '3'
 services:
   fabio:
     image: ${REGISTRY_ADDRESS}/${REPOSITORY_NAME}/fabio:${POD_VERSION}
-    build: ./fabio
+    build: ./images/fabio
     ports:
       - 9999:9999
       - 9998:9998
