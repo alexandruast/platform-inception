@@ -34,8 +34,8 @@ deploy_factory_prod_jenkins() {
     source "${scope}/.scope"
     export JENKINS_ADMIN_PASS="${ci_admin_pass}"
     export JENKINS_ADDR="http://${origin_jenkins_ip}:${JENKINS_PORT}"
-    echo "waiting for ${scope}-jenkins-deploy job to complete..."
-    JENKINS_BUILD_JOB="${scope}-jenkins-deploy" \
+    echo "waiting for jenkins-${scope}-provision job to complete..."
+    JENKINS_BUILD_JOB="jenkins-${scope}-provision" \
       ANSIBLE_TARGET="vagrant@${!ip_addr_var}" \
       JENKINS_SCOPE="${scope}" \
       ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'dnsmasq_resolv':'supersede','dns_servers':['8.8.8.8','8.8.4.4']}" \
@@ -45,10 +45,10 @@ deploy_factory_prod_jenkins() {
   done
 }
 
-# Running infra-generic-nomad-server-deploy job on Factory-Jenkins
+# Running infra-target-nomad-server-provision job on Factory-Jenkins
 nomad_server_deploy() {
-  echo "waiting for infra-generic-nomad-server-deploy job to complete..."
-  JENKINS_BUILD_JOB="infra-generic-nomad-server-deploy" \
+  echo "waiting for infra-target-nomad-server-provision job to complete..."
+  JENKINS_BUILD_JOB="infra-target-nomad-server-provision" \
     JENKINS_ADDR="http://127.0.0.1:${tunnel_port}" \
     JENKINS_ADMIN_PASS="${ci_admin_pass}" \
     ANSIBLE_TARGET="$(echo ${server_nodes_json} | jq -re .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')" \
@@ -58,10 +58,10 @@ nomad_server_deploy() {
     ./jenkins-query.sh ./common/jobs/build-infra-target-provision-job.groovy
 }
 
-# Running infra-generic-vault-server-deploy job on Factory-Jenkins
+# Running infra-target-vault-server-provision job on Factory-Jenkins
 vault_server_deploy() {
-  echo "waiting for infra-generic-vault-server-deploy job to complete..."
-  JENKINS_BUILD_JOB="infra-generic-vault-server-deploy" \
+  echo "waiting for infra-target-vault-server-provision job to complete..."
+  JENKINS_BUILD_JOB="infra-target-vault-server-provision" \
     JENKINS_ADDR="http://127.0.0.1:${tunnel_port}" \
     JENKINS_ADMIN_PASS="${ci_admin_pass}" \
     ANSIBLE_TARGET="$(echo ${server_nodes_json} | jq -re .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')" \
@@ -71,10 +71,10 @@ vault_server_deploy() {
     ./jenkins-query.sh ./common/jobs/build-infra-target-provision-job.groovy
 }
 
-# Running infra-generic-nomad-compute-deploy job on Factory-Jenkins
+# Running infra-target-nomad-compute-provision job on Factory-Jenkins
 nomad_compute_deploy() {
-  echo "waiting for infra-generic-nomad-compute-deploy job to complete..."
-  JENKINS_BUILD_JOB="infra-generic-nomad-compute-deploy" \
+  echo "waiting for infra-target-nomad-compute-provision job to complete..."
+  JENKINS_BUILD_JOB="infra-target-nomad-compute-provision" \
     JENKINS_ADDR="http://127.0.0.1:${tunnel_port}" \
     JENKINS_ADMIN_PASS="${ci_admin_pass}" \
     ANSIBLE_SERVICE='nomad' \

@@ -14,7 +14,6 @@ Subsequent runs will take much less:
 * vagrant provision: 5 minutes
 * vagrant up: 30 seconds
 
-
 #### Description and Purpose - this is work in progress
 This code brings up three Jenkins instances: Origin, Factory and Prod.  
 Inception starts one Jenkins server, the Origin-Jenkins.  
@@ -25,9 +24,10 @@ Prod-Jenkins creates and manages all prod environments, where things get deploye
 Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory-Jenkins.
 
 #### Changelog
-added nomad service in dev mode to factory/prod jenkins to be able to properly validate jobs
-decision to have int/qa/prod environments, qa for performance testing
-decision to have the development/sandbox local in vagrant
+refactored job-dsl job names and views  
+added nomad service in dev mode to factory/prod jenkins to be able to properly validate jobs  
+decision to have int/qa/prod environments, qa for performance testing  
+decision to have the development/sandbox local in vagrant  
 decision to bake the configuration into containers, reason is otherwise we will lose dev/prod parity because application configuration can be anything  
 added build-docker-image script  
 added td-agent-bit to target nodes  
