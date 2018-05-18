@@ -153,7 +153,7 @@ server2_ip="$(echo ${server_nodes_json} | jq -re .[1].ip)"
 
 cd /vagrant/
 
-curr_ansible_dir_md5="$(tar -cf - -C /vagrant/ansible ./ | md5sum | cut -d' ' -f1)"
+curr_ansible_dir_md5="$(tar --mtime='1970-01-01' -cf - -C /vagrant/ansible ./ | md5sum | cut -d' ' -f1)"
 
 # if ansible dir content changed, force_setup is true
 if [[ -f "/tmp/ansible-dir-md5" ]]; then
