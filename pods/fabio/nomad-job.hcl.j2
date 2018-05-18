@@ -1,6 +1,6 @@
 job "fabio" {
   datacenters = ["dc1"]
-  type = "service"
+  type = "system"
   update {
     max_parallel = 1
     healthy_deadline = "30s"
@@ -8,7 +8,6 @@ job "fabio" {
     stagger          = "10s"
   }
   group "fabio" {
-    count = 2
     restart {
       attempts = 3
       delay    = "60s"
@@ -39,7 +38,7 @@ job "fabio" {
           mbits = 100
           port "ui" {}
           port "http" {
-            # static = 9999
+            static = 9999
           }
         }
       }
