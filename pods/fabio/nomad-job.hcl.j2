@@ -8,6 +8,12 @@ job "{{ansible_env.POD_NAME}}-{{ansible_env.POD_VERSION}}" {
     stagger          = "10s"
   }
   group "fabio" {
+    restart {
+      attempts = 3
+      delay    = "60s"
+      interval = "10m"
+      mode = delay
+    }
     task "fabio-{{ansible_env.POD_VERSION}}" {
       driver = "docker"
       config {
@@ -28,11 +34,12 @@ job "{{ansible_env.POD_NAME}}-{{ansible_env.POD_VERSION}}" {
           path = "/health"
           interval = "4s"
           timeout  = "2s"
-          check_restart {
-            limit = 3
-            grace = "10s"
-            ignore_warnings = false
-          }
+        }
+        check_restart {
+          limit = 3
+          grace = "30s"
+          ignore_warnings = false
+          mode = fail
         }
       }
       resources {
