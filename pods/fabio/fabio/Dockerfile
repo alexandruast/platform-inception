@@ -14,13 +14,13 @@ COPY [ \
 
 RUN curl -LSs https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64 -o /usr/local/bin/gosu-amd64 \
 && cd /usr/local/bin \
-&& grep 'gosu-amd64' /tmp/gosu-${GOSU_VERSION}.sha256 | sha256sum -c - \
+&& grep "gosu-amd64"'$' /tmp/gosu-${GOSU_VERSION}.sha256 | sha256sum -c - \
 && mv gosu-amd64 gosu \
 && chmod +x /usr/local/bin/gosu
 
 RUN curl -LSs https://github.com/fabiolb/fabio/releases/download/v${FABIO_VERSION}/fabio-${FABIO_VERSION}-go${GO_VERSION}-linux_amd64 -o /usr/local/bin/fabio-${FABIO_VERSION}-go${GO_VERSION}-linux_amd64 \
 && cd /usr/local/bin \
-&& grep "fabio-${FABIO_VERSION}-go${GO_VERSION}-linux_amd64" /tmp/fabio-${FABIO_VERSION}-go${GO_VERSION}.sha256 | sha256sum -c - \
+&& grep "fabio-${FABIO_VERSION}-go${GO_VERSION}-linux_amd64"'$' /tmp/fabio-${FABIO_VERSION}-go${GO_VERSION}.sha256 | sha256sum -c - \
 && mv fabio-${FABIO_VERSION}-go${GO_VERSION}-linux_amd64 fabio \
 && chmod +x /usr/local/bin/fabio
 
