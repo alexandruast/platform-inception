@@ -59,6 +59,3 @@
         name: nomad
       vars:
         service_mode: client
-        service_meta: {
-          foo: "bar"
-        }

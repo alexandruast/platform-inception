@@ -1,5 +1,4 @@
-etc_profile_vars:
-  - { key: "FOO", value: "BAR" }
+etc_profile_vars: []
 
 pam_limits:
   - domain: '*'
