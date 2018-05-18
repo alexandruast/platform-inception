@@ -39,7 +39,7 @@ job "{{ansible_env.POD_NAME}}-{{ansible_env.POD_VERSION}}" {
           limit = 3
           grace = "30s"
           ignore_warnings = false
-          mode = fail
+          mode = "fail"
         }
       }
       resources {
