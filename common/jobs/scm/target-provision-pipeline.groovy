@@ -1,15 +1,5 @@
 node {
-  stage('validation') {
-    sh '''
-      [ x"${ANSIBLE_TARGET}" != 'x' ]
-      [ x"${ANSIBLE_SERVICE}" != 'x' ]
-      [ x"${ANSIBLE_SCOPE}" != 'x' ]
-      echo "ANSIBLE_EXTRAVARS=${ANSIBLE_EXTRAVARS}"
-      ansible --version
-      jq --version
-    '''
-  }
-  stage('preparation') {
+  stage('checkout') {
     checkout([$class: 'GitSCM', 
       branches: [[name: '*/devel']], 
       doGenerateSubmoduleConfigurations: false, 

@@ -1,15 +1,5 @@
 node {
-  stage('validation') {
-    sh '''
-      [ x"${POD_NAME}" != 'x' ]
-      [ x"${POD_ENVIRONMENT}" != 'x' ]
-      ansible --version
-      docker --version
-      docker-compose --version
-      nomad --version
-    '''
-  }
-  stage('preparation') {
+  stage('checkout') {
     checkout([$class: 'GitSCM', 
       branches: [[name: '*/devel']], 
       doGenerateSubmoduleConfigurations: false, 
@@ -39,6 +29,7 @@ node {
     export REPOSITORY_NAME
     export POD_VERSION
     export POD_NAME
+    export POD_ENVIRONMENT
     docker system prune -f
     docker volume prune -f
     ANSIBLE_TARGET=127.0.0.1 \
@@ -48,12 +39,6 @@ node {
     nomad validate nomad-job.hcl
     docker-compose --no-ansi build --no-cache
     docker-compose --no-ansi push
-    '''
-  }
-  stage('run-tests') {
-    sh '''#!/usr/bin/env bash
-    set -xeuEo pipefail
-    trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
     '''
   }
   stage('deploy-pod') {

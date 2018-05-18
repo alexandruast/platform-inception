@@ -27,7 +27,7 @@ Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory
 consul key-value store / jenkins and nomad integration  
 vault secrets store / nomad integration  
 remove hardcoded values in jobs, move to consul/vault  
-reduce the number of vagrant machines  
+build publish plugin  
 
 #### Changelog
 added fluentd pod for collecting logs  
