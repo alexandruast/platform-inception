@@ -24,22 +24,22 @@ job "{{ansible_env.POD_NAME}}-{{ansible_env.POD_VERSION}}" {
           password = "{{ansible_env.REGISTRY_PASSWORD}}"
         }
       }
-      service {
-        env {
-          FABIO_registry.consul.addr = "${attr.unique.network.ip-address}:8500"
-        }
-        resources {
-          memory = 30
-          network {
-            mbits = 100
-            port "ui" {
-              static = 9998
-            }
-            port "http" {
-              static = 9999
-            }
+      env {
+        FABIO_registry.consul.addr = "${attr.unique.network.ip-address}:8500"
+      }
+      resources {
+        memory = 30
+        network {
+          mbits = 100
+          port "ui" {
+            static = 9998
+          }
+          port "http" {
+            static = 9999
           }
         }
+      }
+      service {
         port = "http"
         check {
           type = "http"
