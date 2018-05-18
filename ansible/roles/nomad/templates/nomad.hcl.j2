@@ -17,11 +17,11 @@ server {
   rejoin_after_leave = true
 }
 {% elif service_mode == 'client' %}
-{% if service_network_interface is defined %}
-network_interface = "{{service_network_interface}}"
-{% endif %}
 client {
   enabled = true
+  {% if service_network_interface is defined %}
+  network_interface = "{{service_network_interface}}"
+  {% endif %}
   meta {
     {% for key, value in service_meta.iteritems() %}
     {{key}} = "{{value}}"

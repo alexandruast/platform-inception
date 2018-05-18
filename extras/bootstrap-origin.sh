@@ -80,7 +80,7 @@ nomad_compute_deploy() {
     ANSIBLE_SERVICE='nomad' \
     ANSIBLE_SCOPE='compute' \
     ANSIBLE_TARGET="$(echo ${compute_nodes_json} | jq -re .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')" \
-    ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'serial_value':'100%','ansible_user':'vagrant','dnsmasq_resolv':'supersede','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'service_bind_ip':'{{ansible_host}}','service_network_interface':'{{ansible_default_ipv4.interface}}'}" \
+    ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'serial_value':'100%','ansible_user':'vagrant','dnsmasq_resolv':'supersede','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'service_bind_ip':'{{ansible_host}}','service_network_interface':'enp0s8'}" \
     ./jenkins-query.sh ./common/jobs/build-infra-generic-deploy-job.groovy
 }
 
