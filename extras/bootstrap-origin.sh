@@ -40,7 +40,7 @@ deploy_factory_prod_jenkins() {
       JENKINS_SCOPE="${scope}" \
       ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'dnsmasq_resolv':'supersede','dns_servers':['8.8.8.8','8.8.4.4']}" \
       ./jenkins-query.sh \
-      ./common/jobs/build-jenkins-deploy-job.groovy
+      ./common/jobs/build-jenkins-provision-job.groovy
     echo "${scope}-jenkins is online: http://${!ip_addr_var}:${JENKINS_PORT} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
   done
 }
@@ -55,7 +55,7 @@ nomad_server_deploy() {
     ANSIBLE_SERVICE='nomad' \
     ANSIBLE_SCOPE='server' \
     ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'bootstrap_enabled':true,'serial_value':'100%','ansible_user':'vagrant','dnsmasq_resolv':'supersede','dns_servers':['/consul/127.0.0.1#8600','8.8.8.8','8.8.4.4'],'service_bind_ip':'{{ansible_host}}'}" \
-    ./jenkins-query.sh ./common/jobs/build-infra-generic-deploy-job.groovy  
+    ./jenkins-query.sh ./common/jobs/build-infra-target-provision-job.groovy
 }
 
 # Running infra-generic-vault-server-deploy job on Factory-Jenkins
@@ -68,7 +68,7 @@ vault_server_deploy() {
     ANSIBLE_SERVICE='vault' \
     ANSIBLE_SCOPE='server' \
     ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'serial_value':'100%','ansible_user':'vagrant','standalone_install':false}" \
-    ./jenkins-query.sh ./common/jobs/build-infra-generic-deploy-job.groovy
+    ./jenkins-query.sh ./common/jobs/build-infra-target-provision-job.groovy
 }
 
 # Running infra-generic-nomad-compute-deploy job on Factory-Jenkins
@@ -81,7 +81,7 @@ nomad_compute_deploy() {
     ANSIBLE_SCOPE='compute' \
     ANSIBLE_TARGET="$(echo ${compute_nodes_json} | jq -re .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')" \
     ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'serial_value':'100%','ansible_user':'vagrant','dnsmasq_resolv':'supersede','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'service_bind_ip':'{{ansible_host}}','service_network_interface':'enp0s8'}" \
-    ./jenkins-query.sh ./common/jobs/build-infra-generic-deploy-job.groovy
+    ./jenkins-query.sh ./common/jobs/build-infra-target-provision-job.groovy
 }
 
 # Establishes SSH tunnel to Factory-Jenkins
