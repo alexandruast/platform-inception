@@ -18,7 +18,7 @@ server {
   bootstrap_expect = 2
   rejoin_after_leave = true
 }
-{% else %}
+{% elif service_mode == 'client' %}
 client {
   enabled = true
   meta {

@@ -15,7 +15,7 @@ leave_on_terminate = true
 bootstrap_expect = 2
 server = true
 ui = true
-{% else %}
+{% elif service_mode == 'client' %}
 retry_join = [
   "consul.service.consul"
 ]
