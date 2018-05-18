@@ -22,6 +22,7 @@ RUN curl -LSs https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/g
 RUN curl -LSs https://github.com/fabiolb/fabio/releases/download/v${FABIO_VERSION}/fabio-${FABIO_VERSION}-go${GO_VERSION}-linux_amd64 -o /usr/local/bin/fabio-${FABIO_VERSION}-go${GO_VERSION}-linux_amd64 \
 && cd /usr/local/bin \
 && grep "fabio-${FABIO_VERSION}-go${GO_VERSION}-linux_amd64$" /tmp/fabio-${FABIO_VERSION}-go${GO_VERSION}.sha256 | tee /tmp/fabio-${FABIO_VERSION}-go${GO_VERSION}.sha256 \
+&& cat /tmp/fabio-${FABIO_VERSION}-go${GO_VERSION}.sha256 \
 && sha256sum -c /tmp/fabio-${FABIO_VERSION}-go${GO_VERSION}.sha256 \
 && mv fabio-${FABIO_VERSION}-go${GO_VERSION}-linux_amd64 fabio \
 && chmod +x /usr/local/bin/fabio
