@@ -163,14 +163,14 @@ if [[ -f "/tmp/ansible-dir-md5" ]]; then
   fi
 fi
 
-# setup_origin_jenkins
-# overwrite_origin_keypair
-# deploy_factory_prod_jenkins
-# overwrite_factory_prod_jenkins_keypair
+setup_origin_jenkins
+overwrite_origin_keypair
+deploy_factory_prod_jenkins
+overwrite_factory_prod_jenkins_keypair
 create_ssh_tunnel
-# nomad_server_deploy
-# join_cluster_members
-# vault_server_deploy
+nomad_server_deploy
+join_cluster_members
+vault_server_deploy
 nomad_compute_deploy
 
 echo "${curr_ansible_dir_md5}" > /tmp/ansible-dir-md5
