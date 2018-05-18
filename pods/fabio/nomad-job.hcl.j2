@@ -11,8 +11,8 @@ job "{{ansible_env.POD_NAME}}-{{ansible_env.POD_VERSION}}" {
     restart {
       attempts = 3
       delay    = "60s"
-      interval = "10m"
-      mode = "delay"
+      interval = "15m"
+      mode     = "delay"
     }
     task "fabio-{{ansible_env.POD_VERSION}}" {
       driver = "docker"
