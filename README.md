@@ -23,7 +23,14 @@ Factory-Jenkins creates and manages all non-prod environments, where things get 
 Prod-Jenkins creates and manages all prod environments, where things get deployed to public (Prod).  
 Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory-Jenkins.
 
+#### ToDo
+consul key-value store / jenkins and nomad integration  
+vault secrets store / nomad integration  
+remove hardcoded values in jobs, move to consul/vault  
+reduce the number of vagrant machines  
+
 #### Changelog
+added fluentd pod for collecting logs  
 refactored job-dsl job names and views  
 added nomad service in dev mode to factory/prod jenkins to be able to properly validate jobs  
 decision to have int/qa/prod environments, qa for performance testing  
