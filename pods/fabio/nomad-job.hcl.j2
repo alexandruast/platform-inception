@@ -23,11 +23,23 @@ job "{{ansible_env.POD_NAME}}-{{ansible_env.POD_VERSION}}" {
           username = "{{ansible_env.REGISTRY_USERNAME}}"
           password = "{{ansible_env.REGISTRY_PASSWORD}}"
         }
+      }
+      service {
         env {
           FABIO_registry.consul.addr = "${attr.unique.network.ip-address}:8500"
         }
-      }
-      service {
+        resources {
+          memory = 30
+          network {
+            mbits = 100
+            port "ui" {
+              static = 9998
+            }
+            port "http" {
+              static = 9999
+            }
+          }
+        }
         port = "http"
         check {
           type = "http"
@@ -38,18 +50,6 @@ job "{{ansible_env.POD_NAME}}-{{ansible_env.POD_VERSION}}" {
             limit = 3
             grace = "10s"
             ignore_warnings = false
-          }
-        }
-      }
-      resources {
-        memory = 30
-        network {
-          mbits = 100
-          port "ui" {
-            static = 9998
-          }
-          port "http" {
-            static = 9999
           }
         }
       }
