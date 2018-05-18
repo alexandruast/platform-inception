@@ -27,6 +27,13 @@ job "fabio" {
           ui   = 9998
           http = 9999
         }
+        logging {
+          type = "fluentd"
+          config {
+            fluentd-address = "fluentd.service.consul:24224"
+            tag = "docker.{{ansible_env.POD_NAME}}-{{ansible_env.POD_VERSION}}.${attr.unique.hostname}.{%raw%}{{.ID}}{%endraw%}"
+          }
+        }
       }
       env {
         FABIO_registry.consul.addr = "${attr.unique.network.ip-address}:8500"
