@@ -16,7 +16,7 @@ node {
       submoduleCfg: [], 
       userRemoteConfigs: [[url: 'https://github.com/alexandruast/platform-inception.git']]])
   }
-  stage('deploy') {
+  stage('provision') {
     sh '''#!/usr/bin/env bash
       set -xeEo pipefail
       trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR

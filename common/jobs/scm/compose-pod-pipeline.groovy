@@ -50,6 +50,12 @@ node {
     docker-compose --no-ansi push
     '''
   }
+  stage('run-tests') {
+    sh '''#!/usr/bin/env bash
+    set -xeuEo pipefail
+    trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
+    '''
+  }
   stage('deploy-pod') {
     sh '''#!/usr/bin/env bash
     set -xeuEo pipefail

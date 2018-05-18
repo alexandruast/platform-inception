@@ -5,8 +5,8 @@ def services = [
 ]
 
 services.each { service, scopes ->
-  def jobPrefix="infra-generic-${service}"
-  def jobSuffix='deploy'
+  def jobPrefix="infra-target-${service}"
+  def jobSuffix='provision'
   scopes.each { scope ->
     pipelineJob("${jobPrefix}-${scope}-${jobSuffix}") {
       description("Dynamically generated with job-dsl by ${JOB_NAME}\nAny changes to this item will be overwritten without notice.")
@@ -24,7 +24,7 @@ services.each { service, scopes ->
             git {
               remote { url(repo) }
               branches('devel')
-              scriptPath("common/jobs/scm/pipeline-infra-generic-deploy.groovy")
+              scriptPath("common/jobs/scm/target-provision-pipeline.groovy")
               extensions {
                 cleanBeforeCheckout()
               }

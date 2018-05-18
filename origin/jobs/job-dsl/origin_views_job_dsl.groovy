@@ -1,6 +1,5 @@
 def views = [
-  'system',
-  'infra'
+  'jenkins'
 ]
 
 views.each { view ->

@@ -26,7 +26,7 @@ pods.each { pod ->
             git {
               remote { url(repo) }
               branches('devel')
-              scriptPath("common/jobs/scm/pipeline-pod-deploy.groovy")
+              scriptPath("common/jobs/scm/compose-pod-pipeline.groovy")
               extensions {
                 cleanBeforeCheckout()
               }

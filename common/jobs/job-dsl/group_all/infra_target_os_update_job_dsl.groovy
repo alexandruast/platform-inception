@@ -1,4 +1,4 @@
-pipelineJob("infra-generic-os-update") {
+pipelineJob("infra-target-os-update") {
   description("Dynamically generated with job-dsl by ${JOB_NAME}\nAny changes to this item will be overwritten without notice.")
   def repo = 'https://github.com/alexandruast/platform-inception'
   keepDependencies(false)
@@ -12,7 +12,7 @@ pipelineJob("infra-generic-os-update") {
         git {
           remote { url(repo) }
           branches('devel')
-          scriptPath("common/jobs/scm/pipeline-infra-generic-os-update.groovy")
+          scriptPath("common/jobs/scm/target-os-update-pipeline.groovy")
           extensions {
             cleanBeforeCheckout()
           }
