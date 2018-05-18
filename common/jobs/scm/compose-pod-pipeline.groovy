@@ -6,7 +6,7 @@ node {
       submoduleCfg: [], 
       userRemoteConfigs: [[url: 'https://github.com/alexandruast/platform-inception.git']]])
   }
-  stage('build-images') {
+  stage('build') {
     sh '''#!/usr/bin/env bash
     set -xeuEo pipefail
     trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
@@ -29,7 +29,6 @@ node {
     export REPOSITORY_NAME
     export POD_VERSION
     export POD_NAME
-    export POD_ENVIRONMENT
     docker system prune -f
     docker volume prune -f
     ANSIBLE_TARGET=127.0.0.1 \
@@ -37,11 +36,19 @@ node {
       ./apl-wrapper.sh ansible/nomad-job.yml
     cd "./pods/${POD_NAME}"
     nomad validate nomad-job.hcl
-    docker-compose --no-ansi build --no-cache
-    docker-compose --no-ansi push
+    curl -Ssf http://127.0.0.1:8500/v1/status/leader
+    curr_pod_dir_md5="$(tar -cf - -C "$(pwd)/pods/${POD_NAME}" ./ | md5sum | cut -d' ' -f1)"
+    prev_pod_dir_md5="$(curl -sf http://127.0.0.1:8500/v1/kv/md5/${POD_NAME}?raw)"
+    if [[ "${curr_pod_dir_md5}" != "${prev_pod_dir_md5}" ]]; then
+      docker-compose --no-ansi build --no-cache
+      docker-compose --no-ansi push
+      curl -Ssf --request PUT --data "${curr_pod_dir_md5}" http://127.0.0.1:8500/v1/kv/md5/${POD_NAME}
+    else
+      echo "Skipping build/deploy docker images, code is the same..."
+    fi
     '''
   }
-  stage('deploy-pod') {
+  stage('deploy') {
     sh '''#!/usr/bin/env bash
     set -xeuEo pipefail
     trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
