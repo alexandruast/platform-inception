@@ -10,6 +10,12 @@
     state: present
   become: true
 
+- name: "config file copied"
+  copy:
+    src: "{{role_path}}/files/td-agent-bit.conf"
+    dest: "/etc/td-agent-bit/"
+  become: true
+
 - name: "service enabled"
   systemd:
     name: td-agent-bit

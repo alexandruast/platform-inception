@@ -4,7 +4,7 @@ ARG FABIO_VERSION=1.5.9
 ARG GO_VERSION=1.10.2
 ARG GOSU_VERSION=1.10
 
-RUN apk add -q --no-cache curl bash inotify-tools \
+RUN apk add -q --no-cache curl bash \
 && adduser -D -H -s /bin/false fabio fabio
 
 COPY [ \

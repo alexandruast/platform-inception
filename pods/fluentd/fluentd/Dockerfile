@@ -3,7 +3,7 @@ FROM fluent/fluentd:v1.2-debian
 ARG GOSU_VERSION=1.10
 
 RUN apt-get -y -qq update \
-&& apt-get -y -qq install --no-install-recommends curl procps inotify-tools \
+&& apt-get -y -qq install --no-install-recommends curl procps \
 && useradd -M -s /bin/false fluentd \
 && chown -R fluentd:fluentd /fluentd
 
