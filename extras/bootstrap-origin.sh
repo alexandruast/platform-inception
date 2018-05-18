@@ -80,7 +80,7 @@ nomad_compute_deploy() {
     ANSIBLE_SERVICE='nomad' \
     ANSIBLE_SCOPE='compute' \
     ANSIBLE_TARGET="$(echo ${compute_nodes_json} | jq -re .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')" \
-    ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'serial_value':'100%','ansible_user':'vagrant','dnsmasq_resolv':'supersede','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'service_bind_ip':'{{ansible_host}}'}" \
+    ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'serial_value':'100%','ansible_user':'vagrant','dnsmasq_resolv':'supersede','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'service_bind_ip':'{{ansible_host}}','service_network_interface':'{{ansible_default_ipv4.interface}}'}" \
     ./jenkins-query.sh ./common/jobs/build-infra-generic-deploy-job.groovy
 }
 
@@ -163,14 +163,14 @@ if [[ -f "/tmp/ansible-dir-md5" ]]; then
   fi
 fi
 
-setup_origin_jenkins
-overwrite_origin_keypair
-deploy_factory_prod_jenkins
-overwrite_factory_prod_jenkins_keypair
+# setup_origin_jenkins
+# overwrite_origin_keypair
+# deploy_factory_prod_jenkins
+# overwrite_factory_prod_jenkins_keypair
 create_ssh_tunnel
-nomad_server_deploy
-join_cluster_members
-vault_server_deploy
+# nomad_server_deploy
+# join_cluster_members
+# vault_server_deploy
 nomad_compute_deploy
 
 echo "${curr_ansible_dir_md5}" > /tmp/ansible-dir-md5
