@@ -37,7 +37,7 @@ node {
     cd "./pods/${POD_NAME}"
     nomad validate nomad-job.hcl
     curl -Ssf http://127.0.0.1:8500/v1/status/leader
-    curr_pod_dir_md5="$(tar -cf - -C "$(pwd)/images" ./ | md5sum | cut -d' ' -f1)"
+    curr_pod_dir_md5="$(tar --mtime='1970-01-01' - -C "$(pwd)/images" ./ | md5sum | cut -d' ' -f1)"
     prev_pod_dir_md5="$(curl -Ss http://127.0.0.1:8500/v1/kv/md5/${POD_NAME}?raw)"
     if [[ "${curr_pod_dir_md5}" != "${prev_pod_dir_md5}" ]]; then
       docker-compose --no-ansi build --no-cache
