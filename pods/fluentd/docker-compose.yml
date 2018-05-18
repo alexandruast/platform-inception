@@ -5,4 +5,4 @@ services:
     image: ${REGISTRY_ADDRESS}/${REPOSITORY_NAME}/fluentd:${POD_VERSION}
     build: ./fluentd
     ports:
-      - "24224:24224"
+      - 24224:24224
