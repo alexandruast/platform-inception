@@ -30,10 +30,8 @@ node {
     export REPOSITORY_NAME
     export POD_TAG
     export POD_NAME
-    ANSIBLE_TARGET=127.0.0.1 \
-      ANSIBLE_EXTRAVARS="{'pwd':'$(pwd)'}" \
-      ./apl-wrapper.sh ansible/nomad-job.yml
     cd "./pods/${POD_NAME}"
+    ansible all -i localhost, --connection=local -m template -a "src=nomad-job.hcl.j2 dest=nomad-job.hcl"
     nomad validate nomad-job.hcl
     if [[ "${checkout_commit_id}" != "${build_commit_id}" ]]; then
       docker-compose --no-ansi build

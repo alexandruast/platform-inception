@@ -14,14 +14,14 @@ job "fluentd" {
       interval = "15m"
       mode     = "delay"
     }
-    task "fluentd-{{ansible_env.POD_TAG}}" {
+    task "fluentd-{{lookup('env','POD_TAG')}}" {
       driver = "docker"
       config {
-        image = "{{ansible_env.REGISTRY_ADDRESS}}/{{ansible_env.REPOSITORY_NAME}}/fluentd:{{ansible_env.POD_TAG}}"
+        image = "{{lookup('env','REGISTRY_ADDRESS')}}/{{lookup('env','REPOSITORY_NAME')}}/fluentd:{{lookup('env','POD_TAG')}}"
         auth {
-          server_address = "{{ansible_env.REGISTRY_ADDRESS}}"
-          username = "{{ansible_env.REGISTRY_USERNAME}}"
-          password = "{{ansible_env.REGISTRY_PASSWORD}}"
+          server_address = "{{lookup('env','REGISTRY_ADDRESS')}}"
+          username = "{{lookup('env','REGISTRY_USERNAME')}}"
+          password = "{{lookup('env','REGISTRY_PASSWORD')}}"
         }
         port_map {
           service = 24224
