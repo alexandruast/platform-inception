@@ -11,34 +11,34 @@
 
 def environments = [
   sandbox: [
-    fabio: {
+    fabio: [
       url:    "https://github.com/alexandruast/platform-inception",
       branch: "*/devel"
-    },
-    fluentd: {
+    ],
+    fluentd: [
       url:    "https://github.com/alexandruast/platform-inception",
       branch: "*/devel"
-    }
+    ]
   ],
   integration: [
-    fabio: {
+    fabio: [
       url:    "https://github.com/alexandruast/platform-inception",
       branch: "*/devel"
-    },
-    fluentd: {
+    ],
+    fluentd: [
       url:    "https://github.com/alexandruast/platform-inception",
       branch: "*/devel"
-    }
+    ]
   ],
   qa: [
-    fabio: {
+    fabio: [
       url:    "https://github.com/alexandruast/platform-inception",
       branch: "*/devel"
-    },
-    fluentd: {
+    ],
+    fluentd: [
       url:    "https://github.com/alexandruast/platform-inception",
       branch: "*/devel"
-    }
+    ]
   ]
 ]
 
