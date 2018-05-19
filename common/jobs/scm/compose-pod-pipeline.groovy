@@ -14,7 +14,7 @@ node {
     trap 'docker-compose down --rmi all --volumes' EXIT
     checkout_commit_id="$(curl -Ssf http://127.0.0.1:8500/v1/kv/${POD_NAME}/checkout_commit_id?raw)"
     build_commit_id="$(curl -Ss http://127.0.0.1:8500/v1/kv/${POD_NAME}/build_commit_id?raw)"
-    POD_VERSION="${checkout_commit_id:0:6}"
+    POD_VERSION="${checkout_commit_id:0:7}"
     REGISTRY_CREDENTIALS="platformdemo:63hu8y1L7X3BBel8"
     REGISTRY_USERNAME="${REGISTRY_CREDENTIALS%:*}"
     REGISTRY_PASSWORD="${REGISTRY_CREDENTIALS#*:}"
@@ -38,7 +38,7 @@ node {
     if [[ "${checkout_commit_id}" != "${build_commit_id}" ]]; then
       docker-compose --no-ansi build --no-cache
       docker-compose --no-ansi push
-      sh("curl -Ssf --request PUT --data ${checkout_commit_id} http://127.0.0.1:8500/v1/kv/${POD_NAME}/build_commit_id")
+      curl -Ssf --request PUT --data ${checkout_commit_id} http://127.0.0.1:8500/v1/kv/${POD_NAME}/build_commit_id
     fi
     '''
   }
