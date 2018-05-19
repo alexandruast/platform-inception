@@ -1,10 +1,10 @@
 node {
   stage('checkout') {
     checkout_info = checkout([$class: 'GitSCM', 
-      branches: [[name: '*/devel']], 
+      branches: [[name: "${POD_BRANCH}"]], 
       doGenerateSubmoduleConfigurations: false, 
       submoduleCfg: [], 
-      userRemoteConfigs: [[url: 'https://github.com/alexandruast/platform-inception.git']]])
+      userRemoteConfigs: [[url: "${POD_SCM}"]]])
     sh("curl -Ssf --request PUT --data ${checkout_info.GIT_COMMIT} http://127.0.0.1:8500/v1/kv/${POD_ENVIRONMENT}/${POD_NAME}/checkout_commit_id")
   }
   stage('build') {
