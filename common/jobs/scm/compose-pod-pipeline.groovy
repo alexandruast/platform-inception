@@ -11,7 +11,7 @@ node {
     sh '''#!/usr/bin/env bash
     set -xeuEo pipefail
     trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
-    trap 'docker-compose down --rmi all --volumes' EXIT
+    trap 'docker-compose down --rmi local' EXIT
     checkout_commit_id="$(curl -Ssf http://127.0.0.1:8500/v1/kv/${POD_NAME}/checkout_commit_id?raw)"
     build_commit_id="$(curl -Ss http://127.0.0.1:8500/v1/kv/${POD_NAME}/build_commit_id?raw)"
     POD_VERSION="${checkout_commit_id:0:7}"
