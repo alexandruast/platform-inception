@@ -36,7 +36,7 @@ node {
     cd "./pods/${POD_NAME}"
     nomad validate nomad-job.hcl
     if [[ "${checkout_commit_id}" != "${build_commit_id}" ]]; then
-      docker-compose --no-ansi build --no-cache
+      docker-compose --no-ansi build
       docker-compose --no-ansi push
       curl -Ssf --request PUT --data ${checkout_commit_id} http://127.0.0.1:8500/v1/kv/${POD_NAME}/build_commit_id
     fi
