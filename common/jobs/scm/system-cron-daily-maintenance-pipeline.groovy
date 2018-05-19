@@ -6,6 +6,7 @@ node {
       if which docker; then
         docker system prune -f
         docker volume prune -f
+        docker image prune -a -f
       fi
     '''
   }
