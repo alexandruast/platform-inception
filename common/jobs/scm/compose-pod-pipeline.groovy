@@ -5,7 +5,7 @@ node {
       doGenerateSubmoduleConfigurations: false, 
       submoduleCfg: [], 
       userRemoteConfigs: [[url: 'https://github.com/alexandruast/platform-inception.git']]])
-    sh("curl -Ssf --request PUT --data ${checkout_info.COMMIT_ID.substring(0,6)} http://127.0.0.1:8500/v1/kv/${POD_NAME}/checkout_commit_id")
+    sh("curl -Ssf --request PUT --data ${checkout_info.GIT_COMMIT} http://127.0.0.1:8500/v1/kv/${POD_NAME}/checkout_commit_id")
   }
   stage('build') {
     sh '''#!/usr/bin/env bash
@@ -13,8 +13,8 @@ node {
     trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
     trap 'docker-compose down --rmi all --volumes' EXIT
     checkout_commit_id="$(curl -Ssf http://127.0.0.1:8500/v1/kv/${POD_NAME}/checkout_commit_id?raw)"
-    build_commit_id="$(curl -Ssf http://127.0.0.1:8500/v1/kv/${POD_NAME}/build_commit_id?raw)"
-    POD_VERSION="${checkout_commit_id}"
+    build_commit_id="$(curl -Ss http://127.0.0.1:8500/v1/kv/${POD_NAME}/build_commit_id?raw)"
+    POD_VERSION="${checkout_commit_id:0:6}"
     REGISTRY_CREDENTIALS="platformdemo:63hu8y1L7X3BBel8"
     REGISTRY_USERNAME="${REGISTRY_CREDENTIALS%:*}"
     REGISTRY_PASSWORD="${REGISTRY_CREDENTIALS#*:}"
