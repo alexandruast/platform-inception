@@ -31,12 +31,14 @@ node {
     export POD_TAG
     export POD_NAME
     cd "./pods/${POD_NAME}"
-    ansible all -i localhost, --connection=local -m template -a "src=nomad-job.hcl.j2 dest=nomad-job.hcl"
+    ansible all -i localhost, --connection=local -m template -a "src=nomad-job.hcl.j2 dest=nomad-job.hcl" >/dev/null
     nomad validate nomad-job.hcl
     if [[ "${checkout_commit_id}" != "${build_commit_id}" ]]; then
       docker-compose --no-ansi build
       docker-compose --no-ansi push
       curl -Ssf --request PUT --data ${checkout_commit_id} http://127.0.0.1:8500/v1/kv/${POD_NAME}/build_commit_id
+    else
+      echo "Build for ${POD_TAG} previously successful, will not build again!"
     fi
     '''
   }
