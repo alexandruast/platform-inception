@@ -30,6 +30,7 @@ remove hardcoded values in jobs, move to consul/vault
 build publish plugin  
 
 #### Changelog
+created system cron daily maintenance jenkins job
 added fluentd pod for collecting logs  
 refactored job-dsl job names and views  
 added nomad service in dev mode to factory/prod jenkins to be able to properly validate jobs  
