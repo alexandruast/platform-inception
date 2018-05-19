@@ -1,14 +1,3 @@
-// def pods = [
-//   'fabio',
-//   'fluentd'
-// ]
-// 
-// def environments = [
-//   'sandbox',
-//   'integration',
-//   'qa'
-// ]
-
 def environments = [
   sandbox: [
     fabio: [

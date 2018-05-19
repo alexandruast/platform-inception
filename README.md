@@ -30,7 +30,8 @@ remove hardcoded values in jobs, move to consul/vault
 build publish plugin  
 
 #### Changelog
-removed if for pod builds, because it induced too much complexity  
+basic_compose_pod can now deploy any basic docker-compose based pod, on any git url and branch
+removed "if->else" for pod builds, because it induced too much complexity  
 replaced ansible-playbook for jinja2 templating with ad-hoc command  
 replaced POD_VERSION with POD_TAG to better reflect what we're doing  
 pods will build only if the git commit id changed, also changed the version string to be the short commit id  

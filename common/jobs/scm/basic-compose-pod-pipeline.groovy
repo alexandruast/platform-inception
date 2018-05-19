@@ -12,8 +12,8 @@ node {
     set -xeuEo pipefail
     trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
     trap 'docker-compose down' EXIT
-    checkout_commit_id="$(curl -Ssf http://127.0.0.1:8500/v1/kv/${POD_ENVIRONMENT}/${POD_NAME}/checkout_commit_id?raw)"
-    POD_TAG="${checkout_commit_id:0:7}"
+    CHECKOUT_COMMIT_ID="$(curl -Ssf http://127.0.0.1:8500/v1/kv/${POD_ENVIRONMENT}/${POD_NAME}/checkout_commit_id?raw)"
+    POD_TAG="${CHECKOUT_COMMIT_ID:0:7}"
     REGISTRY_CREDENTIALS="platformdemo:63hu8y1L7X3BBel8"
     REGISTRY_USERNAME="${REGISTRY_CREDENTIALS%:*}"
     REGISTRY_PASSWORD="${REGISTRY_CREDENTIALS#*:}"
