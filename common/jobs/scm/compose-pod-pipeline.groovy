@@ -14,7 +14,7 @@ node {
     trap 'docker-compose down --rmi local' EXIT
     checkout_commit_id="$(curl -Ssf http://127.0.0.1:8500/v1/kv/${POD_NAME}/checkout_commit_id?raw)"
     build_commit_id="$(curl -Ss http://127.0.0.1:8500/v1/kv/${POD_NAME}/build_commit_id?raw)"
-    POD_VERSION="${checkout_commit_id:0:7}"
+    POD_TAG="${checkout_commit_id:0:7}"
     REGISTRY_CREDENTIALS="platformdemo:63hu8y1L7X3BBel8"
     REGISTRY_USERNAME="${REGISTRY_CREDENTIALS%:*}"
     REGISTRY_PASSWORD="${REGISTRY_CREDENTIALS#*:}"
@@ -28,7 +28,7 @@ node {
     export REGISTRY_USERNAME
     export REGISTRY_PASSWORD
     export REPOSITORY_NAME
-    export POD_VERSION
+    export POD_TAG
     export POD_NAME
     ANSIBLE_TARGET=127.0.0.1 \
       ANSIBLE_EXTRAVARS="{'pwd':'$(pwd)'}" \

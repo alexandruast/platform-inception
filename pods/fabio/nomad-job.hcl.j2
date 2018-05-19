@@ -14,10 +14,10 @@ job "fabio" {
       interval = "15m"
       mode     = "delay"
     }
-    task "fabio-{{ansible_env.POD_VERSION}}" {
+    task "fabio-{{ansible_env.POD_TAG}}" {
       driver = "docker"
       config {
-        image = "{{ansible_env.REGISTRY_ADDRESS}}/{{ansible_env.REPOSITORY_NAME}}/fabio:{{ansible_env.POD_VERSION}}"
+        image = "{{ansible_env.REGISTRY_ADDRESS}}/{{ansible_env.REPOSITORY_NAME}}/fabio:{{ansible_env.POD_TAG}}"
         auth {
           server_address = "{{ansible_env.REGISTRY_ADDRESS}}"
           username = "{{ansible_env.REGISTRY_USERNAME}}"
@@ -31,7 +31,7 @@ job "fabio" {
           type = "fluentd"
           config {
             fluentd-address = "fluentd.service.consul:24224"
-            tag = "docker.{{ansible_env.POD_NAME}}-{{ansible_env.POD_VERSION}}.${attr.unique.hostname}.{%raw%}{{.ID}}{%endraw%}"
+            tag = "docker.{{ansible_env.POD_NAME}}-{{ansible_env.POD_TAG}}.${attr.unique.hostname}.{%raw%}{{.ID}}{%endraw%}"
           }
         }
       }

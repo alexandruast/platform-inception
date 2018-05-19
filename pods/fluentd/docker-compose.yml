@@ -2,7 +2,7 @@ version: '3'
 
 services:
   fluentd:
-    image: ${REGISTRY_ADDRESS}/${REPOSITORY_NAME}/fluentd:${POD_VERSION}
+    image: ${REGISTRY_ADDRESS}/${REPOSITORY_NAME}/fluentd:${POD_TAG}
     build: ./images/fluentd
     ports:
       - 24224:24224

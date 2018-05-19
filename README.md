@@ -30,6 +30,8 @@ remove hardcoded values in jobs, move to consul/vault
 build publish plugin  
 
 #### Changelog
+replaced POD_VERSION with POD_TAG to better reflect what we're doing  
+pods will build only if the git commit id changed, also changed the version string to be the short commit id  
 created system cron daily maintenance jenkins job  - runs docker prune commands  
 added fluentd pod for collecting logs  
 refactored job-dsl job names and views  
