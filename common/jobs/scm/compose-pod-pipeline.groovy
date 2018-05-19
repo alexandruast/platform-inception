@@ -1,10 +1,11 @@
 node {
   stage('checkout') {
-    checkout([$class: 'GitSCM', 
+    checkout = checkout([$class: 'GitSCM', 
       branches: [[name: '*/devel']], 
       doGenerateSubmoduleConfigurations: false, 
       submoduleCfg: [], 
       userRemoteConfigs: [[url: 'https://github.com/alexandruast/platform-inception.git']]])
+      
   }
   stage('build') {
     sh '''#!/usr/bin/env bash
