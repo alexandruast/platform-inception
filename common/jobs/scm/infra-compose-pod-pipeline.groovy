@@ -13,13 +13,16 @@ node {
     trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
     trap 'docker-compose down' EXIT
     checkout_commit_id="$(curl -Ssf http://127.0.0.1:8500/v1/kv/${POD_NAME}/checkout_commit_id?raw)"
+    checkout_images_md5="$(tar --mtime='1970-01-01' -cf - -C "${WORKSPACE}/pods/${POD_NAME}/images" ./ | md5sum | cut -d' ' -f1)"
     build_commit_id="$(curl -Ss http://127.0.0.1:8500/v1/kv/${POD_NAME}/build_commit_id?raw)"
-    POD_TAG="${checkout_commit_id:0:7}"
+    build_images_md5="$(curl -Ss http://127.0.0.1:8500/v1/kv/${POD_NAME}/build_images_md5?raw)"
+    build_images_commit_id="$(curl -Ss http://127.0.0.1:8500/v1/kv/${POD_NAME}/build_images_commit_id?raw)"
     REGISTRY_CREDENTIALS="platformdemo:63hu8y1L7X3BBel8"
     REGISTRY_USERNAME="${REGISTRY_CREDENTIALS%:*}"
     REGISTRY_PASSWORD="${REGISTRY_CREDENTIALS#*:}"
     REGISTRY_ADDRESS="docker.io"
     REPOSITORY_NAME="platformdemo"
+    POD_TAG="${checkout_commit_id:0:7}"
     echo "[info] ${REGISTRY_ADDRESS} docker registry login..."
     docker login "${REGISTRY_ADDRESS}" \
       --username="${REGISTRY_USERNAME}" \
@@ -30,15 +33,21 @@ node {
     export REPOSITORY_NAME
     export POD_TAG
     export POD_NAME
-    cd "./pods/${POD_NAME}"
+    cd "${WORKSPACE}/pods/${POD_NAME}"
     ansible all -i localhost, --connection=local -m template -a "src=nomad-job.hcl.j2 dest=nomad-job.hcl" >/dev/null
     nomad validate nomad-job.hcl
-    if [[ "${checkout_commit_id}" != "${build_commit_id}" ]]; then
+    if [[ "${checkout_images_md5}" != "${build_images_md5}" ]]; then
       docker-compose --no-ansi build
       docker-compose --no-ansi push
+      curl -Ssf --request PUT --data ${checkout_images_md5} http://127.0.0.1:8500/v1/kv/${POD_NAME}/build_images_md5
+      curl -Ssf --request PUT --data ${checkout_commit_id} http://127.0.0.1:8500/v1/kv/${POD_NAME}/build_images_commit_id
+    else
+      echo "Build images for ${POD_TAG} previously successful - md5 is the same since ${build_images_commit_id} "
+    fi
+    if [[ "${checkout_commit_id}" != "${build_commit_id}" ]]; then
       curl -Ssf --request PUT --data ${checkout_commit_id} http://127.0.0.1:8500/v1/kv/${POD_NAME}/build_commit_id
     else
-      echo "Build for ${POD_TAG} previously successful, will not build again!"
+      echo "Build application for ${POD_TAG} previously successful, will not build again!"
     fi
     '''
   }
@@ -50,7 +59,8 @@ node {
     SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes -o ExitOnForwardFailure=yes'
     tunnel_port=$(perl -e 'print int(rand(999)) + 58000')
     ssh ${SSH_OPTS} -f -N -M -S ssh-control-socket -L ${tunnel_port}:127.0.0.1:4646 vagrant@192.168.169.181
-    NOMAD_ADDR=http://127.0.0.1:${tunnel_port} nomad run "./pods/${POD_NAME}/nomad-job.hcl"
+    cd "${WORKSPACE}/pods/${POD_NAME}"
+    NOMAD_ADDR=http://127.0.0.1:${tunnel_port} nomad run nomad-job.hcl
     '''
   }
   stage('cleanup') {
