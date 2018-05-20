@@ -7,7 +7,7 @@ node {
       VAULT_ADDR="http://vault.service.consul:8200"
       curl -Ssf -X POST \
         -H "X-Vault-Token:${VAULT_TOKEN}" \
-        -d \"{\"increment\": \"96h\"}" \
+        -d "{\"increment\": \"96h\"}" \
         ${VAULT_ADDR}/v1/auth/token/renew-self
       '''
     }
