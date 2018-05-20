@@ -1,17 +1,17 @@
 node {
-  withCredentials([
-    string(credentialsId: 'JENKINS_VAULT_TOKEN', variable: 'VAULT_TOKEN'),
-    string(credentialsId: 'JENKINS_VAULT_ROLE_ID', variable: 'VAULT_ROLE_ID'),
-  ]) {
-    stage('checkout') {
-      checkout_info = checkout([$class: 'GitSCM', 
-        branches: [[name: "${POD_BRANCH}"]], 
-        doGenerateSubmoduleConfigurations: false, 
-        submoduleCfg: [], 
-        userRemoteConfigs: [[url: "${POD_SCM}"]]])
-      sh("curl -Ssf --request PUT --data ${checkout_info.GIT_COMMIT} http://127.0.0.1:8500/v1/kv/${POD_ENVIRONMENT}/${POD_NAME}/checkout_commit_id")
-    }
-    stage('build') {
+  stage('checkout') {
+    checkout_info = checkout([$class: 'GitSCM', 
+      branches: [[name: "${POD_BRANCH}"]], 
+      doGenerateSubmoduleConfigurations: false, 
+      submoduleCfg: [], 
+      userRemoteConfigs: [[url: "${POD_SCM}"]]])
+    sh("curl -Ssf --request PUT --data ${checkout_info.GIT_COMMIT} http://127.0.0.1:8500/v1/kv/${POD_ENVIRONMENT}/${POD_NAME}/checkout_commit_id")
+  }
+  stage('build') {
+    withCredentials([
+      string(credentialsId: 'JENKINS_VAULT_TOKEN', variable: 'VAULT_TOKEN'),
+      string(credentialsId: 'JENKINS_VAULT_ROLE_ID', variable: 'VAULT_ROLE_ID'),
+    ]) {
       sh '''#!/usr/bin/env bash
       set -xeuEo pipefail
       trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
@@ -39,20 +39,20 @@ node {
       docker-compose --no-ansi push
       '''
     }
-    stage('deploy') {
-      sh '''#!/usr/bin/env bash
-      set -xeuEo pipefail
-      trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
-      trap 'ssh -S "${WORKSPACE}/ssh-control-socket" -O exit vagrant@192.168.169.181' EXIT
-      SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes -o ExitOnForwardFailure=yes'
-      tunnel_port=$(perl -e 'print int(rand(999)) + 58000')
-      ssh ${SSH_OPTS} -f -N -M -S "${WORKSPACE}/ssh-control-socket" -L ${tunnel_port}:127.0.0.1:4646 vagrant@192.168.169.181
-      cd "${WORKSPACE}/pods/${POD_NAME}" || ls -1 docker-compose.yml
-      NOMAD_ADDR=http://127.0.0.1:${tunnel_port} nomad run nomad-job.hcl
-      '''
-    }
-    stage('cleanup') {
-      cleanWs()
-    }
+  }
+  stage('deploy') {
+    sh '''#!/usr/bin/env bash
+    set -xeuEo pipefail
+    trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
+    trap 'ssh -S "${WORKSPACE}/ssh-control-socket" -O exit vagrant@192.168.169.181' EXIT
+    SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes -o ExitOnForwardFailure=yes'
+    tunnel_port=$(perl -e 'print int(rand(999)) + 58000')
+    ssh ${SSH_OPTS} -f -N -M -S "${WORKSPACE}/ssh-control-socket" -L ${tunnel_port}:127.0.0.1:4646 vagrant@192.168.169.181
+    cd "${WORKSPACE}/pods/${POD_NAME}" || ls -1 docker-compose.yml
+    NOMAD_ADDR=http://127.0.0.1:${tunnel_port} nomad run nomad-job.hcl
+    '''
+  }
+  stage('cleanup') {
+    cleanWs()
   }
 }
