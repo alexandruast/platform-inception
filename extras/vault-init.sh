@@ -140,17 +140,17 @@ vault_reset() {
 }
 
 # uncomment this block to manually run this script
-VAULT_CLUSTER_IPS="$(echo '["192.168.169.181","192.168.169.182"]' | jq -re .[])"
-export VAULT_CLUSTER_IPS
-export JENKINS_ADMIN_USER=admin
-export JENKINS_ADMIN_PASS=welcome1
-export JENKINS_ADDR=http://192.168.169.172:8080
+# VAULT_CLUSTER_IPS="$(echo '["192.168.169.181","192.168.169.182"]' | jq -re .[])"
+# export VAULT_CLUSTER_IPS
+# export JENKINS_ADMIN_USER=admin
+# export JENKINS_ADMIN_PASS=welcome1
+# export JENKINS_ADDR=http://192.168.169.172:8080
 
 VAULT_ADDR="http://$(echo "${VAULT_CLUSTER_IPS}" | head -1):8200"
 CONSUL_HTTP_ADDR="http://$(echo "${VAULT_CLUSTER_IPS}" | head -1):8500"
 
 # uncomment this block to always reset vault
-vault_reset
+# vault_reset
 
 # Don't use jq -re or curl -f here, because if the result is false it will error out
 vault_init="$(curl -Ss --connect-timeout 4 ${VAULT_ADDR}/v1/sys/init | jq -r .initialized)"
