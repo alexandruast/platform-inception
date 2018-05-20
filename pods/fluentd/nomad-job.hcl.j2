@@ -26,9 +26,6 @@ job "fluentd" {
         port_map {
           service = 24224
         }
-        volumes = [
-          "log:/fluentd/log"
-        ]
       }
       resources {
         memory = 60

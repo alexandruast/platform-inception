@@ -36,6 +36,7 @@ consul key-value store / jenkins and nomad integration
 vault secrets store / nomad integration  
 remove hardcoded values in jobs, move to consul/vault  
 build publish plugin  
+hide sensitive info from console output  
 
 #### Changelog
 jenkins jobs for vault token renew and secret update  
