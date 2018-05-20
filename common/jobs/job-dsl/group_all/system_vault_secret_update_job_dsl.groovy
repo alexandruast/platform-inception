@@ -5,7 +5,7 @@ pipelineJob("system-vault-secret-update") {
   parameters {
     stringParam('VAULT_ADDR', "http://vault.service.consul:8200", "Vault address")
     nonStoredPasswordParam('VAULT_TOKEN', "Vault token")
-    stringParam('SECRET_KEY', "secret/foo", "Key to store secret")
+    stringParam('SECRET_KEY', "operations/foo", "Key to store secret")
     nonStoredPasswordParam('SECRET_VALUE', "Secret value")
   }
   definition {
