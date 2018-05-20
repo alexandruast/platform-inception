@@ -87,10 +87,16 @@ vault_reset() {
   echo "[info] JENKINS_VAULT_ROLE_ID: ${JENKINS_VAULT_ROLE_ID}"
   
   token_renew_seconds=$(curl -Ssf -X POST \
+    -H "X-Vault-Token:${OPERATIONS_VAULT_TOKEN}" \
+    -d "{\"increment\": \"96h\"}" \
+    "${VAULT_ADDR}/v1/auth/token/renew-self" | jq -re .auth.lease_duration)
+  echo "[info] OPERATIONS_VAULT_TOKEN self renewal passed, seconds=${token_renew_seconds}"
+  
+  token_renew_seconds=$(curl -Ssf -X POST \
     -H "X-Vault-Token:${JENKINS_VAULT_TOKEN}" \
     -d "{\"increment\": \"96h\"}" \
     "${VAULT_ADDR}/v1/auth/token/renew-self" | jq -re .auth.lease_duration)
-  echo "[info] test self token renewal passed, seconds=${token_renew_seconds}"
+  echo "[info] JENKINS_VAULT_TOKEN self renewal passed, seconds=${token_renew_seconds}"
 
   # generate secret-id for approle and wrap it (will transfer to app at deploy)
   approle_secid_unwrap_token="$(curl -Ssf -X POST \
@@ -114,7 +120,7 @@ vault_reset() {
     -d "{\"role_id\":\"${JENKINS_VAULT_ROLE_ID}\",\"secret_id\":\"${approle_vault_secret_id}\"}" \
     ${VAULT_ADDR}/v1/auth/approle/login | jq -re .auth.client_token)"
 
-  curl -Ssf -X PUT -H "X-Vault-Token:${VAULT_ADMIN_TOKEN}" -d '{"value":"bar"}' ${VAULT_ADDR}/v1/secret/operations/foo
+  curl -Ssf -X PUT -H "X-Vault-Token:${OPERATIONS_VAULT_TOKEN}" -d '{"value":"bar"}' ${VAULT_ADDR}/v1/secret/operations/foo
   echo "[info] vault written operations/foo secret"
   
   # use approle token to read secret (on the application side)

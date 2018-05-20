@@ -1,6 +1,7 @@
 def views = [
   'system',
-  'infra'
+  'infra',
+  'vault'
 ]
 
 views.each { view ->

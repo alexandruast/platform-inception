@@ -1,10 +1,11 @@
-pipelineJob("vault-jenkins-token-renew") {
+pipelineJob("vault-custom-token-renew") {
   description("Dynamically generated with job-dsl by ${JOB_NAME}\nAny changes to this item will be overwritten without notice.")
-  triggers { cron('H 00 * * *') }
   def repo = 'https://github.com/alexandruast/platform-inception'
   keepDependencies(false)
   parameters {
     stringParam('VAULT_ADDR', "http://vault.service.consul:8200", "Vault address")
+    nonStoredPasswordParam('VAULT_TOKEN', "Vault token")
+    stringParam('RENEW_INCREMENT', "48h", "Time to increment")
   }
   definition {
     cpsScm {
@@ -12,7 +13,7 @@ pipelineJob("vault-jenkins-token-renew") {
         git {
           remote { url(repo) }
           branches('devel')
-          scriptPath("common/jobs/scm/vault-jenkins-token-renew-pipeline.groovy")
+          scriptPath("common/jobs/scm/vault-custom-token-renew-pipeline.groovy")
           extensions {
             cleanBeforeCheckout()
           }

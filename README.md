@@ -22,6 +22,14 @@ Because it has root access to Origin-Prod, it should be an air-gapped, single pu
 Factory-Jenkins creates and manages all non-prod environments, where things get produced (Factory).  
 Prod-Jenkins creates and manages all prod environments, where things get deployed to public (Prod).  
 Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory-Jenkins.
+After everything is up and running, login to factory-jenkins and write your first vault secret  
+using the system-vault-secret-update job:
+```
+VAULT_ADDR: leave default
+VAULT_TOKEN: this is the OPERATIONS_VAULT_TOKEN from the vagrant output
+SECRET_KEY: operations/docker-registry
+SECRET_VALUE: username:password format from your account on hub.docker.com
+```
 
 #### ToDo
 consul key-value store / jenkins and nomad integration  
@@ -30,7 +38,9 @@ remove hardcoded values in jobs, move to consul/vault
 build publish plugin  
 
 #### Changelog
-basic_compose_pod can now deploy any basic docker-compose based pod, on any git url and branch
+jenkins jobs for vault token renew and secret update  
+vault-init overhaul to better describe the approle flow  
+basic_compose_pod can now deploy any basic docker-compose based pod, on any git url and branch  
 removed "if->else" for pod builds, because it induced too much complexity  
 replaced ansible-playbook for jinja2 templating with ad-hoc command  
 replaced POD_VERSION with POD_TAG to better reflect what we're doing  

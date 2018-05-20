@@ -1,4 +1,4 @@
-pipelineJob("system-vault-secret-update") {
+pipelineJob("vault-secret-update") {
   description("Dynamically generated with job-dsl by ${JOB_NAME}\nAny changes to this item will be overwritten without notice.")
   def repo = 'https://github.com/alexandruast/platform-inception'
   keepDependencies(false)
@@ -14,7 +14,7 @@ pipelineJob("system-vault-secret-update") {
         git {
           remote { url(repo) }
           branches('devel')
-          scriptPath("common/jobs/scm/system-vault-secret-update-pipeline.groovy")
+          scriptPath("common/jobs/scm/vault-secret-update-pipeline.groovy")
           extensions {
             cleanBeforeCheckout()
           }
