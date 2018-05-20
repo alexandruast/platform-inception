@@ -1,4 +1,4 @@
-pipelineJob("system-vault-jenkins-token-renew") {
+pipelineJob("system-vault-secret-update") {
   description("Dynamically generated with job-dsl by ${JOB_NAME}\nAny changes to this item will be overwritten without notice.")
   def repo = 'https://github.com/alexandruast/platform-inception'
   keepDependencies(false)
