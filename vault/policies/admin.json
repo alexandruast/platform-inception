@@ -1,0 +1,25 @@
+{
+  "path": {
+    "auth/*": {
+      "capabilities": ["create", "read", "update", "delete", "list", "sudo"]
+    },
+    "sys/auth/*": {
+      "capabilities": ["create", "read", "update", "delete", "sudo"]
+    },
+    "sys/policy": {
+      "capabilities": ["read"]
+    },
+    "sys/policy/*": {
+      "capabilities": ["create", "read", "update", "delete", "list", "sudo"]
+    },
+    "secret/*": {
+      "capabilities": ["create", "read", "update", "delete", "list", "sudo"]
+    },
+    "sys/mounts/*": {
+      "capabilities": ["create", "read", "update", "delete", "list", "sudo"]
+    },
+    "sys/health": {
+      "capabilities": ["read", "sudo"]
+    }
+  }
+}

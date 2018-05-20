@@ -1,9 +1,0 @@
-{
-  "path": {
-    "auth/approle/role/app-f85b911a/secret-id": {
-      "capabilities": [
-        "read"
-      ]
-    }
-  }
-}
