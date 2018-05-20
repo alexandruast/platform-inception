@@ -19,7 +19,7 @@ node {
       CHECKOUT_COMMIT_ID="$(curl -Ssf http://127.0.0.1:8500/v1/kv/${POD_ENVIRONMENT}/${POD_NAME}/checkout_commit_id?raw)"
       POD_TAG="${CHECKOUT_COMMIT_ID:0:7}"
       REGISTRY_CREDENTIALS="$(curl -Ssf -X GET \
-        -H "X-Vault-Token:${JENKINS_VAULT_TOKEN}" \
+        -H "X-Vault-Token:${VAULT_TOKEN}" \
         "${VAULT_ADDR}/v1/secret/operations/docker-registry" | jq -re .data.value)"
       REGISTRY_USERNAME="${REGISTRY_CREDENTIALS%:*}"
       REGISTRY_PASSWORD="${REGISTRY_CREDENTIALS#*:}"
