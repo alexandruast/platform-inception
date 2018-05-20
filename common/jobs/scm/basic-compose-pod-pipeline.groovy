@@ -8,20 +8,24 @@ node {
     sh("curl -Ssf --request PUT --data ${checkout_info.GIT_COMMIT} http://127.0.0.1:8500/v1/kv/${POD_ENVIRONMENT}/${POD_NAME}/checkout_commit_id")
   }
   stage('build') {
-    withCredentials([string(credentialsId: 'JENKINS_VAULT_TOKEN', variable: 'VAULT_TOKEN')]) {
+    withCredentials([
+        string(credentialsId: 'JENKINS_VAULT_TOKEN', variable: 'VAULT_TOKEN'),
+        string(credentialsId: 'JENKINS_VAULT_ROLE_ID', variable: 'VAULT_ROLE_ID'),
+    ]) {
       sh '''#!/usr/bin/env bash
       set -xeuEo pipefail
       trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
       trap 'docker-compose down' EXIT
       CHECKOUT_COMMIT_ID="$(curl -Ssf http://127.0.0.1:8500/v1/kv/${POD_ENVIRONMENT}/${POD_NAME}/checkout_commit_id?raw)"
       POD_TAG="${CHECKOUT_COMMIT_ID:0:7}"
+      VAULT_ADDR="http://vault.service.consul:8200"
+      REGISTRY_ADDRESS="docker.io"
+      REPOSITORY_NAME="platformdemo"
       REGISTRY_CREDENTIALS="$(curl -Ssf -X GET \
         -H "X-Vault-Token:${VAULT_TOKEN}" \
         "${VAULT_ADDR}/v1/secret/operations/docker-registry" | jq -re .data.value)"
       REGISTRY_USERNAME="${REGISTRY_CREDENTIALS%:*}"
       REGISTRY_PASSWORD="${REGISTRY_CREDENTIALS#*:}"
-      REGISTRY_ADDRESS="docker.io"
-      REPOSITORY_NAME="platformdemo"
       export REGISTRY_ADDRESS
       export REGISTRY_USERNAME
       export REGISTRY_PASSWORD
