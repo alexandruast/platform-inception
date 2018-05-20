@@ -22,14 +22,18 @@ for scope in origin factory prod; do
   for v in $(env | grep '^JENKINS_' | cut -f1 -d'='); do unset $v; done
   # shellcheck source=origin/.scope
   source ${scope}/.scope
-  export JENKINS_ADMIN_PASS=$ci_admin_pass
+  export JENKINS_ADMIN_PASS=${ci_admin_pass}
   export JENKINS_ADDR=http://${!ip_addr_var}:${JENKINS_PORT}
   ./jenkins-query.sh common/is-online.groovy
   echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
 done
 
 # setting up vault
-VAULT_CLUSTER_IPS="$(echo ${server_nodes_json} | jq -re .[].ip)" ./extras/vault-init.sh
+source factory/.scope
+JENKINS_ADMIN_PASS=${ci_admin_pass} \
+  JENKINS_ADDR=http://${factory_jenkins_ip}:${JENKINS_PORT} \
+  VAULT_CLUSTER_IPS="$(echo ${server_nodes_json} | jq -re .[].ip)" \
+  ./extras/vault-init.sh
 
 # garbage collection nodes
 curl --silent -X PUT "http://${server1_ip}:4646/v1/system/gc"
