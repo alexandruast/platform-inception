@@ -91,9 +91,7 @@ vault_reset() {
     -d "{\"increment\": \"96h\"}" \
     "${VAULT_ADDR}/v1/auth/token/renew-self" | jq -re .auth.lease_duration)
   echo "[info] test self token renewal passed, seconds=${token_renew_seconds}"
-  
-   curl -X POST -H "X-Vault-Token:${JENKINS_VAULT_TOKEN}" -d "{\"increment\": \"96h\"}" http://vault.service.consul:8200/v1/auth/token/renew-self
-  
+
   # generate secret-id for approle and wrap it (will transfer to app at deploy)
   approle_secid_unwrap_token="$(curl -Ssf -X POST \
     -H "X-Vault-Token:${JENKINS_VAULT_TOKEN}" \
@@ -133,8 +131,6 @@ vault_reset() {
     JENKINS_CREDENTIAL_DESCRIPTION="Vault Role ID" \
     JENKINS_CREDENTIAL_SECRET="${JENK_VAULT_ROLE_ID}" \
     ./jenkins-query.sh common/credential-update.groovy
-  
-  echo curl -X POST -H "X-Vault-Token:${JENKINS_VAULT_TOKEN}" -d "{\"increment\": \"96h\"}" http://vault.service.consul:8200/v1/auth/token/renew-self
 }
 
 # uncomment this block to manually run this script
