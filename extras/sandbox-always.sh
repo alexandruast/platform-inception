@@ -13,6 +13,11 @@ export JENKINS_ADDR=http://${sandbox_ip}:${JENKINS_PORT}
 ./jenkins-query.sh common/is-online.groovy
 echo "factory-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
 
+# setting up port forwarding rules
+sudo sysctl -w net.ipv4.conf.all.route_localnet=1
+sudo iptables -t nat -A PREROUTING -p tcp --dport 8500 -j DNAT --to-destination 127.0.0.1:8500
+sudo iptables -t nat -A PREROUTING -p tcp --dport 4646 -j DNAT --to-destination 127.0.0.1:4646
+
 # setting up vault
 VAULT_CLUSTER_IPS="${sandbox_ip}" ./extras/vault-init.sh
 

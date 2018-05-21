@@ -76,7 +76,7 @@
     - include_role:
         name: vault
       vars:
-        service_mode: dev
+        service_mode: server
 
     - include_role:
         name: packer
