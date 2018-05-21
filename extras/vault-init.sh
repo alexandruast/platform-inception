@@ -150,6 +150,8 @@ vault_reset() {
     ./jenkins-query.sh common/credential-update.groovy
 }
 
+vault_reset
+
 # Don't use jq -re or curl -f here, because if the result is false it will error out
 vault_init="$(curl -Ss --connect-timeout 4 \
   "${VAULT_SERVERS[0]}/v1/sys/init" \

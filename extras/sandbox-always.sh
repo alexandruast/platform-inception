@@ -24,7 +24,10 @@ sudo iptables -t nat -A PREROUTING -p tcp --dport 4646 -j DNAT --to-destination 
 # setting up vault, tokens stored on last initialized jenkins server
 export CONSUL_HTTP_ADDR="http://consul.service.consul:8500"
 export VAULT_ADDR="http://vault.service.consul:8200"
-export VAULT_SERVERS=("http://127.0.0.1:8200")
+declare -a ARR_VAULT_SERVERS=(
+  "http://127.0.0.1:8200"
+)
+export VAULT_SERVERS="${ARR_VAULT_SERVERS[*]}"
 ./extras/vault-init.sh
 
 # garbage collection nodes

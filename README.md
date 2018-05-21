@@ -40,7 +40,8 @@ build publish plugin
 hide sensitive info from console output  
 
 #### Changelog
-sandbox mode added to vagrantfile - use one vm for sandbox environment
+refactored vagrant always run scripts / vault-init  
+sandbox mode added to vagrantfile - use one vm for sandbox environment  
 jenkins jobs for vault token renew and secret update  
 vault-init overhaul to better describe the approle flow  
 basic_compose_pod can now deploy any basic docker-compose based pod, on any git url and branch  

@@ -32,10 +32,11 @@ done
 # setting up vault, tokens stored on last initialized jenkins server
 export CONSUL_HTTP_ADDR="http://consul.service.consul:8500"
 export VAULT_ADDR="http://vault.service.consul:8200"
-export VAULT_SERVERS=(
+declare -a ARR_VAULT_SERVERS=(
   "http://${server1_ip}:8200"
   "http://${server2_ip}:8200"
 )
+export VAULT_SERVERS="${ARR_VAULT_SERVERS[*]}"
 ./extras/vault-init.sh
 
 # garbage collection nodes
