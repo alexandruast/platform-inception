@@ -5,7 +5,7 @@ node {
       doGenerateSubmoduleConfigurations: false, 
       submoduleCfg: [], 
       userRemoteConfigs: [[url: "${POD_SCM}"]]])
-    sh("curl -Ssf --request PUT --data ${checkout_info.GIT_COMMIT} http://127.0.0.1:8500/v1/kv/${POD_ENVIRONMENT}/${POD_NAME}/checkout_commit_id")
+    sh("curl -Ssf -X PUT -d ${checkout_info.GIT_COMMIT} http://127.0.0.1:8500/v1/kv/${POD_ENVIRONMENT}/${POD_NAME}/checkout_commit_id")
   }
   stage('build') {
     withCredentials([
@@ -18,9 +18,9 @@ node {
       trap 'docker-compose down' EXIT
       CHECKOUT_COMMIT_ID="$(curl -Ssf http://127.0.0.1:8500/v1/kv/${POD_ENVIRONMENT}/${POD_NAME}/checkout_commit_id?raw)"
       POD_TAG="${CHECKOUT_COMMIT_ID:0:7}"
-      VAULT_ADDR="http://vault.service.consul:8200"
-      REGISTRY_ADDRESS="docker.io"
-      REPOSITORY_NAME="platformdemo"
+      VAULT_ADDR="$(curl -Ssf ${CONSUL_ADDR}/v1/kv/${APPLICATION_ENVIRONMENT}/vault_address?raw)"
+      REGISTRY_ADDRESS="$(curl -Ssf ${CONSUL_ADDR}/v1/kv/${APPLICATION_ENVIRONMENT}/docker_registry_address?raw)"
+      REPOSITORY_NAME="$(curl -Ssf ${CONSUL_ADDR}/v1/kv/${APPLICATION_ENVIRONMENT}/docker_repository_name?raw)"
       REGISTRY_CREDENTIALS="$(curl -Ssf -X GET \
         -H "X-Vault-Token:${VAULT_TOKEN}" \
         "${VAULT_ADDR}/v1/secret/operations/docker-registry" | jq -re .data.value)"
@@ -45,10 +45,11 @@ node {
     sh '''#!/usr/bin/env bash
     set -xeuEo pipefail
     trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
-    trap 'ssh -S "${WORKSPACE}/ssh-control-socket" -O exit vagrant@192.168.169.181' EXIT
+    SSH_DEPLOY_ADDRESS="$(curl -Ssf ${CONSUL_ADDR}/v1/kv/${APPLICATION_ENVIRONMENT}/ssh_deploy_address?raw)"
+    trap 'ssh -S "${WORKSPACE}/ssh-control-socket" -O exit ${SSH_DEPLOY_ADDRESS}' EXIT
     SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes -o ExitOnForwardFailure=yes'
     tunnel_port=$(perl -e 'print int(rand(999)) + 58000')
-    ssh ${SSH_OPTS} -f -N -M -S "${WORKSPACE}/ssh-control-socket" -L ${tunnel_port}:127.0.0.1:4646 vagrant@192.168.169.181
+    ssh ${SSH_OPTS} -f -N -M -S "${WORKSPACE}/ssh-control-socket" -L ${tunnel_port}:127.0.0.1:4646 ${SSH_DEPLOY_ADDRESS}
     cd "${WORKSPACE}/pods/${POD_NAME}" || ls -1 docker-compose.yml
     NOMAD_ADDR=http://127.0.0.1:${tunnel_port} nomad run nomad-job.hcl
     '''
