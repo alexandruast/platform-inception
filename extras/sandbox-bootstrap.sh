@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-set -eEo pipefail
+set -eEuo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
 ci_admin_pass=$1
+sandbox_ip=$2
 
 install_jq() {
   sudo curl -LSs https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -o /usr/local/bin/jq \
@@ -22,7 +23,7 @@ cd /vagrant/
 
 source "factory/.scope"
 export JENKINS_ADMIN_PASS="${ci_admin_pass}"
-export JENKINS_ADDR="http://127.0.0.1:${JENKINS_PORT}"
+export JENKINS_ADDR="http://${sandbox_ip}:${JENKINS_PORT}"
 ANSIBLE_TARGET="127.0.0.1" \
   ANSIBLE_EXTRAVARS="{'dnsmasq_resolv':'supersede','dns_servers':['/consul/127.0.0.1#8600','8.8.8.8','8.8.4.4']}" \
   ./apl-wrapper.sh ansible/target-sandbox.yml

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # This script tries to emulate a flow that's normally done from an operations workstation
 # This server is also the Origin-Jenkins
-set -eEo pipefail
+set -eEuo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 SSH_CONTROL_SOCKET="/tmp/ssh-control-socket-$(uuidgen)"
 trap 'sudo ssh -S "${SSH_CONTROL_SOCKET}" -O exit vagrant@${!ip_addr_var:-192.0.2.255}' EXIT

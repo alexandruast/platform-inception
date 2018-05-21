@@ -219,7 +219,7 @@ Vagrant.configure(2) do |config|
     node.vm.provision "shell", path: "./extras/sandbox-ssh-key.sh", privileged: false
     node.vm.provision "shell", inline: bootstrap, privileged: false
     node.vm.provision "shell" do |s|
-      s.path = "./extras/bootstrap-origin.sh"
+      s.path = "./extras/origin-bootstrap.sh"
       s.privileged = false
       s.args = [
         ci_admin_pass,
@@ -231,7 +231,7 @@ Vagrant.configure(2) do |config|
       ]
     end
     node.vm.provision "shell", run: "always" do |s|
-      s.path = "./extras/always-origin.sh"
+      s.path = "./extras/origin-always.sh"
       s.privileged = false
       s.args = [
         ci_admin_pass,
@@ -263,18 +263,19 @@ Vagrant.configure(2) do |config|
       node.vm.provision "shell", path: "./extras/sandbox-ssh-key.sh", privileged: false
       node.vm.provision "shell", inline: bootstrap, privileged: false
       node.vm.provision "shell" do |s|
-        s.path = "./extras/bootstrap-sandbox.sh"
-        s.privileged = false
-        s.args = [
-          ci_admin_pass
-        ]
-      end
-      node.vm.provision "shell", run: "always" do |s|
-        s.path = "./extras/always-sandbox.sh"
+        s.path = "./extras/sandbox-bootstrap.sh"
         s.privileged = false
         s.args = [
           ci_admin_pass,
-          sandbox.to_json.to_s
+          sandbox[:ip]
+        ]
+      end
+      node.vm.provision "shell", run: "always" do |s|
+        s.path = "./extras/sandbox-always.sh"
+        s.privileged = false
+        s.args = [
+          ci_admin_pass,
+          sandbox[:ip]
         ]
       end
       node.trigger.before :destroy do |trigger|
