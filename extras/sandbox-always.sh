@@ -19,10 +19,10 @@ sudo iptables -t nat -A PREROUTING -p tcp --dport 8500 -j DNAT --to-destination 
 sudo iptables -t nat -A PREROUTING -p tcp --dport 4646 -j DNAT --to-destination 127.0.0.1:4646
 
 # setting up vault
-VAULT_CLUSTER_IPS="${sandbox_ip}" ./extras/vault-init.sh
+VAULT_CLUSTER_IPS="127.0.0.1" ./extras/vault-init.sh
 
 # garbage collection nodes
-curl --silent -X PUT "http://${sandbox_ip}:4646/v1/system/gc"
+curl --silent -X PUT "http://127.0.0.1:4646/v1/system/gc"
 
 echo "Consul API/UI is available at http://${sandbox_ip}:8500"
 echo "Nomad API/UI is available at http://${sandbox_ip}:4646"

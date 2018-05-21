@@ -135,7 +135,7 @@ vault_reset() {
     ./jenkins-query.sh common/credential-update.groovy
   JENKINS_CREDENTIAL_ID="JENKINS_VAULT_ROLE_ID" \
     JENKINS_CREDENTIAL_DESCRIPTION="Vault Role ID" \
-    JENKINS_CREDENTIAL_SECRET="${JENK_VAULT_ROLE_ID}" \
+    JENKINS_CREDENTIAL_SECRET="${JENKINS_VAULT_ROLE_ID}" \
     ./jenkins-query.sh common/credential-update.groovy
 }
 
@@ -150,7 +150,7 @@ VAULT_ADDR="http://$(echo "${VAULT_CLUSTER_IPS}" | head -1):8200"
 CONSUL_HTTP_ADDR="http://$(echo "${VAULT_CLUSTER_IPS}" | head -1):8500"
 
 # uncomment this block to always reset vault
-# vault_reset
+vault_reset
 
 # Don't use jq -re or curl -f here, because if the result is false it will error out
 vault_init="$(curl -Ss --connect-timeout 4 ${VAULT_ADDR}/v1/sys/init | jq -r .initialized)"
