@@ -12,9 +12,60 @@ box = "bento/centos-7.4"
 # box = "moonphase/amazonlinux2"
 # box = "xianlin/rhel-7"
 
+ci_origin = {
+  :hostname => "origin",
+  :ip => "192.168.169.171",
+  :box => box,
+  :memory => 640,
+  :cpus => 1
+}
+
 ci_factory = {
   :hostname => "factory",
   :ip => "192.168.169.172",
+  :box => box,
+  :memory => 800,
+  :cpus => 2
+}
+
+ci_prod = {
+  :hostname => "prod",
+  :ip => "192.168.169.173",
+  :box => box,
+  :memory => 500,
+  :cpus => 1
+}
+
+nomad_servers = [
+  {
+    :hostname => "server1",
+    :ip => "192.168.169.181",
+    :box => box,
+    :memory => 500,
+    :cpus => 1
+  },
+  {
+    :hostname => "server2",
+    :ip => "192.168.169.182",
+    :box => box,
+    :memory => 500,
+    :cpus => 1
+  }
+]
+
+compute_nodes = [
+  {
+    :hostname => "node1",
+    :ip => "192.168.169.191",
+    :box => box,
+    :memory => 640,
+    :cpus => 2
+  }
+]
+
+sandbox = {
+  :hostname => "sandbox",
+  :ip => "192.168.169.170",
   :box => box,
   :memory => 3600,
   :cpus => 2
@@ -86,30 +137,108 @@ fi
 SCRIPT
 
 Vagrant.configure(2) do |config|
-  config.vm.define "factory" do |node|
-    node.vm.box = ci_factory[:box]
-    node.vm.hostname = ci_factory[:hostname]
+  
+  [ci_factory,ci_prod].each do |machine|
+    config.vm.define machine[:hostname] do |node|
+      node.vm.box = machine[:box]
+      node.vm.hostname = machine[:hostname]
+      node.vm.provider "virtualbox" do |vb|
+        vb.linked_clone = true
+        vb.memory = machine[:memory]
+        vb.cpus = machine[:cpus]
+      end  
+      node.vm.network "private_network", ip: machine[:ip]
+      node.vm.provision "shell", path: "./extras/sandbox-ssh-key.sh", privileged: false
+      node.vm.provision "shell", inline: bootstrap, privileged: false
+      node.trigger.before :destroy do |trigger|
+        trigger.on_error = :continue
+        begin
+          trigger.run_remote = { inline: "if which subscription-manager; then sudo subscription-manager unregister; fi" } if box.include? "rhel"
+        rescue
+          puts "If something went wrong, please remove the vm manually from https://access.redhat.com/management/subscriptions"
+        end
+      end
+    end
+  end
+  
+  nomad_servers.each do |machine|
+    config.vm.define machine[:hostname] do |node|
+      node.vm.box = machine[:box]
+      node.vm.hostname = machine[:hostname]
+      node.vm.provider "virtualbox" do |vb|
+        vb.linked_clone = true
+        vb.memory = machine[:memory]
+        vb.cpus = machine[:cpus]
+      end  
+      node.vm.network "private_network", ip: machine[:ip]
+      node.vm.provision "shell", path: "./extras/sandbox-ssh-key.sh", privileged: false
+      node.vm.provision "shell", inline: bootstrap, privileged: false
+      node.trigger.before :destroy do |trigger|
+        trigger.on_error = :continue
+        begin
+          trigger.run_remote = { inline: "if which subscription-manager; then sudo subscription-manager unregister; fi" } if box.include? "rhel"
+        rescue
+          puts "If something went wrong, please remove the vm manually from https://access.redhat.com/management/subscriptions"
+        end
+      end
+    end
+  end
+  
+  compute_nodes.each do |machine|
+    config.vm.define machine[:hostname] do |node|
+      node.vm.box = machine[:box]
+      node.vm.hostname = machine[:hostname]
+      node.vm.provider "virtualbox" do |vb|
+        vb.linked_clone = true
+        vb.memory = machine[:memory]
+        vb.cpus = machine[:cpus]
+      end  
+      node.vm.network "private_network", ip: machine[:ip]
+      node.vm.provision "shell", path: "./extras/sandbox-ssh-key.sh", privileged: false
+      node.vm.provision "shell", inline: bootstrap, privileged: false
+      node.trigger.before :destroy do |trigger|
+        trigger.on_error = :continue
+        begin
+          trigger.run_remote = { inline: "if which subscription-manager; then sudo subscription-manager unregister; fi" } if box.include? "rhel"
+        rescue
+          puts "If something went wrong, please remove the vm manually from https://access.redhat.com/management/subscriptions"
+        end
+      end
+    end
+  end
+  
+  config.vm.define "origin" do |node|
+    node.vm.box = ci_origin[:box]
+    node.vm.hostname = ci_origin[:hostname]
     node.vm.provider "virtualbox" do |vb|
         vb.linked_clone = true
-        vb.memory = ci_factory[:memory]
-        vb.cpus = ci_factory[:cpus]
+        vb.memory = ci_origin[:memory]
+        vb.cpus = ci_origin[:cpus]
     end
-    node.vm.network "private_network", ip: ci_factory[:ip]
+    node.vm.network "private_network", ip: ci_origin[:ip]
     node.vm.provision "shell", path: "./extras/sandbox-ssh-key.sh", privileged: false
     node.vm.provision "shell", inline: bootstrap, privileged: false
     node.vm.provision "shell" do |s|
-      s.path = "./extras/bootstrap-sandbox.sh"
-      s.privileged = false
-      s.args = [
-        ci_admin_pass
-      ]
-    end
-    node.vm.provision "shell", run: "always" do |s|
-      s.path = "./extras/always-sandbox.sh"
+      s.path = "./extras/bootstrap-origin.sh"
       s.privileged = false
       s.args = [
         ci_admin_pass,
-        ci_factory.to_json.to_s
+        ci_origin.to_json.to_s,
+        ci_factory.to_json.to_s,
+        ci_prod.to_json.to_s,
+        nomad_servers.to_json.to_s,
+        compute_nodes.to_json.to_s
+      ]
+    end
+    node.vm.provision "shell", run: "always" do |s|
+      s.path = "./extras/always-origin.sh"
+      s.privileged = false
+      s.args = [
+        ci_admin_pass,
+        ci_origin.to_json.to_s,
+        ci_factory.to_json.to_s,
+        ci_prod.to_json.to_s,
+        nomad_servers.to_json.to_s
       ]
     end
     node.trigger.before :destroy do |trigger|
@@ -118,6 +247,43 @@ Vagrant.configure(2) do |config|
         trigger.run_remote = { inline: "if which subscription-manager; then sudo subscription-manager unregister; fi" } if box.include? "rhel"
       rescue
         puts "If something went wrong, please remove the vm manually from https://access.redhat.com/management/subscriptions"
+      end
+    end
+  end
+  if ARGV[1] == "sandbox" or ARGV[0] == "destroy" or ARGV[0] == "halt" 
+    config.vm.define "sandbox" do |node|
+      node.vm.box = sandbox[:box]
+      node.vm.hostname = sandbox[:hostname]
+      node.vm.provider "virtualbox" do |vb|
+          vb.linked_clone = true
+          vb.memory = sandbox[:memory]
+          vb.cpus = sandbox[:cpus]
+      end
+      node.vm.network "private_network", ip: sandbox[:ip]
+      node.vm.provision "shell", path: "./extras/sandbox-ssh-key.sh", privileged: false
+      node.vm.provision "shell", inline: bootstrap, privileged: false
+      node.vm.provision "shell" do |s|
+        s.path = "./extras/bootstrap-sandbox.sh"
+        s.privileged = false
+        s.args = [
+          ci_admin_pass
+        ]
+      end
+      node.vm.provision "shell", run: "always" do |s|
+        s.path = "./extras/always-sandbox.sh"
+        s.privileged = false
+        s.args = [
+          ci_admin_pass,
+          sandbox.to_json.to_s
+        ]
+      end
+      node.trigger.before :destroy do |trigger|
+        trigger.on_error = :continue
+        begin
+          trigger.run_remote = { inline: "if which subscription-manager; then sudo subscription-manager unregister; fi" } if box.include? "rhel"
+        rescue
+          puts "If something went wrong, please remove the vm manually from https://access.redhat.com/management/subscriptions"
+        end
       end
     end
   end
