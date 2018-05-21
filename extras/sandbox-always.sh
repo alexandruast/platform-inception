@@ -7,19 +7,25 @@ sandbox_ip=$2
 
 cd /vagrant/
 
-source factory/.scope
-export JENKINS_ADMIN_PASS=${ci_admin_pass}
-export JENKINS_ADDR=http://${sandbox_ip}:${JENKINS_PORT}
+# waiting for factory jenkins server to be online
+scope='factory'
+# shellcheck source=factory/.scope
+source ${scope}/.scope
+export JENKINS_ADMIN_PASS="${ci_admin_pass}"
+export JENKINS_ADDR="http://${sandbox_ip}:${JENKINS_PORT}"
 ./jenkins-query.sh common/is-online.groovy
-echo "factory-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
+echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
 
 # setting up port forwarding rules
-sudo sysctl -w net.ipv4.conf.all.route_localnet=1
+sudo sysctl -w net.ipv4.conf.all.route_localnet=1 >/dev/null
 sudo iptables -t nat -A PREROUTING -p tcp --dport 8500 -j DNAT --to-destination 127.0.0.1:8500
 sudo iptables -t nat -A PREROUTING -p tcp --dport 4646 -j DNAT --to-destination 127.0.0.1:4646
 
-# setting up vault
-VAULT_CLUSTER_IPS="127.0.0.1" ./extras/vault-init.sh
+# setting up vault, tokens stored on last initialized jenkins server
+export CONSUL_HTTP_ADDR="http://consul.service.consul:8500"
+export VAULT_ADDR="http://vault.service.consul:8200"
+export VAULT_SERVERS=("http://127.0.0.1:8200")
+./extras/vault-init.sh
 
 # garbage collection nodes
 curl --silent -X PUT "http://127.0.0.1:4646/v1/system/gc"
