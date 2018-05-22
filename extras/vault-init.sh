@@ -8,7 +8,7 @@ trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 REGISTRY_CREDENTIALS='platformdemo:63hu8y1L7X3BBel8'
 
 vault_reset() {
-  curl -Ssf -X DELETE ${CONSUL_HTTP_ADDR}/v1/kv/vault?recurse >/dev/null
+  curl -Ssf -X DELETE ${CONSUL_HTTP_ADDR}/v1/kv/vault/?recurse >/dev/null
   # sleep is required here, delete is not instant
   sleep 1
   echo "[info] vault data purged from consul"

@@ -81,6 +81,7 @@
     become: true
     register: docker_group
     when: service_mode == 'client'
+      or service_mode == 'dev'
 
   - name: "restart docker"
     systemd:
