@@ -39,7 +39,7 @@ node {
       docker login "${REGISTRY_ADDRESS}" --username="${REGISTRY_USERNAME}" --password-stdin <<< ${REGISTRY_PASSWORD} >/dev/null
       docker build -t ${REGISTRY_ADDRESS}/${REGISTRY_PATH}/${SERVICE_NAME}:${SERVICE_TAG} ./
       docker push ${REGISTRY_ADDRESS}/${REGISTRY_PATH}/${SERVICE_NAME}:${SERVICE_TAG}
-      curl -Ssf -X PUT -d "${SERVICE_TAG}" ${CONSUL_HTTP_ADDR}/v1/kv/platform_data/${PLATFORM_ENVIRONMENT}/${SERVICE_NAME}/tag_version
+      curl -Ssf -X PUT -d "${SERVICE_TAG}" ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${SERVICE_NAME}/tag_version
       '''
     }
   }
