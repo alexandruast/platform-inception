@@ -23,7 +23,7 @@ node {
     docker run --rm \
       -v "$(pwd)/config:/config" \
       -v "$(pwd)/import:/import" \
-      --dns 172.17.0.1 \
+      --dns ${JENKINS_IP_ADDR} \
       ${REGISTRY_ADDRESS}/$REGISTRY_PATH/yaml-to-consul:${TAG_VERSION}
     '''
   }
