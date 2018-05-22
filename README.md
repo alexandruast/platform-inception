@@ -21,7 +21,8 @@ Origin-Jenkins is then used to provision Factory-Jenkins and Prod-Jenkins, and i
 Because it has root access to Origin-Prod, it should be an air-gapped, single purpose instance and only started and connected to network when needed.  
 Factory-Jenkins creates and manages all non-prod environments, where things get produced (Factory).  
 Prod-Jenkins creates and manages all prod environments, where things get deployed to public (Prod).  
-Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory-Jenkins.
+Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory-Jenkins.  
+Production infrastructure requires consul/vault clusters for factory and prod.
 
 #### ToDo
 deployments can be referenced  
@@ -35,6 +36,7 @@ looging, metrics, monitoring dashboard
 service dashboard  
 
 #### Changelog
+yaml-to-consul integration  
 vault/consul kv integration  
 env var groovy script added  
 refactored vagrant always run scripts / vault-init  
