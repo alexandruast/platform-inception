@@ -2,6 +2,11 @@
 set -eEuo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
+# I am exposing a personal docker.io account here for demo purposes,
+# saving your time and making the process more streamlined.
+# PLEASE DO NOT ABUSE!
+REGISTRY_CREDENTIALS='platformdemo:63hu8y1L7X3BBel8'
+
 vault_reset() {
   curl -Ssf -X DELETE ${CONSUL_HTTP_ADDR}/v1/kv/vault?recurse >/dev/null
   # sleep is required here, delete is not instant
@@ -129,7 +134,7 @@ vault_reset() {
 
   curl -Ssf -X PUT \
     -H "X-Vault-Token:${OPERATIONS_VAULT_TOKEN}" \
-    -d '{"value":"bar"}' \
+    -d "{\"value\":\"bar\"}" \
     "${VAULT_ADDR}/v1/secret/operations/foo"
   echo "[info] vault written operations/foo secret"
   
@@ -140,6 +145,12 @@ vault_reset() {
     | jq -re .data.value)"
   echo "[info] vault token wrap/unwrap tests passed, secret=$secret"
   
+  # writing some first secrets, to save your time
+  curl -Ssf -X PUT \
+    -H "X-Vault-Token:${OPERATIONS_VAULT_TOKEN}" \
+    -d -d "{\"value\":\"${REGISTRY_CREDENTIALS}\"}" \
+    "${VAULT_ADDR}/v1/secret/operations/docker-registry"
+
   JENKINS_CREDENTIAL_ID="JENKINS_VAULT_TOKEN" \
     JENKINS_CREDENTIAL_DESCRIPTION="Vault Token" \
     JENKINS_CREDENTIAL_SECRET="${JENKINS_VAULT_TOKEN}" \

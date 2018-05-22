@@ -22,14 +22,6 @@ Because it has root access to Origin-Prod, it should be an air-gapped, single pu
 Factory-Jenkins creates and manages all non-prod environments, where things get produced (Factory).  
 Prod-Jenkins creates and manages all prod environments, where things get deployed to public (Prod).  
 Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory-Jenkins.
-After everything is up and running, login to factory-jenkins and write your first vault secret  
-using the system-vault-secret-update job:
-```
-VAULT_ADDR: leave default
-VAULT_TOKEN: this is the OPERATIONS_VAULT_TOKEN from the vagrant output
-SECRET_KEY: operations/docker-registry
-SECRET_VALUE: username:password format from your account on hub.docker.com
-```
 
 #### ToDo
 get vault_address from consul on all jobs  
