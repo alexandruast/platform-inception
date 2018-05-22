@@ -1,7 +1,7 @@
 node {
   stage('checkout') {
-    serviceGitBranch = sh("curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/services/${SERVICE_NAME}/${PLATFORM_ENVIRONMENT}/scm_branch?raw").trim()
-    serviceGitURL = sh("curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/services/${SERVICE_NAME}/${PLATFORM_ENVIRONMENT}/scm_url?raw").trim()
+    serviceGitBranch = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/services/${SERVICE_NAME}/${PLATFORM_ENVIRONMENT}/scm_branch?raw").trim()
+    serviceGitURL = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/services/${SERVICE_NAME}/${PLATFORM_ENVIRONMENT}/scm_url?raw").trim()
     checkout_info = checkout([$class: 'GitSCM', 
       branches: [[name: serviceGitBranch]], 
       doGenerateSubmoduleConfigurations: false, 
@@ -17,7 +17,6 @@ node {
       sh '''#!/usr/bin/env bash
       set -xeuEo pipefail
       trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
-      trap 'docker-compose down' EXIT
       CHECKOUT_COMMIT_ID="$(curl -Ssf http://127.0.0.1:8500/v1/kv/${PLATFORM_ENVIRONMENT}/${SERVICE_NAME}/checkout_commit_id?raw)"
       SERVICE_TAG="${CHECKOUT_COMMIT_ID:0:7}"
       VAULT_ADDR="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/vault_address?raw)"
