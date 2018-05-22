@@ -32,6 +32,7 @@ SECRET_VALUE: username:password format from your account on hub.docker.com
 ```
 
 #### ToDo
+get vault_address from consul on all jobs  
 fluentd to listen on udp socket  
 consul key-value store / jenkins and nomad integration  
 vault secrets store / nomad integration  

@@ -29,9 +29,15 @@ for scope in origin prod factory; do
   echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
 done
 
-# setting up vault, tokens stored on last initialized jenkins server
+# running in sandbox environment
+export PLATFORM_ENV='sandbox'
+
+# setting up consul
 export CONSUL_HTTP_ADDR="http://consul.service.consul:8500"
 export VAULT_ADDR="http://vault.service.consul:8200"
+./extras/consul-init.sh
+
+# setting up vault, tokens stored on last initialized jenkins server
 declare -a ARR_VAULT_SERVERS=(
   "http://${server1_ip}:8200"
   "http://${server2_ip}:8200"
