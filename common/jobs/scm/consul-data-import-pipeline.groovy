@@ -16,9 +16,9 @@ node {
     REGISTRY_PATH="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/docker_registry_path?raw)"
     ansible all -i localhost, --connection=local -m template -a "src=config/main.yml.j2 dest=config/main.yml" >/dev/null
     TAG_VERSION="$(
-      curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/qa/yaml-to-consul/tag_version?raw || \
-      curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/integration/yaml-to-consul/tag_version?raw || \
-      curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/sandbox/yaml-to-consul/tag_version?raw
+      curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform_data/qa/yaml-to-consul/tag_version?raw || \
+      curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform_data/integration/yaml-to-consul/tag_version?raw || \
+      curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform_data/sandbox/yaml-to-consul/tag_version?raw
     )"
     docker run --rm \
       -v "$(pwd)/config:/config" \

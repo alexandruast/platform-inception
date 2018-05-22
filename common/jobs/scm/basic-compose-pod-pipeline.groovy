@@ -52,7 +52,7 @@ node {
     ssh ${SSH_OPTS} -f -N -M -S "${WORKSPACE}/ssh-control-socket" -L ${tunnel_port}:127.0.0.1:4646 ${SSH_DEPLOY_ADDRESS}
     cd "${WORKSPACE}/pods/${POD_NAME}" || ls -1 docker-compose.yml
     NOMAD_ADDR=http://127.0.0.1:${tunnel_port} nomad run nomad-job.hcl
-    curl -Ssf -X PUT -d "${POD_TAG}" ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/tag_version
+    curl -Ssf -X PUT -d "${POD_TAG}" ${CONSUL_HTTP_ADDR}/v1/kv/platform_data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/tag_version
     '''
   }
   stage('cleanup') {

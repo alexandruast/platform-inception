@@ -11,7 +11,7 @@ echo "[info] kv data purged from consul"
 # will be used - factory and prod, with manual initial repo configuration
 
 curl -Ssf -X PUT \
-  -d "https://github.com/alexandruast/platform-data" \
+  -d "https://github.com/alexandruast/platform_data" \
   "${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/bootstrap/scm_url" >/dev/null
 
 curl -Ssf -X PUT \
