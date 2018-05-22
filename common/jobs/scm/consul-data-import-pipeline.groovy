@@ -23,6 +23,7 @@ node {
     docker run --rm \
       -v "$(pwd)/config:/config" \
       -v "$(pwd)/import:/import" \
+      --dns 172.17.0.1 \
       ${REGISTRY_ADDRESS}/$REGISTRY_PATH/yaml-to-consul:${TAG_VERSION}
     '''
   }
