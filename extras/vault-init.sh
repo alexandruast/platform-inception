@@ -148,7 +148,7 @@ vault_reset() {
   # writing some first secrets, to save your time
   curl -Ssf -X PUT \
     -H "X-Vault-Token:${OPERATIONS_VAULT_TOKEN}" \
-    -d -d "{\"value\":\"${REGISTRY_CREDENTIALS}\"}" \
+    -d "{\"value\":\"${REGISTRY_CREDENTIALS}\"}" \
     "${VAULT_ADDR}/v1/secret/operations/docker-registry"
 
   JENKINS_CREDENTIAL_ID="JENKINS_VAULT_TOKEN" \

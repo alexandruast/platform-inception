@@ -39,7 +39,6 @@ environments.each { environment, pods ->
       def repo = 'https://github.com/alexandruast/platform-inception'
       keepDependencies(false)
       parameters {
-        stringParam('CONSUL_HTTP_ADDR', "http://consul.service.consul:8500", "Consul address")
         choiceParam('PLATFORM_ENVIRONMENT', ["${environment}"], "Running in environment")
         choiceParam('POD_NAME', ["${pod}"], "Pod name")
         choiceParam('POD_SCM', ["${details.url}"], "SCM URL")
