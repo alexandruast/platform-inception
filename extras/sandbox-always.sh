@@ -21,13 +21,10 @@ sudo sysctl -w net.ipv4.conf.all.route_localnet=1 >/dev/null
 sudo iptables -t nat -A PREROUTING -p tcp --dport 8500 -j DNAT --to-destination 127.0.0.1:8500
 sudo iptables -t nat -A PREROUTING -p tcp --dport 4646 -j DNAT --to-destination 127.0.0.1:4646
 
-# running in sandbox environment
-export PLATFORM_ENV='sandbox'
-export SSH_DEPLOY_ADDRESS="vagrant@${sandbox_ip}"
-
 # setting up consul
 export CONSUL_HTTP_ADDR="http://consul.service.consul:8500"
 export VAULT_ADDR="http://vault.service.consul:8200"
+export SSH_DEPLOY_ADDRESS="vagrant@${sandbox_ip}"
 ./extras/consul-init.sh
 
 # setting up vault, tokens stored on last initialized jenkins server

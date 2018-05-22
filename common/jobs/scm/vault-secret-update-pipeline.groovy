@@ -7,10 +7,11 @@ node {
       sh '''#!/usr/bin/env bash
       set -xeuEo pipefail
       trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
+      VAULT_ADDR="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/vault_address?raw)"
       curl -Ssf -X PUT \
         -H "X-Vault-Token:${VAULT_TOKEN}" \
         -d "{\\"value\\":\\"${SECRET_VALUE}\\"}" \
-        ${VAULT_ADDR}/v1/secret/${SECRET_KEY}
+        "${VAULT_ADDR}/v1/secret/${SECRET_KEY}"
       '''
     }
   }

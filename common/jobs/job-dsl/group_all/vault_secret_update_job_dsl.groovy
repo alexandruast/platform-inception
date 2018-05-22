@@ -3,7 +3,6 @@ pipelineJob("vault-secret-update") {
   def repo = 'https://github.com/alexandruast/platform-inception'
   keepDependencies(false)
   parameters {
-    stringParam('VAULT_ADDR', "http://vault.service.consul:8200", "Vault address")
     nonStoredPasswordParam('VAULT_TOKEN', "Vault token")
     stringParam('SECRET_KEY', "operations/foo", "Key to store secret")
     nonStoredPasswordParam('SECRET_VALUE', "Secret value")

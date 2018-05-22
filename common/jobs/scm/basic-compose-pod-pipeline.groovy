@@ -5,7 +5,7 @@ node {
       doGenerateSubmoduleConfigurations: false, 
       submoduleCfg: [], 
       userRemoteConfigs: [[url: "${POD_SCM}"]]])
-    sh("curl -Ssf -X PUT -d ${checkout_info.GIT_COMMIT} http://127.0.0.1:8500/v1/kv/${PLATFORM_ENV}/${POD_NAME}/checkout_commit_id")
+    sh("curl -Ssf -X PUT -d ${checkout_info.GIT_COMMIT} http://127.0.0.1:8500/v1/kv/${PLATFORM_ENVIRONMENT}/${POD_NAME}/checkout_commit_id")
   }
   stage('build') {
     withCredentials([
@@ -16,11 +16,11 @@ node {
       set -xeuEo pipefail
       trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
       trap 'docker-compose down' EXIT
-      CHECKOUT_COMMIT_ID="$(curl -Ssf http://127.0.0.1:8500/v1/kv/${PLATFORM_ENV}/${POD_NAME}/checkout_commit_id?raw)"
+      CHECKOUT_COMMIT_ID="$(curl -Ssf http://127.0.0.1:8500/v1/kv/${PLATFORM_ENVIRONMENT}/${POD_NAME}/checkout_commit_id?raw)"
       POD_TAG="${CHECKOUT_COMMIT_ID:0:7}"
-      VAULT_ADDR="$(curl -Ssf ${CONSUL_ADDR}/v1/kv/${PLATFORM_ENV}/vault_address?raw)"
-      REGISTRY_ADDRESS="$(curl -Ssf ${CONSUL_ADDR}/v1/kv/${PLATFORM_ENV}/docker_registry_address?raw)"
-      REGISTRY_PATH="$(curl -Ssf ${CONSUL_ADDR}/v1/kv/${PLATFORM_ENV}/docker_registry_path?raw)"
+      VAULT_ADDR="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/vault_address?raw)"
+      REGISTRY_ADDRESS="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/docker_registry_address?raw)"
+      REGISTRY_PATH="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/docker_registry_path?raw)"
       REGISTRY_CREDENTIALS="$(curl -Ssf -X GET \
         -H "X-Vault-Token:${VAULT_TOKEN}" \
         "${VAULT_ADDR}/v1/secret/operations/docker-registry" | jq -re .data.value)"
@@ -45,7 +45,7 @@ node {
     sh '''#!/usr/bin/env bash
     set -xeuEo pipefail
     trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
-    SSH_DEPLOY_ADDRESS="$(curl -Ssf ${CONSUL_ADDR}/v1/kv/${PLATFORM_ENV}/ssh_deploy_address?raw)"
+    SSH_DEPLOY_ADDRESS="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/ssh_deploy_address?raw)"
     trap 'ssh -S "${WORKSPACE}/ssh-control-socket" -O exit ${SSH_DEPLOY_ADDRESS}' EXIT
     SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes -o ExitOnForwardFailure=yes'
     tunnel_port=$(perl -e 'print int(rand(999)) + 58000')

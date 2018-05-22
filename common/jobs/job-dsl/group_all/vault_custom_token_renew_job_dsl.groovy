@@ -3,7 +3,6 @@ pipelineJob("vault-custom-token-renew") {
   def repo = 'https://github.com/alexandruast/platform-inception'
   keepDependencies(false)
   parameters {
-    stringParam('VAULT_ADDR', "http://vault.service.consul:8200", "Vault address")
     nonStoredPasswordParam('VAULT_TOKEN', "Vault token")
     stringParam('RENEW_INCREMENT', "48h", "Time to increment")
   }

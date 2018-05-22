@@ -3,9 +3,6 @@ pipelineJob("vault-jenkins-token-renew") {
   triggers { cron('H 00 * * *') }
   def repo = 'https://github.com/alexandruast/platform-inception'
   keepDependencies(false)
-  parameters {
-    stringParam('VAULT_ADDR', "http://vault.service.consul:8200", "Vault address")
-  }
   definition {
     cpsScm {
       scm {
