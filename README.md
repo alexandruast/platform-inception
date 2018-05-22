@@ -24,11 +24,8 @@ Prod-Jenkins creates and manages all prod environments, where things get deploye
 Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory-Jenkins.
 
 #### ToDo
-get vault_address from consul on all jobs  
+deployments can be referenced  
 fluentd to listen on udp socket  
-consul key-value store / jenkins and nomad integration  
-vault secrets store / nomad integration  
-remove hardcoded values in jobs, move to consul/vault  
 fail job and revert nomad if not online  
 build publish plugin  
 hide sensitive info from console output  
@@ -38,6 +35,8 @@ looging, metrics, monitoring dashboard
 service dashboard  
 
 #### Changelog
+vault/consul kv integration  
+env var groovy script added  
 refactored vagrant always run scripts / vault-init  
 sandbox mode added to vagrantfile - use one vm for sandbox environment  
 jenkins jobs for vault token renew and secret update  

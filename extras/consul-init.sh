@@ -24,6 +24,14 @@ curl -Ssf -X PUT \
   -d "${SSH_DEPLOY_ADDRESS}" \
   "${CONSUL_HTTP_ADDR}/v1/kv/ssh_deploy_address" >/dev/null
 
+  curl -Ssf -X PUT \
+    -d "https://github.com/alexandruast/yaml-to-consul" \
+    "${CONSUL_HTTP_ADDR}/v1/kv/services/yaml-to-consul/sandbox/scm_url" >/dev/null
+  
+  curl -Ssf -X PUT \
+    -d "*/master" \
+    "${CONSUL_HTTP_ADDR}/v1/kv/services/yaml-to-consul/sandbox/scm_branch" >/dev/null
+
 JENKINS_ENV_VAR_NAME="CONSUL_HTTP_ADDR" \
   JENKINS_ENV_VAR_VALUE="http://consul.service.consul:8500" \
   ./jenkins-query.sh common/env-update.groovy
