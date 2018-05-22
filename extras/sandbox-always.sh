@@ -23,6 +23,7 @@ sudo iptables -t nat -A PREROUTING -p tcp --dport 4646 -j DNAT --to-destination 
 
 # running in sandbox environment
 export PLATFORM_ENV='sandbox'
+export SSH_DEPLOY_ADDRESS="vagrant@${sandbox_ip}"
 
 # setting up consul
 export CONSUL_HTTP_ADDR="http://consul.service.consul:8500"

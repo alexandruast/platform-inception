@@ -17,7 +17,7 @@ job "fluentd" {
     task "fluentd-{{lookup('env','POD_TAG')}}" {
       driver = "docker"
       config {
-        image = "{{lookup('env','REGISTRY_ADDRESS')}}/{{lookup('env','REPOSITORY_NAME')}}/fluentd:{{lookup('env','POD_TAG')}}"
+        image = "{{lookup('env','REGISTRY_ADDRESS')}}/{{lookup('env','REGISTRY_PATH')}}/fluentd:{{lookup('env','POD_TAG')}}"
         auth {
           server_address = "{{lookup('env','REGISTRY_ADDRESS')}}"
           username = "{{lookup('env','REGISTRY_USERNAME')}}"

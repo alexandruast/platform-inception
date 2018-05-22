@@ -31,6 +31,7 @@ done
 
 # running in sandbox environment
 export PLATFORM_ENV='sandbox'
+export SSH_DEPLOY_ADDRESS="vagrant@${server1_ip}"
 
 # setting up consul
 export CONSUL_HTTP_ADDR="http://consul.service.consul:8500"
