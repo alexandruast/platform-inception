@@ -1,4 +1,5 @@
 FROM fluent/fluentd:v1.2-debian
+MAINTAINER Alexandru Ast <alexandru.ast@gmail.com>
 
 RUN apt-get -y -qq update \
 && apt-get -y -qq install --no-install-recommends curl procps \
@@ -27,6 +28,7 @@ RUN curl -LSs https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/g
 COPY fluent.conf /fluentd/etc/
 
 COPY entrypoint.sh /
+
 RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]

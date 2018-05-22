@@ -1,4 +1,5 @@
 FROM alpine:3.7
+MAINTAINER Alexandru Ast <alexandru.ast@gmail.com>
 
 RUN apk add -q --no-cache curl bash \
 && adduser -D -H -s /bin/false fabio fabio

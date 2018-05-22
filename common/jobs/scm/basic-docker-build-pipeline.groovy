@@ -9,6 +9,9 @@ node {
       userRemoteConfigs: [[url: serviceGitURL]]])
     sh("curl -Ssf -X PUT -d ${checkout_info.GIT_COMMIT} http://127.0.0.1:8500/v1/kv/${PLATFORM_ENVIRONMENT}/${SERVICE_NAME}/checkout_commit_id")
   }
+  stage('test') {
+    sh('./run-tests.sh')
+  }
   stage('build') {
     withCredentials([
         string(credentialsId: 'JENKINS_VAULT_TOKEN', variable: 'VAULT_TOKEN'),
