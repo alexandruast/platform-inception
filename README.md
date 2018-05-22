@@ -32,12 +32,17 @@ SECRET_VALUE: username:password format from your account on hub.docker.com
 ```
 
 #### ToDo
+fluentd to listen on udp socket  
 consul key-value store / jenkins and nomad integration  
 vault secrets store / nomad integration  
 remove hardcoded values in jobs, move to consul/vault  
 fail job and revert nomad if not online  
 build publish plugin  
 hide sensitive info from console output  
+store archive/backups  
+first java application  
+looging, metrics, monitoring dashboard  
+service dashboard  
 
 #### Changelog
 refactored vagrant always run scripts / vault-init  

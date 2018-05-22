@@ -40,7 +40,7 @@ environments.each { environment, pods ->
       keepDependencies(false)
       parameters {
         stringParam('CONSUL_ADDR', "http://consul.service.consul:8500", "Consul address")
-        choiceParam('POD_ENVIRONMENT', ["${environment}"], "Running in environment")
+        choiceParam('PLATFORM_ENV', ["${environment}"], "Running in environment")
         choiceParam('POD_NAME', ["${pod}"], "Pod name")
         choiceParam('POD_SCM', ["${details.url}"], "SCM URL")
         choiceParam('POD_BRANCH', ["${details.branch}"], "SCM branch")
