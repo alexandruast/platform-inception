@@ -35,6 +35,14 @@ export VAULT_ADDR="http://vault.service.consul:8200"
 export SSH_DEPLOY_ADDRESS="vagrant@${server1_ip}"
 ./extras/consul-init.sh
 
+JENKINS_ENV_VAR_NAME="CONSUL_HTTP_ADDR" \
+  JENKINS_ENV_VAR_VALUE="http://consul.service.consul:8500" \
+  ./jenkins-query.sh common/env-update.groovy
+  
+JENKINS_ENV_VAR_NAME="JENKINS_IP_ADDR" \
+  JENKINS_ENV_VAR_VALUE="${!ip_addr_var}" \
+  ./jenkins-query.sh common/env-update.groovy  
+
 # setting up vault, tokens stored on last initialized jenkins server
 declare -a ARR_VAULT_SERVERS=(
   "http://${server1_ip}:8200"
