@@ -26,13 +26,15 @@ Production infrastructure requires consul/vault clusters for factory and prod.
 
 #### ToDo  
 fluentd to listen on udp socket  
+first java application  
 fail job and revert nomad if not online  
-build publish plugin  
+looging, metrics, monitoring dashboard  
+service health dashboard  
+authenticate consul with vault for write operations  
+build publish plugin - run build on another jenkins(prod)  
 hide sensitive info from console output  
 store archive/backups  
-first java application  
-looging, metrics, monitoring dashboard  
-service dashboard  
+
 
 #### Changelog
 automatically start jobs from vagrant: yaml-to-consul, import data, fluentd, fabio

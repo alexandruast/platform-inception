@@ -6,6 +6,7 @@ trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 # saving your time and making the process more streamlined.
 # PLEASE DO NOT ABUSE!
 REGISTRY_CREDENTIALS='platformdemo:63hu8y1L7X3BBel8'
+VAULT_SERVERS=( ${VAULT_SERVERS} )
 
 vault_reset() {
   curl -Ssf -X DELETE ${CONSUL_HTTP_ADDR}/v1/kv/vault/?recurse >/dev/null
@@ -23,7 +24,7 @@ vault_reset() {
   VAULT_UNSEAL_KEY="$(echo ${vault_init} | jq -re .keys[0])"
   
   # unseal all servers
-  for server in ${VAULT_SERVERS}; do
+  for server in "${VAULT_SERVERS[@]}"; do
     curl -Ssf -X PUT \
       -d "{\"key\":\"${VAULT_UNSEAL_KEY}\"}" \
       "${server}/v1/sys/unseal" >/dev/null
