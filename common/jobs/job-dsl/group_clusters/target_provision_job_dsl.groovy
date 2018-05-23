@@ -5,7 +5,7 @@ def services = [
 ]
 
 services.each { service, scopes ->
-  def jobPrefix="infra-target-${service}"
+  def jobPrefix="ansible-target-${service}"
   def jobSuffix='provision'
   scopes.each { scope ->
     pipelineJob("${jobPrefix}-${scope}-${jobSuffix}") {

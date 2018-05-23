@@ -45,43 +45,43 @@ deploy_factory_prod_jenkins() {
   done
 }
 
-# Running infra-target-nomad-server-provision job on Factory-Jenkins
+# Running ansible-target-nomad-server-provision job on Factory-Jenkins
 nomad_server_deploy() {
-  echo "waiting for infra-target-nomad-server-provision job to complete..."
-  JENKINS_BUILD_JOB="infra-target-nomad-server-provision" \
+  echo "waiting for ansible-target-nomad-server-provision job to complete..."
+  JENKINS_BUILD_JOB="ansible-target-nomad-server-provision" \
     JENKINS_ADDR="http://127.0.0.1:${tunnel_port}" \
     JENKINS_ADMIN_PASS="${ci_admin_pass}" \
     ANSIBLE_TARGET="$(echo ${server_nodes_json} | jq -re .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')" \
     ANSIBLE_SERVICE='nomad' \
     ANSIBLE_SCOPE='server' \
     ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'bootstrap_enabled':true,'serial_value':'100%','ansible_user':'vagrant','dnsmasq_resolv':'supersede','dns_servers':['/consul/127.0.0.1#8600','8.8.8.8','8.8.4.4'],'service_bind_ip':'{{ansible_host}}'}" \
-    ./jenkins-query.sh ./common/jobs/build-infra-target-provision-job.groovy
+    ./jenkins-query.sh ./common/jobs/build-ansible-target-provision-job.groovy
 }
 
-# Running infra-target-vault-server-provision job on Factory-Jenkins
+# Running ansible-target-vault-server-provision job on Factory-Jenkins
 vault_server_deploy() {
-  echo "waiting for infra-target-vault-server-provision job to complete..."
-  JENKINS_BUILD_JOB="infra-target-vault-server-provision" \
+  echo "waiting for ansible-target-vault-server-provision job to complete..."
+  JENKINS_BUILD_JOB="ansible-target-vault-server-provision" \
     JENKINS_ADDR="http://127.0.0.1:${tunnel_port}" \
     JENKINS_ADMIN_PASS="${ci_admin_pass}" \
     ANSIBLE_TARGET="$(echo ${server_nodes_json} | jq -re .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')" \
     ANSIBLE_SERVICE='vault' \
     ANSIBLE_SCOPE='server' \
     ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'serial_value':'100%','ansible_user':'vagrant','standalone_install':false}" \
-    ./jenkins-query.sh ./common/jobs/build-infra-target-provision-job.groovy
+    ./jenkins-query.sh ./common/jobs/build-ansible-target-provision-job.groovy
 }
 
-# Running infra-target-nomad-compute-provision job on Factory-Jenkins
+# Running ansible-target-nomad-compute-provision job on Factory-Jenkins
 nomad_compute_deploy() {
-  echo "waiting for infra-target-nomad-compute-provision job to complete..."
-  JENKINS_BUILD_JOB="infra-target-nomad-compute-provision" \
+  echo "waiting for ansible-target-nomad-compute-provision job to complete..."
+  JENKINS_BUILD_JOB="ansible-target-nomad-compute-provision" \
     JENKINS_ADDR="http://127.0.0.1:${tunnel_port}" \
     JENKINS_ADMIN_PASS="${ci_admin_pass}" \
     ANSIBLE_SERVICE='nomad' \
     ANSIBLE_SCOPE='compute' \
     ANSIBLE_TARGET="$(echo ${compute_nodes_json} | jq -re .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')" \
     ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'serial_value':'100%','ansible_user':'vagrant','dnsmasq_resolv':'supersede','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'service_bind_ip':'{{ansible_host}}','service_network_interface':'enp0s8'}" \
-    ./jenkins-query.sh ./common/jobs/build-infra-target-provision-job.groovy
+    ./jenkins-query.sh ./common/jobs/build-ansible-target-provision-job.groovy
 }
 
 # Establishes SSH tunnel to Factory-Jenkins
