@@ -1,16 +1,16 @@
 def views = [
-  'sandbox',
-  'integration',
-  'qa'
+  sandbox: 'sandbox',
+  integration: 'integration',
+  qa: 'qa'
 ]
 
-views.each { view ->
+views.each { view, filter ->
   listView(view) {
     description("Dynamically generated with job-dsl by ${JOB_NAME}\nAny changes to this item will be overwritten without notice.")
     filterBuildQueue()
     filterExecutors()
     jobs {
-      regex("${view}-.+")
+      regex("${filter}-.+")
     }
     columns {
       status()
