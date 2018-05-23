@@ -1,6 +1,6 @@
 def views = [
-  system: 'system'
-  infra:  'infra'
+  system: 'system',
+  infra:  'infra',
   meta:   'vault|consul'
 ]
 
