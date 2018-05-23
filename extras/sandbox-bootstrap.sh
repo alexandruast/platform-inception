@@ -40,39 +40,6 @@ setup_factory_jenkins() {
     ./common/jobs/build-simple-job.groovy
 }
 
-platform_services_up() {
-  # Bringing platform services up
-  JENKINS_BUILD_JOB="sandbox-yaml-to-consul-build"
-  echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
-  JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
-  PLATFORM_ENVIRONMENT="sandbox" \
-  POD_NAME="yaml-to-consul" \
-    ./jenkins-query.sh \
-    ./common/jobs/build-basic-pod-job.groovy
-
-  JENKINS_BUILD_JOB="consul-data-import"
-  echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
-  JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
-    ./jenkins-query.sh \
-    ./common/jobs/build-simple-job.groovy
-
-  JENKINS_BUILD_JOB="sandbox-fluentd-deploy"
-  echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
-  JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
-  PLATFORM_ENVIRONMENT="sandbox" \
-  POD_NAME="fluentd" \
-    ./jenkins-query.sh \
-    ./common/jobs/build-basic-pod-job.groovy
-
-  JENKINS_BUILD_JOB="sandbox-fabio-deploy"
-  echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
-  JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
-  PLATFORM_ENVIRONMENT="sandbox" \
-  POD_NAME="fabio" \
-    ./jenkins-query.sh \
-    ./common/jobs/build-basic-pod-job.groovy
-}
-
 sudo yum -q -y install python libselinux-python
 which pip >/dev/null || install_pip
 which ansible >/dev/null || install_ansible
@@ -80,7 +47,6 @@ which jq >/dev/null || install_jq
 
 cd /vagrant/
 
-overwrite_factory_keypair
 setup_factory_jenkins
-platform_services_up
+overwrite_factory_keypair
 

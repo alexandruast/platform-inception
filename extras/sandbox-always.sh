@@ -45,6 +45,37 @@ export VAULT_SERVERS="${ARR_VAULT_SERVERS[*]}"
 # garbage collection nodes
 curl --silent -X PUT "http://127.0.0.1:4646/v1/system/gc"
 
+# bringing up platform services
+JENKINS_BUILD_JOB="sandbox-yaml-to-consul-build"
+echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
+JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
+PLATFORM_ENVIRONMENT="sandbox" \
+POD_NAME="yaml-to-consul" \
+  ./jenkins-query.sh \
+  ./common/jobs/build-basic-pod-job.groovy
+
+JENKINS_BUILD_JOB="consul-data-import"
+echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
+JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
+  ./jenkins-query.sh \
+  ./common/jobs/build-simple-job.groovy
+
+JENKINS_BUILD_JOB="sandbox-fluentd-deploy"
+echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
+JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
+PLATFORM_ENVIRONMENT="sandbox" \
+POD_NAME="fluentd" \
+  ./jenkins-query.sh \
+  ./common/jobs/build-basic-pod-job.groovy
+
+JENKINS_BUILD_JOB="sandbox-fabio-deploy"
+echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
+JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
+PLATFORM_ENVIRONMENT="sandbox" \
+POD_NAME="fabio" \
+  ./jenkins-query.sh \
+  ./common/jobs/build-basic-pod-job.groovy
+
 echo "Consul API/UI is available at http://${sandbox_ip}:8500"
 echo "Nomad API/UI is available at http://${sandbox_ip}:4646"
 echo "Vault API is available at http://${sandbox_ip}:8200"

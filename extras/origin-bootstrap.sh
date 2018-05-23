@@ -140,39 +140,6 @@ overwrite_factory_prod_jenkins_keypair() {
   done
 }
 
-platform_services_up() {
-  # Bringing platform services up
-  JENKINS_BUILD_JOB="sandbox-yaml-to-consul-build"
-  echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
-  JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
-  PLATFORM_ENVIRONMENT="sandbox" \
-  POD_NAME="yaml-to-consul" \
-    ./jenkins-query.sh \
-    ./common/jobs/build-basic-pod-job.groovy
-
-  JENKINS_BUILD_JOB="consul-data-import"
-  echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
-  JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
-    ./jenkins-query.sh \
-    ./common/jobs/build-simple-job.groovy
-
-  JENKINS_BUILD_JOB="sandbox-fluentd-deploy"
-  echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
-  JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
-  PLATFORM_ENVIRONMENT="sandbox" \
-  POD_NAME="fluentd" \
-    ./jenkins-query.sh \
-    ./common/jobs/build-basic-pod-job.groovy
-
-  JENKINS_BUILD_JOB="sandbox-fabio-deploy"
-  echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
-  JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
-  PLATFORM_ENVIRONMENT="sandbox" \
-  POD_NAME="fabio" \
-    ./jenkins-query.sh \
-    ./common/jobs/build-basic-pod-job.groovy
-}
-
 ci_admin_pass=$1
 ci_origin_json=$2
 ci_factory_json=$3
@@ -213,7 +180,6 @@ nomad_server_deploy
 join_cluster_members
 vault_server_deploy
 nomad_compute_deploy
-platform_services_up
 
 echo "${curr_ansible_dir_md5}" > /tmp/ansible-dir-md5
 
