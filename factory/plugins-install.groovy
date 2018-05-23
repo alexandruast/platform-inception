@@ -6,11 +6,9 @@ pm = instance.pluginManager
 uc = instance.updateCenter
 
 Set<String> installPlugins = [
-  "ansicolor",
   "build-timeout",
   "credentials",
   "git",
-  "gradle",
   "job-dsl",
   "mask-passwords",
   "matrix-auth",

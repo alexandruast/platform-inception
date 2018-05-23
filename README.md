@@ -37,6 +37,8 @@ store archive/backups
 
 
 #### Changelog
+decision to use multi step Dockerfile and not rely on Jenkins runtimes
+removed test step from pipelines, to be integrated in build
 automatically start jobs from vagrant: yaml-to-consul, import data, fluentd, fabio
 deployments can be referenced by commit id  
 yaml-to-consul integration  
