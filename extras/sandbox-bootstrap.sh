@@ -18,6 +18,61 @@ install_jq() {
   && sudo chmod +x /usr/local/bin/jq
 }
 
+overwrite_factory_keypair() {
+  # Overwrites ssh key pair, created by Ansible in previous steps
+  cat /home/vagrant/.ssh/id_rsa | sudo tee /home/jenkins/.ssh/id_rsa >/dev/null
+  ssh-keygen -y -f "$HOME/.ssh/id_rsa" | sudo tee /home/jenkins/.ssh/id_rsa.pub >/dev/null
+}
+
+setup_factory_jenkins() {
+  source "factory/.scope"
+  export JENKINS_ADMIN_PASS="${ci_admin_pass}"
+  export JENKINS_ADDR="http://${sandbox_ip}:${JENKINS_PORT}"
+  ANSIBLE_TARGET="127.0.0.1" \
+    ANSIBLE_EXTRAVARS="{'dnsmasq_resolv':'supersede','dns_servers':['/consul/127.0.0.1#8600','8.8.8.8','8.8.4.4']}" \
+    ./apl-wrapper.sh ansible/target-sandbox.yml
+  ./jenkins-setup.sh
+  echo "factory-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
+  JENKINS_BUILD_JOB="system-factory-job-seed"
+  echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
+  JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
+    ./jenkins-query.sh \
+    ./common/jobs/build-simple-job.groovy
+}
+
+platform_services_up() {
+  # Bringing platform services up
+  JENKINS_BUILD_JOB="sandbox-yaml-to-consul-build"
+  echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
+  JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
+  PLATFORM_ENVIRONMENT="sandbox" \
+  POD_NAME="yaml-to-consul" \
+    ./jenkins-query.sh \
+    ./common/jobs/build-basic-pod-job.groovy
+
+  JENKINS_BUILD_JOB="consul-data-import"
+  echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
+  JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
+    ./jenkins-query.sh \
+    ./common/jobs/build-simple-job.groovy
+
+  JENKINS_BUILD_JOB="sandbox-fluentd-deploy"
+  echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
+  JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
+  PLATFORM_ENVIRONMENT="sandbox" \
+  POD_NAME="fluentd" \
+    ./jenkins-query.sh \
+    ./common/jobs/build-basic-pod-job.groovy
+
+  JENKINS_BUILD_JOB="sandbox-fabio-deploy"
+  echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
+  JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
+  PLATFORM_ENVIRONMENT="sandbox" \
+  POD_NAME="fabio" \
+    ./jenkins-query.sh \
+    ./common/jobs/build-basic-pod-job.groovy
+}
+
 sudo yum -q -y install python libselinux-python
 which pip >/dev/null || install_pip
 which ansible >/dev/null || install_ansible
@@ -25,19 +80,7 @@ which jq >/dev/null || install_jq
 
 cd /vagrant/
 
-source "factory/.scope"
-export JENKINS_ADMIN_PASS="${ci_admin_pass}"
-export JENKINS_ADDR="http://${sandbox_ip}:${JENKINS_PORT}"
-ANSIBLE_TARGET="127.0.0.1" \
-  ANSIBLE_EXTRAVARS="{'dnsmasq_resolv':'supersede','dns_servers':['/consul/127.0.0.1#8600','8.8.8.8','8.8.4.4']}" \
-  ./apl-wrapper.sh ansible/target-sandbox.yml
-./jenkins-setup.sh
-echo "factory-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
-echo "waiting for system-factory-job-seed job to complete..."
-JENKINS_BUILD_JOB=system-factory-job-seed \
-  ./jenkins-query.sh \
-  ./common/jobs/build-simple-job.groovy
+overwrite_factory_keypair
+setup_factory_jenkins
+platform_services_up
 
-# Overwrites ssh key pair, created by Ansible in previous steps
-cat /home/vagrant/.ssh/id_rsa | sudo tee /home/jenkins/.ssh/id_rsa >/dev/null
-ssh-keygen -y -f "$HOME/.ssh/id_rsa" | sudo tee /home/jenkins/.ssh/id_rsa.pub >/dev/null

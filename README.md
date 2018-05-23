@@ -24,8 +24,8 @@ Prod-Jenkins creates and manages all prod environments, where things get deploye
 Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory-Jenkins.  
 Production infrastructure requires consul/vault clusters for factory and prod.
 
-#### ToDo
-deployments can be referenced  
+#### ToDo  
+vagrant add jobs: build yaml-to-consul, import data, run fluentd, fabio
 fluentd to listen on udp socket  
 fail job and revert nomad if not online  
 build publish plugin  
@@ -36,6 +36,7 @@ looging, metrics, monitoring dashboard
 service dashboard  
 
 #### Changelog
+deployments can be referenced by commit id  
 yaml-to-consul integration  
 vault/consul kv integration  
 env var groovy script added  

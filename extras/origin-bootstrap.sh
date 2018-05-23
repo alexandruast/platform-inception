@@ -21,8 +21,9 @@ ANSIBLE_TARGET="127.0.0.1" \
   ./apl-wrapper.sh ansible/target-${scope}-jenkins.yml
 ./jenkins-setup.sh
 echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
-echo "waiting for system-${scope}-job-seed job to complete..."
-JENKINS_BUILD_JOB=system-${scope}-job-seed \
+JENKINS_BUILD_JOB="system-${scope}-job-seed"
+echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
+JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
   ./jenkins-query.sh \
   ./common/jobs/build-simple-job.groovy
 }
@@ -34,8 +35,9 @@ deploy_factory_prod_jenkins() {
     source "${scope}/.scope"
     export JENKINS_ADMIN_PASS="${ci_admin_pass}"
     export JENKINS_ADDR="http://${origin_jenkins_ip}:${JENKINS_PORT}"
-    echo "waiting for jenkins-${scope}-provision job to complete..."
-    JENKINS_BUILD_JOB="jenkins-${scope}-provision" \
+    JENKINS_BUILD_JOB="jenkins-${scope}-provision"
+    echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
+    JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
       ANSIBLE_TARGET="vagrant@${!ip_addr_var}" \
       JENKINS_SCOPE="${scope}" \
       ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'dnsmasq_resolv':'supersede','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4']}" \
@@ -47,41 +49,47 @@ deploy_factory_prod_jenkins() {
 
 # Running ansible-target-nomad-server-provision job on Factory-Jenkins
 nomad_server_deploy() {
-  echo "waiting for ansible-target-nomad-server-provision job to complete..."
-  JENKINS_BUILD_JOB="ansible-target-nomad-server-provision" \
+  JENKINS_BUILD_JOB="ansible-target-nomad-server-provision"
+  echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
+  JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
     JENKINS_ADDR="http://127.0.0.1:${tunnel_port}" \
     JENKINS_ADMIN_PASS="${ci_admin_pass}" \
     ANSIBLE_TARGET="$(echo ${server_nodes_json} | jq -re .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')" \
     ANSIBLE_SERVICE='nomad' \
     ANSIBLE_SCOPE='server' \
     ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'bootstrap_enabled':true,'serial_value':'100%','ansible_user':'vagrant','dnsmasq_resolv':'supersede','dns_servers':['/consul/127.0.0.1#8600','8.8.8.8','8.8.4.4'],'service_bind_ip':'{{ansible_host}}'}" \
-    ./jenkins-query.sh ./common/jobs/build-ansible-target-provision-job.groovy
+    ./jenkins-query.sh \
+    ./common/jobs/build-ansible-target-provision-job.groovy
 }
 
 # Running ansible-target-vault-server-provision job on Factory-Jenkins
 vault_server_deploy() {
-  echo "waiting for ansible-target-vault-server-provision job to complete..."
-  JENKINS_BUILD_JOB="ansible-target-vault-server-provision" \
+  JENKINS_BUILD_JOB="ansible-target-vault-server-provision"
+  echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
+  JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
     JENKINS_ADDR="http://127.0.0.1:${tunnel_port}" \
     JENKINS_ADMIN_PASS="${ci_admin_pass}" \
     ANSIBLE_TARGET="$(echo ${server_nodes_json} | jq -re .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')" \
     ANSIBLE_SERVICE='vault' \
     ANSIBLE_SCOPE='server' \
     ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'serial_value':'100%','ansible_user':'vagrant','standalone_install':false}" \
-    ./jenkins-query.sh ./common/jobs/build-ansible-target-provision-job.groovy
+    ./jenkins-query.sh \
+    ./common/jobs/build-ansible-target-provision-job.groovy
 }
 
 # Running ansible-target-nomad-compute-provision job on Factory-Jenkins
 nomad_compute_deploy() {
-  echo "waiting for ansible-target-nomad-compute-provision job to complete..."
-  JENKINS_BUILD_JOB="ansible-target-nomad-compute-provision" \
+  JENKINS_BUILD_JOB="ansible-target-nomad-compute-provision"
+  echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
+  JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
     JENKINS_ADDR="http://127.0.0.1:${tunnel_port}" \
     JENKINS_ADMIN_PASS="${ci_admin_pass}" \
     ANSIBLE_SERVICE='nomad' \
     ANSIBLE_SCOPE='compute' \
     ANSIBLE_TARGET="$(echo ${compute_nodes_json} | jq -re .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')" \
     ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'serial_value':'100%','ansible_user':'vagrant','dnsmasq_resolv':'supersede','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'service_bind_ip':'{{ansible_host}}','service_network_interface':'enp0s8'}" \
-    ./jenkins-query.sh ./common/jobs/build-ansible-target-provision-job.groovy
+    ./jenkins-query.sh \
+    ./common/jobs/build-ansible-target-provision-job.groovy
 }
 
 # Establishes SSH tunnel to Factory-Jenkins
@@ -132,6 +140,39 @@ overwrite_factory_prod_jenkins_keypair() {
   done
 }
 
+platform_services_up() {
+  # Bringing platform services up
+  JENKINS_BUILD_JOB="sandbox-yaml-to-consul-build"
+  echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
+  JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
+  PLATFORM_ENVIRONMENT="sandbox" \
+  POD_NAME="yaml-to-consul" \
+    ./jenkins-query.sh \
+    ./common/jobs/build-basic-pod-job.groovy
+
+  JENKINS_BUILD_JOB="consul-data-import"
+  echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
+  JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
+    ./jenkins-query.sh \
+    ./common/jobs/build-simple-job.groovy
+
+  JENKINS_BUILD_JOB="sandbox-fluentd-deploy"
+  echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
+  JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
+  PLATFORM_ENVIRONMENT="sandbox" \
+  POD_NAME="fluentd" \
+    ./jenkins-query.sh \
+    ./common/jobs/build-basic-pod-job.groovy
+
+  JENKINS_BUILD_JOB="sandbox-fabio-deploy"
+  echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
+  JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
+  PLATFORM_ENVIRONMENT="sandbox" \
+  POD_NAME="fabio" \
+    ./jenkins-query.sh \
+    ./common/jobs/build-basic-pod-job.groovy
+}
+
 ci_admin_pass=$1
 ci_origin_json=$2
 ci_factory_json=$3
@@ -172,6 +213,7 @@ nomad_server_deploy
 join_cluster_members
 vault_server_deploy
 nomad_compute_deploy
+platform_services_up
 
 echo "${curr_ansible_dir_md5}" > /tmp/ansible-dir-md5
 
