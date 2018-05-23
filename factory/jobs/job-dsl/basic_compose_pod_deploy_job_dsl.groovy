@@ -41,8 +41,6 @@ environments.each { environment, pods ->
       parameters {
         choiceParam('PLATFORM_ENVIRONMENT', ["${environment}"], "Running in environment")
         choiceParam('POD_NAME', ["${pod}"], "Pod name")
-        choiceParam('POD_SCM', ["${details.url}"], "SCM URL")
-        choiceParam('POD_BRANCH', ["${details.branch}"], "SCM branch")
       }
       definition {
         cpsScm {

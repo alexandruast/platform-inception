@@ -1,11 +1,19 @@
 node {
   stage('checkout') {
-    checkout_info = checkout([$class: 'GitSCM', 
-      branches: [[name: "${POD_BRANCH}"]], 
-      doGenerateSubmoduleConfigurations: false, 
-      submoduleCfg: [], 
-      userRemoteConfigs: [[url: "${POD_SCM}"]]])
+    gitBranch = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/${PLATFORM_ENVIRONMENT}/${POD_NAME}/scm_branch?raw").trim()
+    gitURL = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/${PLATFORM_ENVIRONMENT}/${POD_NAME}/scm_url?raw").trim()
+    checkout_info = checkout([$class: 'GitSCM',
+      branches: [[name: gitBranch]],
+      doGenerateSubmoduleConfigurations: false,
+      submoduleCfg: [],
+      userRemoteConfigs: [[url: gitURL]]])
     sh("curl -Ssf -X PUT -d ${checkout_info.GIT_COMMIT} http://127.0.0.1:8500/v1/kv/${PLATFORM_ENVIRONMENT}/${POD_NAME}/checkout_commit_id")
+  }
+  stage('test') {
+    sh ''''
+      cd "${WORKSPACE}/$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_dir?raw)"
+      ./run-tests.sh
+      '''
   }
   stage('build') {
     withCredentials([
@@ -33,7 +41,7 @@ node {
       export POD_NAME
       export POD_TAG
       docker login "${REGISTRY_ADDRESS}" --username="${REGISTRY_USERNAME}" --password-stdin <<< ${REGISTRY_PASSWORD} >/dev/null
-      cd "${WORKSPACE}/pods/${POD_NAME}" || ls -1 docker-compose.yml
+      cd "${WORKSPACE}/$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_dir?raw)"
       ansible all -i localhost, --connection=local -m template -a "src=nomad-job.hcl.j2 dest=nomad-job.hcl" >/dev/null
       nomad validate nomad-job.hcl
       docker-compose --no-ansi build
@@ -50,7 +58,7 @@ node {
     SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes -o ExitOnForwardFailure=yes'
     tunnel_port=$(perl -e 'print int(rand(999)) + 58000')
     ssh ${SSH_OPTS} -f -N -M -S "${WORKSPACE}/ssh-control-socket" -L ${tunnel_port}:127.0.0.1:4646 ${SSH_DEPLOY_ADDRESS}
-    cd "${WORKSPACE}/pods/${POD_NAME}" || ls -1 docker-compose.yml
+    cd "${WORKSPACE}/$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_dir?raw)"
     NOMAD_ADDR=http://127.0.0.1:${tunnel_port} nomad run nomad-job.hcl
     curl -Ssf -X PUT -d "${POD_TAG}" ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/tag_version
     '''
