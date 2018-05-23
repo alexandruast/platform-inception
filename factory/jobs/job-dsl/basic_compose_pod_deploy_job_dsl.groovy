@@ -4,7 +4,7 @@ def environments = [
   "qa"
 ]
 
-def services = [
+def pods = [
   "fluentd",
   "fabio"
 ]
