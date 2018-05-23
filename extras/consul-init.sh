@@ -18,13 +18,17 @@ curl -Ssf -X PUT \
   -d "*/master" \
   "${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/bootstrap/scm_branch" >/dev/null
 
-  curl -Ssf -X PUT \
-    -d "https://github.com/alexandruast/yaml-to-consul" \
-    "${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/sandbox/yaml-to-consul/scm_url" >/dev/null
+curl -Ssf -X PUT \
+  -d "https://github.com/alexandruast/yaml-to-consul" \
+  "${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/sandbox/yaml-to-consul/scm_url" >/dev/null
 
-  curl -Ssf -X PUT \
-    -d "*/master" \
-    "${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/sandbox/yaml-to-consul/scm_branch" >/dev/null
+curl -Ssf -X PUT \
+  -d "./" \
+  "${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/sandbox/yaml-to-consul/build_dir" >/dev/null
+
+curl -Ssf -X PUT \
+  -d "*/master" \
+  "${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/sandbox/yaml-to-consul/scm_branch" >/dev/null
 
 curl -Ssf -X PUT \
   -d "${VAULT_ADDR}" \
