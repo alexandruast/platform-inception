@@ -9,6 +9,7 @@ Set<String> installPlugins = [
   "build-timeout",
   "credentials",
   "git",
+  "gradle",
   "job-dsl",
   "mask-passwords",
   "matrix-auth",

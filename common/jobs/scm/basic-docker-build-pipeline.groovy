@@ -9,13 +9,6 @@ node {
       userRemoteConfigs: [[url: gitURL]]])
     sh("curl -Ssf -X PUT -d ${checkout_info.GIT_COMMIT} http://127.0.0.1:8500/v1/kv/${PLATFORM_ENVIRONMENT}/${POD_NAME}/checkout_commit_id >/dev/null")
   }
-  stage('test') {
-    sh '''
-      BUILD_DIR="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_dir?raw)"
-      cd "${WORKSPACE}/${BUILD_DIR}"
-      ./run-tests.sh
-      '''
-  }
   stage('build') {
     withCredentials([
         string(credentialsId: 'JENKINS_VAULT_TOKEN', variable: 'VAULT_TOKEN'),
