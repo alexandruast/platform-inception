@@ -57,6 +57,8 @@ node {
     SSH_DEPLOY_ADDRESS="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/${PLATFORM_ENVIRONMENT}/ssh_deploy_address?raw)"
     trap 'ssh -S "${WORKSPACE}/ssh-control-socket" -O exit ${SSH_DEPLOY_ADDRESS}' EXIT
     SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes -o ExitOnForwardFailure=yes'
+    CHECKOUT_COMMIT_ID="$(curl -Ssf http://127.0.0.1:8500/v1/kv/${PLATFORM_ENVIRONMENT}/${POD_NAME}/checkout_commit_id?raw)"
+    POD_TAG="${CHECKOUT_COMMIT_ID:0:7}"
     tunnel_port=$(perl -e 'print int(rand(999)) + 58000')
     ssh ${SSH_OPTS} -f -N -M -S "${WORKSPACE}/ssh-control-socket" -L ${tunnel_port}:127.0.0.1:4646 ${SSH_DEPLOY_ADDRESS}
     BUILD_DIR="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_dir?raw)"
