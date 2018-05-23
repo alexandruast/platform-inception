@@ -1,7 +1,7 @@
 def views = [
-  prod: 'production|prod',
-  training: 'training',
-  beta: 'beta'
+  env-prod: 'production|prod',
+  env-training: 'training',
+  env-beta: 'beta'
 ]
 
 views.each { view, filter ->

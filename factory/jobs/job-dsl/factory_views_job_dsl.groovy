@@ -1,7 +1,7 @@
 def views = [
-  sandbox: 'sandbox',
-  integration: 'integration',
-  qa: 'qa'
+  env-sandbox: 'sandbox',
+  env-integration: 'integration',
+  env-qa: 'qa'
 ]
 
 views.each { view, filter ->
