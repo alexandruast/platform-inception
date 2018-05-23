@@ -1,7 +1,7 @@
 def views = [
-  system: 'system',
-  infra:  'infra',
-  meta:   'vault|consul'
+  'system': 'system',
+  'infra':  'infra',
+  'meta':   'vault|consul'
 ]
 
 views.each { view, filter ->
