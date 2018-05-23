@@ -25,7 +25,6 @@ Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory
 Production infrastructure requires consul/vault clusters for factory and prod.
 
 #### ToDo  
-vagrant add jobs: build yaml-to-consul, import data, run fluentd, fabio
 fluentd to listen on udp socket  
 fail job and revert nomad if not online  
 build publish plugin  
@@ -36,6 +35,7 @@ looging, metrics, monitoring dashboard
 service dashboard  
 
 #### Changelog
+automatically start jobs from vagrant: yaml-to-consul, import data, fluentd, fabio
 deployments can be referenced by commit id  
 yaml-to-consul integration  
 vault/consul kv integration  
