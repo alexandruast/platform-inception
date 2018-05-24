@@ -18,9 +18,9 @@ node {
       set -xeuEo pipefail
       trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
       CHECKOUT_COMMIT_ID="$(curl -Ssf http://127.0.0.1:8500/v1/kv/${PLATFORM_ENVIRONMENT}/${POD_NAME}/checkout_commit_id?raw)"
-      PREVIOUS_POD_TAG="$(curl -Ss ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/tag_version?raw)"
+      PREVIOUS_BUILD_TAG="$(curl -Ss ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_tag?raw)"
       POD_TAG="${CHECKOUT_COMMIT_ID:0:7}"
-      if [[ "${POD_TAG}" == "${PREVIOUS_POD_TAG}" ]]; then
+      if [[ "${POD_TAG}" == "${PREVIOUS_BUILD_TAG}" ]]; then
         echo [warning] commit id is the same, will not build again!
         exit 0
       fi
@@ -45,7 +45,7 @@ node {
       trap 'docker-compose --project-name "${POD_NAME}-${POD_TAG}" -f - down -v --rmi all --remove-orphans <<< "${COMPOSE_FILE}"' EXIT
       docker-compose --project-name "${POD_NAME}-${POD_TAG}" --no-ansi -f - build --no-cache <<< "${COMPOSE_FILE}"
       docker-compose --project-name "${POD_NAME}-${POD_TAG}" --no-ansi -f - push <<< "${COMPOSE_FILE}"
-      curl -Ssf -X PUT -d "${POD_TAG}" ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/tag_version >/dev/null
+      curl -Ssf -X PUT -d "${POD_TAG}" ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_tag >/dev/null
       '''
     }
   }
