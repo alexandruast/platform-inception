@@ -17,7 +17,7 @@ node {
       sh '''#!/usr/bin/env bash
       set -xeuEo pipefail
       trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
-      trap 'docker-compose down' EXIT
+      trap 'docker-compose down -v --rmi all --remove-orphans' EXIT
       CHECKOUT_COMMIT_ID="$(curl -Ssf http://127.0.0.1:8500/v1/kv/${PLATFORM_ENVIRONMENT}/${POD_NAME}/checkout_commit_id?raw)"
       POD_TAG="${CHECKOUT_COMMIT_ID:0:7}"
       VAULT_ADDR="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/vault_address?raw)"
@@ -39,7 +39,7 @@ node {
       cd "${WORKSPACE}/${BUILD_DIR}"
       ansible all -i localhost, --connection=local -m template -a "src=nomad-job.hcl.j2 dest=nomad-job.hcl" >/dev/null
       nomad validate nomad-job.hcl
-      docker-compose --project-name "${POD_NAME}-${POD_TAG}" --no-ansi build
+      docker-compose --project-name "${POD_NAME}-${POD_TAG}" --no-ansi build --no-cache
       docker-compose --project-name "${POD_NAME}-${POD_TAG}" --no-ansi push
       '''
     }

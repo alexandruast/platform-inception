@@ -37,9 +37,9 @@ node {
       BUILD_DIR="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_dir?raw)"
       cd "${WORKSPACE}/${BUILD_DIR}"
       COMPOSE_FILE="version: '3'\nservices:\n  ${POD_NAME}:\n    image: ${REGISTRY_ADDRESS}/${REGISTRY_PATH}/${POD_NAME}:${POD_TAG}\n    build: ./"
-      trap 'docker-compose -f - down <<< "${COMPOSE_FILE}"' EXIT
-      docker-compose --project-name "${POD_NAME}-${POD_TAG}" --no-ansi -f - build <<< "${COMPOSE_FILE}"
-      docker-compose --project-name "${POD_NAME}-${POD_TAG}" --no-ansi -f - push  <<< "${COMPOSE_FILE}"
+      trap 'docker-compose -f - down -v --rmi all --remove-orphans <<< "${COMPOSE_FILE}"' EXIT
+      docker-compose --project-name "${POD_NAME}-${POD_TAG}" --no-ansi -f - build --no-cache <<< "${COMPOSE_FILE}"
+      docker-compose --project-name "${POD_NAME}-${POD_TAG}" --no-ansi -f - push <<< "${COMPOSE_FILE}"
       curl -Ssf -X PUT -d "${POD_TAG}" ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/tag_version >/dev/null
       '''
     }
