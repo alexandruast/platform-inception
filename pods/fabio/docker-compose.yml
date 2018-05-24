@@ -4,6 +4,3 @@ services:
   fabio:
     image: ${REGISTRY_ADDRESS}/${REGISTRY_PATH}/fabio:${POD_TAG}
     build: ./images/fabio
-    ports:
-      - 9999:9999
-      - 9998:9998

@@ -4,5 +4,3 @@ services:
   fluentd:
     image: ${REGISTRY_ADDRESS}/${REGISTRY_PATH}/fluentd:${POD_TAG}
     build: ./images/fluentd
-    ports:
-      - 24224:24224
