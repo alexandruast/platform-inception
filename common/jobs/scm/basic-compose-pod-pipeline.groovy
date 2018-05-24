@@ -57,7 +57,9 @@ node {
     ssh ${SSH_OPTS} -f -N -M -S "${WORKSPACE}/ssh-control-socket" -L ${tunnel_port}:127.0.0.1:4646 ${SSH_DEPLOY_ADDRESS}
     BUILD_DIR="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_dir?raw)"
     cd "${WORKSPACE}/${BUILD_DIR}"
-    NOMAD_ADDR=http://127.0.0.1:${tunnel_port} nomad run nomad-job.hcl
+    nomad run -output nomad-job.hcl > nomad-job.json
+    NOMAD_ADDR=http://127.0.0.1:${tunnel_port}
+    curl -X POST -d @nomad-job.json ${NOMAD_ADDR}/v1/jobs
     curl -Ssf -X PUT -d "${POD_TAG}" ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/tag_version >/dev/null
     '''
   }
