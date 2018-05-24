@@ -15,7 +15,7 @@ node {
         string(credentialsId: 'JENKINS_VAULT_ROLE_ID', variable: 'VAULT_ROLE_ID'),
     ]) {
       sh '''#!/usr/bin/env bash
-      set -xeuEo pipefail
+      set -xeEuo pipefail
       trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
       CHECKOUT_COMMIT_ID="$(curl -Ssf http://127.0.0.1:8500/v1/kv/${PLATFORM_ENVIRONMENT}/${POD_NAME}/checkout_commit_id?raw)"
       PREVIOUS_BUILD_TAG="$(curl -Ss ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_tag?raw)"
@@ -53,7 +53,7 @@ node {
   }
   stage('deploy') {
     sh '''#!/usr/bin/env bash
-    set -xeuEo pipefail
+    set -xeEuo pipefail
     trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
     SSH_DEPLOY_ADDRESS="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/${PLATFORM_ENVIRONMENT}/ssh_deploy_address?raw)"
     trap 'ssh -S "${WORKSPACE}/ssh-control-socket" -O exit ${SSH_DEPLOY_ADDRESS}' EXIT

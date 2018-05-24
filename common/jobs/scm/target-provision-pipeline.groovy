@@ -8,7 +8,7 @@ node {
   }
   stage('provision') {
     sh '''#!/usr/bin/env bash
-      set -xeEo pipefail
+      set -xeEuo pipefail
       trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
       SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes'
       declare -a SSH_TARGETS=()

@@ -27,7 +27,6 @@ Production infrastructure requires consul/vault clusters for factory and prod.
 #### ToDo  
 fluentd to listen on udp socket  
 first java application  
-fail job and revert nomad if not online  
 looging, metrics, monitoring dashboard  
 service health dashboard  
 authenticate consul with vault for write operations  
@@ -37,6 +36,10 @@ store archive/backups
 
 
 #### Changelog
+added ws-cleanup directories purge to hourly cron  
+added hourly cron  
+added nomad deploy checks  
+added build_id and deploy_id logic  
 will not build again if on the same commit_id  
 all docker stuff is build with --no-cache option  
 basic docker build also uses compose for better compatibility and collision avoidance  

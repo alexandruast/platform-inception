@@ -3,11 +3,7 @@ node {
     sh'''#!/usr/bin/env bash
       set -xeEuo pipefail
       trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
-      if which docker; then
-        docker system prune -f
-        docker volume prune -f
-        docker image prune -a -f
-      fi
+      find ${JENKINS_HOME}/workspace -maxdepth 1 -name "*_ws-cleanup_*" -type d -mmin +30 -exec rm -fr {} +
     '''
   }
 }

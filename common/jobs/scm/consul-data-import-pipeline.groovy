@@ -10,7 +10,7 @@ node {
   }
   stage('import') {
     sh '''#!/usr/bin/env bash
-    set -xeuEo pipefail
+    set -xeEuo pipefail
     trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
     REGISTRY_ADDRESS="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/docker_registry_address?raw)"
     REGISTRY_PATH="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/docker_registry_path?raw)"
