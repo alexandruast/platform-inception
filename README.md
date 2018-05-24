@@ -37,6 +37,7 @@ store archive/backups
 
 
 #### Changelog
+will not build again if on the same commit_id  
 all docker stuff is build with --no-cache option  
 basic docker build also uses compose for better compatibility and collision avoidance  
 decision to use multi step Dockerfile and not rely on Jenkins runtimes  

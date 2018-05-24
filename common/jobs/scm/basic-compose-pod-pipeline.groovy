@@ -64,8 +64,8 @@ node {
     BUILD_DIR="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_dir?raw)"
     cd "${WORKSPACE}/${BUILD_DIR}"
     NOMAD_ADDR=http://127.0.0.1:${tunnel_port}
-    PLAN
-    EVAL_ID="$(curl -Ssf -X POST -d @nomad-job.json ${NOMAD_ADDR}/v1/jobs | jq -re .EvalID)"
+    JOB_PLAN_DATA="$(curl -Ssf -X POST -d @nomad-job.json ${NOMAD_ADDR}/v1/job/${POD_NAME}/plan)"
+    JOB_POST_DATA="$(curl -Ssf -X POST -d @nomad-job.json ${NOMAD_ADDR}/v1/jobs)"
     curl -Ssf -X PUT -d "${POD_TAG}" ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/tag_version >/dev/null
     '''
   }
