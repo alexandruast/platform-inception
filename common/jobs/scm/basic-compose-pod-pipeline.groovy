@@ -67,7 +67,7 @@ node {
     JOB_PLAN_DATA="$(curl -Ssf -X POST -d @nomad-job.json ${NOMAD_ADDR}/v1/job/${POD_NAME}/plan)"
     JOB_POST_DATA="$(curl -Ssf -X POST -d @nomad-job.json ${NOMAD_ADDR}/v1/jobs)"
     JOB_EVAL_ID="$(echo "${JOB_POST_DATA}" | jq -re .EvalID)"
-    DEPLOYMENT_ID="$(curl -Ssf ${NOMAD_ADDR}/v1/evaluation/${JOB_EVAL_ID})"
+    DEPLOYMENT_ID="$(curl -Ssf ${NOMAD_ADDR}/v1/evaluation/${JOB_EVAL_ID} | jq -re .[].DeploymentID)"
     for i in $(seq 1 6); do
       deployment_status="$(curl -Ssf ${NOMAD_ADDR}/v1/deployment/${DEPLOYMENT_ID} | jq -re .Status)"
       if [[ "${deployment_status}" == "successful" ]]; then
