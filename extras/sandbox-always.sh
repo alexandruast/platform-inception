@@ -20,6 +20,8 @@ echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKIN
 sudo sysctl -w net.ipv4.conf.all.route_localnet=1 >/dev/null
 sudo iptables -t nat -A PREROUTING -p tcp --dport 8500 -j DNAT --to-destination 127.0.0.1:8500
 sudo iptables -t nat -A PREROUTING -p tcp --dport 4646 -j DNAT --to-destination 127.0.0.1:4646
+sudo iptables -t nat -A PREROUTING -p tcp --dport 9998 -j DNAT --to-destination 127.0.0.1:9998
+sudo iptables -t nat -A PREROUTING -p tcp --dport 9999 -j DNAT --to-destination 127.0.0.1:9999
 
 # setting up consul
 export CONSUL_HTTP_ADDR="http://consul.service.consul:8500"
@@ -79,3 +81,5 @@ POD_NAME="fabio" \
 echo "Consul API/UI is available at http://${sandbox_ip}:8500"
 echo "Nomad API/UI is available at http://${sandbox_ip}:4646"
 echo "Vault API is available at http://${sandbox_ip}:8200"
+echo "Fabio UI is available at http://${sandbox_ip}:9998"
+echo "Fabio ALB is available at http://${sandbox_ip}:9999"

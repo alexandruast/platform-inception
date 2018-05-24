@@ -96,3 +96,5 @@ POD_NAME="fabio" \
 echo "Consul API/UI is available at http://${server1_ip}:8500"
 echo "Nomad API/UI is available at http://${server1_ip}:4646"
 echo "Vault API is available at http://${server1_ip}:8200"
+echo "Fabio UI is available at http://${server1_ip}:9998"
+echo "Fabio ALB is available at http://${server1_ip}:9999"
