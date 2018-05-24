@@ -66,7 +66,18 @@ node {
     NOMAD_ADDR=http://127.0.0.1:${tunnel_port}
     JOB_PLAN_DATA="$(curl -Ssf -X POST -d @nomad-job.json ${NOMAD_ADDR}/v1/job/${POD_NAME}/plan)"
     JOB_POST_DATA="$(curl -Ssf -X POST -d @nomad-job.json ${NOMAD_ADDR}/v1/jobs)"
-    curl -Ssf -X PUT -d "${POD_TAG}" ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/tag_version >/dev/null
+    JOB_EVAL_ID="$(echo "${JOB_POST_DATA}" | jq -re .EvalID)"
+    DEPLOYMENT_ID="$(curl -Ssf ${NOMAD_ADDR}/v1/evaluation/${JOB_EVAL_ID})"
+    for i in $(seq 1 6); do
+      deployment_status="$(curl -Ssf ${NOMAD_ADDR}/v1/deployment/${DEPLOYMENT_ID} | jq -re .Status)"
+      if [[ "${deployment_status}" == "successful" ]]; then
+        curl -Ssf -X PUT -d "${POD_TAG}" ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/tag_version >/dev/null
+        break
+      fi
+      sleep 10 &
+      wait || true
+    done
+    exit 1
     '''
   }
   stage('cleanup') {
