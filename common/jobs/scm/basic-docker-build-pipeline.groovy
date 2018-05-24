@@ -37,17 +37,19 @@ node {
       docker login "${REGISTRY_ADDRESS}" --username="${REGISTRY_USERNAME}" --password-stdin <<< ${REGISTRY_PASSWORD} >/dev/null
       BUILD_DIR="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_dir?raw)"
       cd "${WORKSPACE}/${BUILD_DIR}"
+      compose_file="docker-compose.yml"
+      if [[ ! -f "${compose_file}" ]]; then
+        compose_file="docker-compose-auto.yml"
+        COMPOSE_YAML="version: '3'\nservices:\n  ${POD_NAME}:\n    image: ${REGISTRY_ADDRESS}/${REGISTRY_PATH}/${POD_NAME}:${POD_TAG}\n    build: ./"
+        echo -e "${COMPOSE_YAML}" > "${compose_file}"
+      fi
       if [[ "${POD_TAG}" == "${PREVIOUS_BUILD_TAG}" ]]; then
         echo [warning] commit id is the same, will not build again!
         exit 0
       fi
-      if [[ ! -f ./docker-compose.yml ]]; then
-        COMPOSE_YAML="version: '3'\nservices:\n  ${POD_NAME}:\n    image: ${REGISTRY_ADDRESS}/${REGISTRY_PATH}/${POD_NAME}:${POD_TAG}\n    build: ./"
-        echo -e "${COMPOSE_YAML}" > ./docker-compose.yml
-      fi
-      trap 'docker-compose --project-name "${POD_NAME}-${POD_TAG}" down -v --rmi all --remove-orphans' EXIT
-      docker-compose --project-name "${POD_NAME}-${POD_TAG}" --no-ansi build --no-cache
-      docker-compose --project-name "${POD_NAME}-${POD_TAG}" --no-ansi push
+      trap 'docker-compose -f "${compose_file}" --project-name "${POD_NAME}-${POD_TAG}" down -v --rmi all --remove-orphans' EXIT
+      docker-compose -f "${compose_file}" --project-name "${POD_NAME}-${POD_TAG}" --no-ansi build --no-cache
+      docker-compose -f "${compose_file}" --project-name "${POD_NAME}-${POD_TAG}" --no-ansi push
       curl -Ssf -X PUT -d "${POD_TAG}" ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_tag >/dev/null
       '''
     }
