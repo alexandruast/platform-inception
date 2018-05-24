@@ -1,8 +1,9 @@
 job "fluentd" {
   datacenters = ["dc1"]
-  type = "system"
+  type = "service"
   update {
     max_parallel = 1
+    health_check     = "checks"
     healthy_deadline = "30s"
     auto_revert      = true
     stagger          = "10s"
