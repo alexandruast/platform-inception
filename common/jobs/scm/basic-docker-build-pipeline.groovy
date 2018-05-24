@@ -37,7 +37,7 @@ node {
       docker login "${REGISTRY_ADDRESS}" --username="${REGISTRY_USERNAME}" --password-stdin <<< ${REGISTRY_PASSWORD} >/dev/null
       BUILD_DIR="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_dir?raw)"
       cd "${WORKSPACE}/${BUILD_DIR}"
-      COMPOSE_FILE="version:\x20'3'\nservices:\n\x20\x20${POD_NAME}:\n\x20\x20\x20\x20image:\x20${REGISTRY_ADDRESS}/${REGISTRY_PATH}/${POD_NAME}:${POD_TAG}\n\\x20\x20\x20\x20build:\x20./"
+      COMPOSE_FILE="version: '3'\nservices:\n  ${POD_NAME}:\n    image: ${REGISTRY_ADDRESS}/${REGISTRY_PATH}/${POD_NAME}:${POD_TAG}\n    build: ./"
       docker-compose --project-name "${POD_NAME}-${POD_TAG}" --no-ansi -f - build <<< "${COMPOSE_FILE}"
       docker-compose --project-name "${POD_NAME}-${POD_TAG}" --no-ansi -f - push  <<< "${COMPOSE_FILE}"
       curl -Ssf -X PUT -d "${POD_TAG}" ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/tag_version >/dev/null
