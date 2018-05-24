@@ -59,8 +59,7 @@ node {
     cd "${WORKSPACE}/${BUILD_DIR}"
     nomad run -output nomad-job.hcl > nomad-job.json
     NOMAD_ADDR=http://127.0.0.1:${tunnel_port}
-    EVAL_ID="$(curl -Ssf -X POST -d @nomad-job.json ${NOMAD_ADDR}/v1/jobs | jq -re .[EvalID])"
-    
+    EVAL_ID="$(curl -Ssf -X POST -d @nomad-job.json ${NOMAD_ADDR}/v1/jobs | jq -re .EvalID)"
     curl -Ssf -X PUT -d "${POD_TAG}" ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/tag_version >/dev/null
     '''
   }
