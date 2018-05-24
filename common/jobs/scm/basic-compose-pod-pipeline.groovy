@@ -65,7 +65,7 @@ node {
     cd "${WORKSPACE}/${BUILD_DIR}"
     NOMAD_ADDR=http://127.0.0.1:${tunnel_port}
     JOB_PLAN_DATA="$(curl -Ssf -X POST -d @nomad-job.json ${NOMAD_ADDR}/v1/job/${POD_NAME}/plan)"
-    FAILED_ALLOCS="$(echo "${JOB_PLAN_DATA}" | grep 'FailedTGAllocs' | jq -rc .FailedTGAllocs)"
+    FAILED_ALLOCS="$(echo "${JOB_PLAN_DATA}" | grep 'Faile2dTGAllocs' | jq -rc .FailedTGAllocs)"
     [[ "${FAILED_ALLOCS}" == "null" ]]
     JOB_POST_DATA="$(curl -Ssf -X POST -d @nomad-job.json ${NOMAD_ADDR}/v1/jobs)"
     JOB_EVAL_ID="$(echo "${JOB_POST_DATA}" | jq -re .EvalID)"
