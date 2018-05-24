@@ -17,7 +17,6 @@ node {
       sh '''#!/usr/bin/env bash
       set -xeuEo pipefail
       trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
-      trap 'docker-compose down' EXIT
       CHECKOUT_COMMIT_ID="$(curl -Ssf http://127.0.0.1:8500/v1/kv/${PLATFORM_ENVIRONMENT}/${POD_NAME}/checkout_commit_id?raw)"
       POD_TAG="${CHECKOUT_COMMIT_ID:0:7}"
       VAULT_ADDR="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/vault_address?raw)"
@@ -38,6 +37,7 @@ node {
       BUILD_DIR="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_dir?raw)"
       cd "${WORKSPACE}/${BUILD_DIR}"
       COMPOSE_FILE="version: 3\nservices:\n  ${POD_NAME}:\n    image: ${REGISTRY_ADDRESS}/${REGISTRY_PATH}/${POD_NAME}:${POD_TAG}\n    build: ./"
+      trap 'docker-compose -f - down <<< "${COMPOSE_FILE}"' EXIT
       docker-compose --project-name "${POD_NAME}-${POD_TAG}" --no-ansi -f - build <<< "${COMPOSE_FILE}"
       docker-compose --project-name "${POD_NAME}-${POD_TAG}" --no-ansi -f - push  <<< "${COMPOSE_FILE}"
       curl -Ssf -X PUT -d "${POD_TAG}" ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/tag_version >/dev/null
