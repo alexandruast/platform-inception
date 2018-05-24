@@ -72,10 +72,14 @@ node {
     DEPLOYMENT_ID="$(curl -Ssf ${NOMAD_ADDR}/v1/evaluation/${JOB_EVAL_ID} | jq -re .DeploymentID)"
     for i in $(seq 1 6); do
       deployment_status="$(curl -Ssf ${NOMAD_ADDR}/v1/deployment/${DEPLOYMENT_ID} | jq -re .Status)"
-      if [[ "${deployment_status}" == "successful" ]]; then
-        curl -Ssf -X PUT -d "${POD_TAG}" ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/tag_version >/dev/null
-        exit 0
-      fi
+      case "${deployment_status}" in
+        successful)
+          curl -Ssf -X PUT -d "${POD_TAG}" ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/tag_version >/dev/null
+          exit 0
+        ;;
+        failed)
+          exit 1
+      esac
       sleep 10 &
       wait || true
     done
