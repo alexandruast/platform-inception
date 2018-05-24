@@ -39,8 +39,8 @@ node {
       cd "${WORKSPACE}/${BUILD_DIR}"
       ansible all -i localhost, --connection=local -m template -a "src=nomad-job.hcl.j2 dest=nomad-job.hcl" >/dev/null
       nomad validate nomad-job.hcl
-      docker-compose --no-ansi build
-      docker-compose --no-ansi push
+      docker-compose --project-name "${POD_NAME}-${POD_TAG}" --no-ansi build
+      docker-compose --project-name "${POD_NAME}-${POD_TAG}" --no-ansi push
       '''
     }
   }
