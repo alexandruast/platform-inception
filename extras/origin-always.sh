@@ -60,7 +60,7 @@ export VAULT_SERVERS="${ARR_VAULT_SERVERS[*]}"
 ./extras/vault-init.sh
 
 # garbage collection nodes
-curl --silent -X PUT "http://${server1_ip}:4646/v1/system/gc"
+curl -Ssf -X PUT "http://${server1_ip}:4646/v1/system/gc"
 
 # bringing up platform services
 JENKINS_BUILD_JOB="sandbox-yaml-to-consul-build"
