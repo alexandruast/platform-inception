@@ -20,6 +20,10 @@ node {
       CHECKOUT_COMMIT_ID="$(curl -Ssf http://127.0.0.1:8500/v1/kv/${PLATFORM_ENVIRONMENT}/${POD_NAME}/checkout_commit_id?raw)"
       PREVIOUS_BUILD_TAG="$(curl -Ss ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_tag?raw)"
       POD_TAG="${CHECKOUT_COMMIT_ID:0:7}"
+      if [[ "${POD_TAG}" == "${PREVIOUS_BUILD_TAG}" ]]; then
+        echo [warning] commit id is the same, will not build again!
+        exit 0
+      fi
       VAULT_ADDR="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/vault_address?raw)"
       REGISTRY_ADDRESS="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/docker_registry_address?raw)"
       REGISTRY_PATH="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-settings/docker_registry_path?raw)"
@@ -40,9 +44,9 @@ node {
       ansible all -i localhost, --connection=local -m template -a "src=nomad-job.hcl.j2 dest=nomad-job.hcl"
       nomad validate nomad-job.hcl
       nomad run -output nomad-job.hcl > nomad-job.json
-      if [[ "${POD_TAG}" == "${PREVIOUS_BUILD_TAG}" ]]; then
-        echo [warning] commit id is the same, will not build again!
-        exit 0
+      if [[ ! -f ./docker-compose.yml ]]; then
+        COMPOSE_YAML="version: '3'\nservices:\n  ${POD_NAME}:\n    image: ${REGISTRY_ADDRESS}/${REGISTRY_PATH}/${POD_NAME}:${POD_TAG}\n    build: ./"
+        echo -e "${COMPOSE_YAML}" > ./docker-compose.yml
       fi
       trap 'docker-compose --project-name "${POD_NAME}-${POD_TAG}" down -v --rmi all --remove-orphans' EXIT
       docker-compose --project-name "${POD_NAME}-${POD_TAG}" --no-ansi build --no-cache

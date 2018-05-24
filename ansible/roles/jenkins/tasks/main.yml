@@ -32,6 +32,15 @@
     group:  "{{service_group}}"
   become: true
 
+- name: "workspace directory created"
+  file:
+    path: "{{service_data_dir}}//workspace"
+    state: directory
+    mode: 0750
+    owner:  "{{service_user}}"
+    group:  "{{service_group}}"
+  become: true
+
 - name: "init.groovy.d directory created"
   file:
     path: "{{service_data_dir}}//init.groovy.d"
