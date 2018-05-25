@@ -1,6 +1,8 @@
 FROM debian:jessie
 MAINTAINER Alexandru Ast <alexandru.ast@gmail.com>
 
+ENV DEBIAN_FRONTEND noninteractive
+
 RUN apt-get -qq update \
 && apt-get -qq install --no-install-recommends curl ca-certificates
 
