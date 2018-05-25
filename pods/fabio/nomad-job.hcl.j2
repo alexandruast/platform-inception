@@ -44,7 +44,7 @@ job "fabio" {
         }
       }
       env {
-        FABIO_registry.consul.addr = "http://${attr.unique.network.ip-address}:8500"
+        FABIO_registry.consul.addr = "${attr.unique.network.ip-address}:8500"
       }
       resources {
         memory = 128
