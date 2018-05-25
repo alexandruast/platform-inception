@@ -14,6 +14,7 @@ source ${scope}/.scope
 export JENKINS_ADMIN_PASS="${ci_admin_pass}"
 export JENKINS_ADDR="http://${sandbox_ip}:${JENKINS_PORT}"
 ./jenkins-query.sh common/is-online.groovy
+./jenkins-query.sh common/quiet-cancel.groovy
 echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
 
 # setting up port forwarding rules
