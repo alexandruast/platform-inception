@@ -1,6 +1,0 @@
-version: '3'
-
-services:
-  fluentd:
-    image: ${REGISTRY_ADDRESS}/${REGISTRY_PATH}/fluentd:${POD_TAG}
-    build: ./images/fluentd
