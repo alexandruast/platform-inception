@@ -31,6 +31,9 @@ job "fluentd" {
         port_map {
           service = 24224
         }
+        dns_servers = [
+          "${attr.unique.network.ip-address}"
+        ]
       }
       resources {
         memory = 60

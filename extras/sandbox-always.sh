@@ -18,7 +18,6 @@ echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKIN
 
 # setting up port forwarding rules
 sudo sysctl -w net.ipv4.conf.all.route_localnet=1 >/dev/null
-sudo iptables -t nat -A PREROUTING -p tcp --dport 8500 -j DNAT --to-destination 127.0.0.1:8500
 sudo iptables -t nat -A PREROUTING -p tcp --dport 4646 -j DNAT --to-destination 127.0.0.1:4646
 
 # setting up consul
