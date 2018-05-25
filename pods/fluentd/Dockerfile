@@ -1,5 +1,4 @@
 FROM fluent/fluentd:v1.2-debian
-MAINTAINER Alexandru Ast <alexandru.ast@gmail.com>
 
 RUN gem install fluent-plugin-concat \
 && gem install fluent-plugin-grok-parser \
