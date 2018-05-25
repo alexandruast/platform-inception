@@ -2,7 +2,7 @@ FROM debian:jessie
 MAINTAINER Alexandru Ast <alexandru.ast@gmail.com>
 
 RUN apt-get -qq update \
-&& apt-get -qq install --no-install-recommends curl
+&& apt-get -qq install --no-install-recommends curl ca-certificates
 
 ARG FABIO_VERSION=1.5.9
 ARG GO_VERSION=1.10.2
