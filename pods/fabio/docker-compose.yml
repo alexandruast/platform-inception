@@ -1,6 +1,0 @@
-version: '3'
-
-services:
-  fabio:
-    image: ${REGISTRY_ADDRESS}/${REGISTRY_PATH}/fabio:${POD_TAG}
-    build: ./images/fabio

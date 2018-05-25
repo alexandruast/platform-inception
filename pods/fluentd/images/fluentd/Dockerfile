@@ -16,8 +16,9 @@ RUN gem install fluent-plugin-concat \
 ARG GOSU_VERSION=1.10
 
 COPY [ \
-"gosu-${GOSU_VERSION}.sha256", \
-"/tmp/" ]
+  "gosu-${GOSU_VERSION}.sha256", \
+  "/tmp/" \
+]
 
 RUN curl -LSs https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64 -o /usr/local/bin/gosu-amd64 \
 && cd /usr/local/bin \
