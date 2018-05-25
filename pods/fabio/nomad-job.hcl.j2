@@ -44,7 +44,9 @@ job "fabio" {
         }
       }
       env {
-        FABIO_registry.consul.addr = "${attr.unique.network.ip-address}:8500"
+        FABIO_registry_consul_addr = "${attr.unique.network.ip-address}:8500"
+        FABIO_proxy_noroutestatus = "503"
+        FABIO_registry_consul_register_enabled = "false"
       }
       resources {
         memory = 128
