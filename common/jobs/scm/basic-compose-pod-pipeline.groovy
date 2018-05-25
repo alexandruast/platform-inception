@@ -78,6 +78,8 @@ node {
     JOB_EVAL_ID="$(echo "${JOB_POST_DATA}" | jq -re .EvalID)"
     DEPLOYMENT_ID="$(curl -Ssf ${NOMAD_ADDR}/v1/evaluation/${JOB_EVAL_ID} | jq -re .DeploymentID)"
     for i in $(seq 1 60); do
+      sleep 10 &
+      wait || true
       deployment_status="$(curl -Ssf ${NOMAD_ADDR}/v1/deployment/${DEPLOYMENT_ID} | jq -re .Status)"
       case "${deployment_status}" in
         successful)
@@ -87,8 +89,6 @@ node {
         failed)
           exit 1
       esac
-      sleep 10 &
-      wait || true
     done
     exit 1
     '''

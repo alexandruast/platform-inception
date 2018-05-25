@@ -49,11 +49,11 @@ job "fluentd" {
         port = "service"
         check {
           type = "tcp"
-          interval = "4s"
-          timeout  = "2s"
+          interval = "10s"
+          timeout  = "4s"
           check_restart {
             limit = 3
-            grace = "10s"
+            grace = "60s"
             ignore_warnings = false
           }
         }

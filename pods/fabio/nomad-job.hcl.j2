@@ -44,6 +44,7 @@ job "fabio" {
         }
       }
       env {
+        FABIO_registry.consul.addr = "consul.service.consul"
         FABIO_registry.consul.register.enabled = "False"
       }
       resources {
