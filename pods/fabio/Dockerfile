@@ -1,4 +1,4 @@
-FROM debian:jessie
+FROM debian:jessie-slim
 MAINTAINER Alexandru Ast <alexandru.ast@gmail.com>
 
 ENV DEBIAN_FRONTEND noninteractive
