@@ -32,16 +32,18 @@ job "fabio" {
           ui   = 9998
           http = 9999
         }
+        dns_servers = [
+          "${attr.unique.network.ip-address}"
+        ]
         logging {
           type = "fluentd"
           config {
             fluentd-address = "fluentd.service.consul:24224"
-            tag = "docker.{{lookup('env','POD_NAME')}}-{{lookup('env','POD_TAG')}}.${attr.unique.hostname}.{%raw%}{{.ID}}{%endraw%}"
+            tag = "docker.{{lookup('env','POD_NAME')}}.fabio-{{lookup('env','POD_TAG')}}.${attr.unique.hostname}.{%raw%}{{.ID}}{%endraw%}"
           }
         }
       }
       env {
-        FABIO_registry.consul.addr = "${attr.unique.network.ip-address}:8500"
         FABIO_registry.consul.register.enabled = "False"
       }
       resources {
