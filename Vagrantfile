@@ -67,7 +67,7 @@ sandbox = {
   :hostname => "sandbox",
   :ip => "192.168.169.170",
   :box => box,
-  :memory => 3600,
+  :memory => 4000,
   :cpus => 2
 }
 
