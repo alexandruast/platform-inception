@@ -10,6 +10,6 @@ service_env: {
 service_meta: {}
 service_exec:     "/usr/local/bin/{{service_name}}"
 service_args_def: "agent -config={{service_conf_dir}}"
-service_args_dev: "agent -dev"
+service_args_dev: "agent -dev -network-interface={{service_network_interface|default(lo)}}"
 service_args:     "{{ service_args_dev if service_mode == 'dev' else service_args_def }}"
 

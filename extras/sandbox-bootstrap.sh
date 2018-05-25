@@ -29,7 +29,7 @@ setup_factory_jenkins() {
   export JENKINS_ADMIN_PASS="${ci_admin_pass}"
   export JENKINS_ADDR="http://${sandbox_ip}:${JENKINS_PORT}"
   ANSIBLE_TARGET="127.0.0.1" \
-    ANSIBLE_EXTRAVARS="{'dnsmasq_resolv':'supersede','dns_servers':['/consul/127.0.0.1#8600','8.8.8.8','8.8.4.4']}" \
+    ANSIBLE_EXTRAVARS="{'dnsmasq_resolv':'supersede','service_network_interface':'enp0s8','dns_servers':['/consul/127.0.0.1#8600','8.8.8.8','8.8.4.4']}" \
     ./apl-wrapper.sh ansible/target-sandbox.yml
   ./jenkins-setup.sh
   echo "factory-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
