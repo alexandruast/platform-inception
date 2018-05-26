@@ -115,8 +115,7 @@ cd "${WORKSPACE}/${BUILD_DIR}"
 docker-compose \
   --project-name "${POD_NAME}-${BUILD_TAG}" \
   --no-ansi \
-  --no-cache \
-  build
+  build --no-cache
 
 docker-compose \
   --project-name "${POD_NAME}-${BUILD_TAG}" \
