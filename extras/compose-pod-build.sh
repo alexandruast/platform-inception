@@ -2,6 +2,8 @@
 set -xeEuo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
+dfsdfsdsd
+
 AUTO_COMPOSE_TEMPLATE="$(cat << EOF
 version: '3'
 services:
