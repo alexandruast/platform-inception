@@ -16,7 +16,7 @@ node {
       sh '''
       curl -LSs https://raw.githubusercontent.com/alexandruast/platform-inception/devel/extras/compose-pod-build.sh -o compose-pod-build.sh
       chmod +x compose-pod-build.sh
-      compose-pod-build.sh
+      ./compose-pod-build.sh
       '''
     }
   }
@@ -24,7 +24,7 @@ node {
     sh '''
       curl -LSs https://raw.githubusercontent.com/alexandruast/platform-inception/devel/extras/compose-pod-deploy.sh -o compose-pod-deploy.sh
       chmod +x compose-pod-deploy.sh
-      compose-pod-deploy.sh
+      ./compose-pod-deploy.sh
     '''
   }
   stage('cleanup') {
