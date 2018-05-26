@@ -25,7 +25,7 @@ node {
         ],
         submoduleCfg: [],
         userRemoteConfigs: [[url: gitURL]]])
-      sh('shell-builder/compose-pod-build.sh')
+      sh("shell-builder/${gitDIR}/compose-pod-build.sh")
     }
   }
   stage('cleanup') {
