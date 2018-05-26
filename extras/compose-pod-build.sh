@@ -79,7 +79,7 @@ if [[ ! -f "${COMPOSE_FILE}" ]] && [[ ! -f "${COMPOSE_FILE}.j2" ]]; then
   echo "${AUTO_COMPOSE_TEMPLATE}" > "${COMPOSE_FILE}.j2"
 fi
 
-readonly NOMAD_FILE="${WORKSPACE}/${BUILD_DIR}/nomad-job.hcl"
+NOMAD_FILE="${WORKSPACE}/${BUILD_DIR}/nomad-job.hcl"
 if [[ ! -f "${NOMAD_FILE}" ]] && [[ ! -f "${NOMAD_FILE}.j2" ]]; then
   NOMAD_FILE="${WORKSPACE}/${BUILD_DIR}/nomad-job-auto.hcl"
   echo "${AUTO_NOMAD_TEMPLATE}" > "${NOMAD_FILE}.j2"
