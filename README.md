@@ -24,23 +24,27 @@ Prod-Jenkins creates and manages all prod environments, where things get deploye
 Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory-Jenkins.  
 Production infrastructure requires consul/vault clusters for factory and prod.
 
-#### ToDo  
-mask docker files and nomad jobs - user selects runtime  
-fluentd to listen on udp socket  
-looging, metrics and monitoring light dashboard  
-service health dashboard  
-authenticate consul with vault for write operations  
-build publish plugin - run build on another jenkins(prod)  
-hide sensitive info from console output  
-store archive/backups  
+#### ToDo
 
-#### Looking for contributors for the following  
-docker-enforcer and vulnerability assessment for docker images/files
-write groovy logic in job-dsl to retrieve all variables from consul, rather than having them spread out in groovy files  
+##### Improvements
+* write groovy logic in job-dsl to retrieve all variables from consul
+* yaml-to-consul to delete only non-declared keys
+* mask docker files and nomad jobs - user selects runtime
+* fluentd to listen on udp socket
+* authenticate consul with vault for write operations
+* hide sensitive info from console output
+* store archives/backups
 
-
+##### Features
+* platform-config to have a structure to permit multi-tenancy
+* streamlined CI tool to trigger jobs per tenant
+* streamlined health, logging, metrics and monitoring dashboard
+* artifact repository
+* build publish plugin - run build on prod-jenkins
+* docker-enforcer and vulnerability assessment for docker images/files
 
 #### Changelog
+moved variables from parametrized builds to environment using envinject
 added java echo service  
 added ws-cleanup directories purge to hourly cron  
 added hourly cron  
