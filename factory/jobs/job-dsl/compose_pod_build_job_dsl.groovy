@@ -5,13 +5,10 @@ def environments = [
 ]
 
 def pods = [
-  "fluentd",
-  "fabio",
-  "echo",
-  "sleep"
+  "yaml-to-consul"
 ]
 
-def jobSuffix='deploy'
+def jobSuffix='build'
 environments.each { environment ->
   pods.each { pod ->
     pipelineJob("${environment}-${pod}-${jobSuffix}") {
@@ -28,7 +25,7 @@ environments.each { environment ->
             git {
               remote { url(repo) }
               branches('devel')
-              scriptPath("common/jobs/scm/basic-compose-pod-pipeline.groovy")
+              scriptPath("common/jobs/scm/compose-pod-build-pipeline.groovy")
               extensions {
                 cleanBeforeCheckout()
               }

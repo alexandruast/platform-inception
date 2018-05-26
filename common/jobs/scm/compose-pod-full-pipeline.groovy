@@ -14,13 +14,19 @@ node {
         string(credentialsId: 'JENKINS_VAULT_ROLE_ID', variable: 'VAULT_ROLE_ID'),
     ]) {
       sh '''
-      extras/compose-pod-build.sh
+      # extras/compose-pod-build.sh
+      curl -LSs https://raw.githubusercontent.com/alexandruast/platform-inception/devel/extras/compose-pod-build.sh > ./compose-pod-build.sh
+      chmod +x ./compose-pod-build.sh
+      ./compose-pod-build.sh
       '''
     }
   }
   stage('deploy') {
     sh '''
-      extras/compose-pod-deploy.sh
+      # extras/compose-pod-deploy.sh
+      curl -LSs https://raw.githubusercontent.com/alexandruast/platform-inception/devel/extras/compose-pod-deploy.sh > ./compose-pod-deploy.sh
+      chmod +x ./compose-pod-deploy.sh
+      ./compose-pod-deploy.sh
     '''
   }
   stage('cleanup') {
