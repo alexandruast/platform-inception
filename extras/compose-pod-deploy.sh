@@ -27,7 +27,7 @@ ssh ${SSH_OPTS[*]} \
 NOMAD_ADDR=http://127.0.0.1:${TUNNEL_PORT}
 
 # Is there a previous deployment for this pod?
-if curl -Ss ${NOMAD_ADDR}/v1/job/${POD_NAME} >/dev/null; then
+if curl -Ssf ${NOMAD_ADDR}/v1/job/${POD_NAME} >/dev/null; then
   # Try job planning, so we can catch any issues before actually deploying stuff
   JOB_PLAN_DATA="$(curl -Ssf -X POST \
     -d @nomad-job.json \
