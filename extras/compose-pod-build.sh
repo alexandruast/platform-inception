@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
-set -xeEuo pipefail
+set -eEuo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
-
-# This part throws garbage on screen
-set +x
 
 AUTO_COMPOSE_TEMPLATE="$(cat << EOF
 version: '3'
@@ -40,9 +37,6 @@ job "{{lookup('env','POD_NAME')}}" {
 }
 EOF
 )"
-
-# End of screen garbage :)
-set -x
 
 VAULT_ADDR="$(curl -Ssf \
   ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/vault_address?raw)"
