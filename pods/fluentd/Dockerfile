@@ -9,7 +9,7 @@ RUN gem install fluent-plugin-concat \
 
 COPY fluent.conf /fluentd/etc/
 
-RUN chown -R nobody:nobody /fluentd
+RUN chown -R nobody:nogroup /fluentd
 
 ENTRYPOINT []
 
