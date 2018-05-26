@@ -17,9 +17,9 @@ environments.each { environment ->
       description("Dynamically generated with job-dsl by ${JOB_NAME}\nAny changes to this item will be overwritten without notice.")
       def repo = 'https://github.com/alexandruast/platform-inception'
       keepDependencies(false)
-      parameters {
-        choiceParam('PLATFORM_ENVIRONMENT', ["${environment}"], "Running in environment")
-        choiceParam('POD_NAME', ["${pod}"], "Pod name")
+      environmentVariables {
+        env('PLATFORM_ENVIRONMENT', "${environment}")
+        env('POD_NAME', "${pod}")
       }
       definition {
         cpsScm {

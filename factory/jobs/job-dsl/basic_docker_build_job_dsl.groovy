@@ -19,10 +19,6 @@ environments.each { environment ->
         env('PLATFORM_ENVIRONMENT', "${environment}")
         env('POD_NAME', "${pod}")
       }
-      // parameters {
-      //   choiceParam('PLATFORM_ENVIRONMENT', ["${environment}"], "Running in environment")
-      //   choiceParam('POD_NAME', ["${pod}"], "Pod name")
-      // }
       definition {
         cpsScm {
           scm {
