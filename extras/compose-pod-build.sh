@@ -101,10 +101,10 @@ while IFS='' read -r -d '' f; do
 done < <(find "${WORKSPACE}/${BUILD_DIR}" -type f -name '*.j2' -print0)
 
 nomad validate \
-  "${WORKSPACE}/${BUILD_DIR}/nomad-job.hcl"
+  "${NOMAD_FILE}"
 
 nomad run \
-  -output "${WORKSPACE}/${BUILD_DIR}/nomad-job.hcl" > "${WORKSPACE}/${BUILD_DIR}/nomad-job.json"
+  -output "${NOMAD_FILE}" > "${WORKSPACE}/${BUILD_DIR}/nomad-job.json"
 
 trap 'docker-compose --project-name "${POD_NAME}-${BUILD_TAG}" down -v --rmi all --remove-orphans' EXIT
 
