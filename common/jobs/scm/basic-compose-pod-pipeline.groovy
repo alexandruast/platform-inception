@@ -20,7 +20,7 @@ node {
   }
   stage('deploy') {
     sh '''
-      extras/compose-pod-build.sh
+      extras/compose-pod-deploy.sh
     '''
   }
   stage('cleanup') {
