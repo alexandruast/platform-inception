@@ -2,6 +2,12 @@
 set -xeEuo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
+VAULT_ADDR="$(curl -Ssf \
+  ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/vault_address?raw)"
+
+BUILD_DIR="$(curl -Ssf \
+  ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_dir?raw)"
+
 SSH_OPTS=(
   "-o LogLevel=error"
   "-o StrictHostKeyChecking=no"
