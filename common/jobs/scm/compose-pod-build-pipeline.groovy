@@ -19,10 +19,10 @@ node {
       checkout_info = checkout([$class: 'GitSCM',
         branches: [[name: gitBranch]],
         doGenerateSubmoduleConfigurations: false,
-        extensions: [
+        extensions:[
           [$class: 'SparseCheckoutPaths', sparseCheckoutPaths:[[$class: 'SparseCheckoutPath', path: gitDIR]]],
-          [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'shell-builder']], 
-          ],
+          [$class: 'RelativeTargetDirectory', relativeTargetDir: 'shell-builder'], 
+        ],
         submoduleCfg: [],
         userRemoteConfigs: [[url: gitURL]]])
       sh('shell-builder/compose-pod-build.sh')
