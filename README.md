@@ -70,7 +70,7 @@ vault-init overhaul to better describe the approle flow
 basic_compose_pod can now deploy any basic docker-compose based pod, on any git url and branch  
 removed "if->else" for pod builds, because it induced too much complexity  
 replaced ansible-playbook for jinja2 templating with ad-hoc command  
-replaced POD_VERSION with POD_TAG to better reflect what we're doing  
+replaced POD_VERSION with BUILD_TAG to better reflect what we're doing  
 pods will build only if the git commit id changed, also changed the version string to be the short commit id  
 created system cron daily maintenance jenkins job  - runs docker prune commands  
 added fluentd pod for collecting logs  

@@ -19,10 +19,10 @@ job "fluentd" {
       interval = "15m"
       mode     = "delay"
     }
-    task "fluentd-{{lookup('env','POD_TAG')}}" {
+    task "fluentd-{{lookup('env','BUILD_TAG')}}" {
       driver = "docker"
       config {
-        image = "{{lookup('env','REGISTRY_ADDRESS')}}/{{lookup('env','REGISTRY_PATH')}}/fluentd:{{lookup('env','POD_TAG')}}"
+        image = "{{lookup('env','REGISTRY_ADDRESS')}}/{{lookup('env','REGISTRY_PATH')}}/fluentd:{{lookup('env','BUILD_TAG')}}"
         auth {
           server_address = "{{lookup('env','REGISTRY_ADDRESS')}}"
           username = "{{lookup('env','REGISTRY_USERNAME')}}"

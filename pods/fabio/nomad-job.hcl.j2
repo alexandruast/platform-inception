@@ -19,10 +19,10 @@ job "fabio" {
       interval = "15m"
       mode     = "delay"
     }
-    task "fabio-{{lookup('env','POD_TAG')}}" {
+    task "fabio-{{lookup('env','BUILD_TAG')}}" {
       driver = "docker"
       config {
-        image = "{{lookup('env','REGISTRY_ADDRESS')}}/{{lookup('env','REGISTRY_PATH')}}/fabio:{{lookup('env','POD_TAG')}}"
+        image = "{{lookup('env','REGISTRY_ADDRESS')}}/{{lookup('env','REGISTRY_PATH')}}/fabio:{{lookup('env','BUILD_TAG')}}"
         auth {
           server_address = "{{lookup('env','REGISTRY_ADDRESS')}}"
           username = "{{lookup('env','REGISTRY_USERNAME')}}"
@@ -39,7 +39,7 @@ job "fabio" {
           type = "fluentd"
           config {
             fluentd-address = "fluentd.service.consul:24224"
-            tag = "docker.{{lookup('env','POD_NAME')}}.fabio-{{lookup('env','POD_TAG')}}.${attr.unique.hostname}.{%raw%}{{.ID}}{%endraw%}"
+            tag = "docker.{{lookup('env','POD_NAME')}}.fabio-{{lookup('env','BUILD_TAG')}}.${attr.unique.hostname}.{%raw%}{{.ID}}{%endraw%}"
           }
         }
       }
