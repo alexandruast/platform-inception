@@ -8,6 +8,9 @@ VAULT_ADDR="$(curl -Ssf \
 BUILD_DIR="$(curl -Ssf \
   ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_dir?raw)"
 
+BUILD_TAG="$(curl -Ssf \
+  ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_tag?raw)"
+
 SSH_OPTS=(
   "-o LogLevel=error"
   "-o StrictHostKeyChecking=no"
@@ -70,7 +73,7 @@ while :; do
   case "${DEPLOYMENT_STATUS}" in
     successful)
       curl -Ssf -X PUT \
-        -d "${POD_TAG}" \
+        -d "${BUILD_TAG}" \
         ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/deploy_tag >/dev/null
       exit 0
     ;;
