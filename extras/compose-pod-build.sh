@@ -73,13 +73,15 @@ readonly REGISTRY_PASSWORD="${REGISTRY_CREDENTIALS#*:}"
 readonly BUILD_DIR="$(curl -Ssf \
   ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_dir?raw)"
 
-readonly COMPOSE_FILE="${WORKSPACE}/${BUILD_DIR}/docker-compose.yml"
+COMPOSE_FILE="${WORKSPACE}/${BUILD_DIR}/docker-compose.yml"
 if [[ ! -f "${COMPOSE_FILE}" ]] && [[ ! -f "${COMPOSE_FILE}.j2" ]]; then
+  COMPOSE_FILE="${WORKSPACE}/${BUILD_DIR}/docker-compose-auto.yml"
   echo "${AUTO_COMPOSE_TEMPLATE}" > "${COMPOSE_FILE}.j2"
 fi
 
 readonly NOMAD_FILE="${WORKSPACE}/${BUILD_DIR}/nomad-job.hcl"
 if [[ ! -f "${NOMAD_FILE}" ]] && [[ ! -f "${NOMAD_FILE}.j2" ]]; then
+  NOMAD_FILE="${WORKSPACE}/${BUILD_DIR}/nomad-job-auto.hcl"
   echo "${AUTO_NOMAD_TEMPLATE}" > "${NOMAD_FILE}.j2"
 fi
 
@@ -113,11 +115,13 @@ docker login "${REGISTRY_ADDRESS}" \
 cd "${WORKSPACE}/${BUILD_DIR}"
 
 docker-compose \
+  -f "${COMPOSE_FILE}" \
   --project-name "${POD_NAME}-${BUILD_TAG}" \
   --no-ansi \
   build --no-cache
 
 docker-compose \
+  -f "${COMPOSE_FILE}" \
   --project-name "${POD_NAME}-${BUILD_TAG}" \
   --no-ansi \
   push
