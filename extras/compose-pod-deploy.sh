@@ -9,7 +9,7 @@ BUILD_DIR="$(curl -Ssf \
   ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_dir?raw)"
 
 BUILD_TAG="$(curl -Ssf \
-  ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_tag?raw)"
+  ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_tag?raw)"
 
 SSH_OPTS=(
   "-o LogLevel=error"
