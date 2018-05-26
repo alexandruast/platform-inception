@@ -14,7 +14,9 @@ node {
     trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
     REGISTRY_ADDRESS="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/docker_registry_address?raw)"
     REGISTRY_PATH="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/docker_registry_path?raw)"
-    ansible all -i localhost, --connection=local -m template -a "src=config/main.yml.j2 dest=config/main.yml" >/dev/null
+    while IFS='' read -r -d '' f; do
+      ansible all -i localhost, --connection=local -m template -a "src=${f} dest=${f%%.j2}"
+    done < <(find . -type f -name '*.j2' -print0)
     TAG_VERSION="$(
       curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/qa/yaml-to-consul/build_tag?raw || \
       curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/integration/yaml-to-consul/build_tag?raw || \
