@@ -26,16 +26,18 @@ ssh ${SSH_OPTS[*]} \
 
 NOMAD_ADDR=http://127.0.0.1:${TUNNEL_PORT}
 
-# Try job planning, so we can catch any issues before actually deploying stuff
-JOB_PLAN_DATA="$(curl -Ssf -X POST \
-  -d @nomad-job.json \
-  ${NOMAD_ADDR}/v1/job/${POD_NAME}/plan)"
-
-# To go further with the deploy, the FailedTGAllocs field must be null
-FAILED_ALLOCS="$(echo "${JOB_PLAN_DATA}" \
-  | grep 'FailedTGAllocs' \
-  | jq -rc .FailedTGAllocs)"
-[[ "${FAILED_ALLOCS}" == "null" ]]
+# Is there a previous deployment for this pod?
+if curl -Ssf ${NOMAD_ADDR}/v1/job/${POD_NAME} >/dev/null; then
+  # Try job planning, so we can catch any issues before actually deploying stuff
+  JOB_PLAN_DATA="$(curl -Ssf -X POST \
+    -d @nomad-job.json \
+    ${NOMAD_ADDR}/v1/job/${POD_NAME}/plan)"
+  # To go further with the deploy, the FailedTGAllocs field must be null
+  FAILED_ALLOCS="$(echo "${JOB_PLAN_DATA}" \
+    | grep 'FailedTGAllocs' \
+    | jq -rc .FailedTGAllocs)"
+  [[ "${FAILED_ALLOCS}" == "null" ]]
+fi
 
 # Posting job data
 JOB_POST_DATA="$(curl -Ssf -X POST -d @nomad-job.json ${NOMAD_ADDR}/v1/jobs)"
