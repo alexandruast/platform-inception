@@ -2,11 +2,13 @@
 set -xeEuo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
-SSH_OPTS='-o LogLevel=error \
-  -o StrictHostKeyChecking=no \
-  -o UserKnownHostsFile=/dev/null \
-  -o BatchMode=yes \
-  -o ExitOnForwardFailure=yes'
+SSH_OPTS=(
+  "-o LogLevel=error"
+  "-o StrictHostKeyChecking=no"
+  "-o UserKnownHostsFile=/dev/null"
+  "-o BatchMode=yes"
+  "-o ExitOnForwardFailure=yes"
+)
 
 SSH_DEPLOY_ADDRESS="$(curl -Ssf \
   ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/ssh_deploy_address?raw)"
@@ -15,7 +17,13 @@ trap 'ssh -S "${WORKSPACE}/ssh-control-socket" -O exit ${SSH_DEPLOY_ADDRESS}' EX
 
 # Creating an SSH tunnel to the nomad server
 TUNNEL_PORT=$(perl -e 'print int(rand(999)) + 58000')
-ssh ${SSH_OPTS} -f -N -M -S "${WORKSPACE}/ssh-control-socket" -L ${TUNNEL_PORT}:127.0.0.1:4646 ${SSH_DEPLOY_ADDRESS}
+
+ssh ${SSH_OPTS[*]} \
+  -f -N -M \
+  -S "${WORKSPACE}/ssh-control-socket" \
+  -L ${TUNNEL_PORT}:127.0.0.1:4646 \
+  ${SSH_DEPLOY_ADDRESS}
+
 NOMAD_ADDR=http://127.0.0.1:${TUNNEL_PORT}
 
 # Try job planning, so we can catch any issues before actually deploying stuff
