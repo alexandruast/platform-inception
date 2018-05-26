@@ -2,6 +2,8 @@
 set -xeEuo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
+echo "[info] getting all information required for the deploy to start..."
+
 VAULT_ADDR="$(curl -Ssf \
   ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/vault_address?raw)"
 
@@ -27,6 +29,8 @@ trap 'ssh -S "${WORKSPACE}/ssh-control-socket" -O exit ${SSH_DEPLOY_ADDRESS}' EX
 # Creating an SSH tunnel to the nomad server
 TUNNEL_PORT=$(perl -e 'print int(rand(999)) + 58000')
 
+echo "[info] SSH tunnel to ${SSH_DEPLOY_ADDRESS}:${TUNNEL_PORT} starting..."
+
 ssh ${SSH_OPTS[*]} \
   -f -N -M \
   -S "${WORKSPACE}/ssh-control-socket" \
@@ -34,6 +38,8 @@ ssh ${SSH_OPTS[*]} \
   ${SSH_DEPLOY_ADDRESS}
 
 NOMAD_ADDR=http://127.0.0.1:${TUNNEL_PORT}
+
+echo "[info] getting information about currently running deployment for this pod..."
 
 # Is there a previous deployment for this pod?
 if curl -Ssf ${NOMAD_ADDR}/v1/job/${POD_NAME} >/dev/null; then
@@ -48,10 +54,14 @@ if curl -Ssf ${NOMAD_ADDR}/v1/job/${POD_NAME} >/dev/null; then
   [[ "${FAILED_ALLOCS}" == "null" ]]
 fi
 
+echo "[info] posting job data to Nomad API..."
+
 # Posting job data
 JOB_POST_DATA="$(curl -Ssf -X POST \
   -d "@${WORKSPACE}/${BUILD_DIR}/nomad-job.json" \
   ${NOMAD_ADDR}/v1/jobs)"
+
+echo "[info] getting information back from Nomad API..."
 
 # Getting information
 JOB_EVAL_ID="$(echo "${JOB_POST_DATA}" \
@@ -61,6 +71,8 @@ DEPLOYMENT_ID="$(curl -Ssf \
   ${NOMAD_ADDR}/v1/evaluation/${JOB_EVAL_ID} \
   | jq -re .DeploymentID)"
 
+echo "[info] waiting for deployment to finish..."
+
 # Infinite loop until status is failed or successful
 while :; do
   sleep 10 &
@@ -69,7 +81,9 @@ while :; do
   DEPLOYMENT_STATUS="$(curl -Ssf \
     ${NOMAD_ADDR}/v1/deployment/${DEPLOYMENT_ID} \
     | jq -re .Status)"
-
+  
+  echo "[info] deployment status: ${DEPLOYMENT_STATUS}"
+  
   case "${DEPLOYMENT_STATUS}" in
     successful)
       curl -Ssf -X PUT \

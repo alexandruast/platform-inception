@@ -2,7 +2,7 @@
 set -eEuo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
-dfsdfsdsd
+echo "[info] getting all information required for the build to start..."
 
 AUTO_COMPOSE_TEMPLATE="$(cat << EOF
 version: '3'
@@ -88,6 +88,9 @@ export REGISTRY_PATH
 export POD_NAME
 export BUILD_TAG
 
+
+echo "[info] parsing jinja2 templates, if any..."
+
 # Parsing all jinja2 templates
 while IFS='' read -r -d '' f; do
   ansible all -i localhost, \
@@ -95,6 +98,8 @@ while IFS='' read -r -d '' f; do
     -m template \
     -a "src=${f} dest=${f%%.j2}"
 done < <(find "${WORKSPACE}/${BUILD_DIR}" -type f -name '*.j2' -print0)
+
+echo "[info] validating nomad job file..."
 
 nomad validate \
   "${NOMAD_FILE}"
@@ -108,11 +113,15 @@ docker login "${REGISTRY_ADDRESS}" \
   --username="${REGISTRY_USERNAME}" \
   --password-stdin <<< ${REGISTRY_PASSWORD} >/dev/null
 
+echo "[info] building docker images..."
+
 docker-compose \
   -f "${COMPOSE_FILE}" \
   --project-name "${POD_NAME}-${BUILD_TAG}" \
   --no-ansi \
   build --no-cache
+
+echo "[info] pushing docker images..."
 
 docker-compose \
   -f "${COMPOSE_FILE}" \
