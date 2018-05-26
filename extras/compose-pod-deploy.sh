@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -xeEuo pipefail
+set -eEuo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
 echo "[info] getting all information required for the deploy to start..."
