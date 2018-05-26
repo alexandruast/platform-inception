@@ -2,13 +2,13 @@
 set -xeEuo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
-readonly SSH_OPTS='-o LogLevel=error \
+SSH_OPTS='-o LogLevel=error \
   -o StrictHostKeyChecking=no \
   -o UserKnownHostsFile=/dev/null \
   -o BatchMode=yes \
   -o ExitOnForwardFailure=yes'
 
-readonly SSH_DEPLOY_ADDRESS="$(curl -Ssf \
+SSH_DEPLOY_ADDRESS="$(curl -Ssf \
   ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/ssh_deploy_address?raw)"
 
 trap 'ssh -S "${WORKSPACE}/ssh-control-socket" -O exit ${SSH_DEPLOY_ADDRESS}' EXIT

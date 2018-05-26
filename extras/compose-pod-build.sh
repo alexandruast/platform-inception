@@ -2,7 +2,7 @@
 set -xeEuo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
-readonly AUTO_COMPOSE_TEMPLATE="$(cat << EOF
+AUTO_COMPOSE_TEMPLATE="$(cat << EOF
 version: '3'
 services:
   {{lookup('env','POD_NAME')}}:
@@ -11,7 +11,7 @@ services:
 EOF
 )"
 
-readonly AUTO_NOMAD_TEMPLATE="$(cat << EOF
+AUTO_NOMAD_TEMPLATE="$(cat << EOF
 job "{{lookup('env','POD_NAME')}}" {
   datacenters = ["dc1"]
   type = "service"
@@ -44,12 +44,12 @@ job "{{lookup('env','POD_NAME')}}" {
 EOF
 )"
 
-readonly VAULT_ADDR="$(curl -Ssf \
+VAULT_ADDR="$(curl -Ssf \
   ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/vault_address?raw)"
 
-readonly BUILD_TAG="$(git rev-parse --short HEAD)"
+BUILD_TAG="$(git rev-parse --short HEAD)"
 
-readonly PREV_BUILD_TAG="$(curl -Ss \
+PREV_BUILD_TAG="$(curl -Ss \
   ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_tag?raw)"
 
 if [[ "${BUILD_TAG}" == "${PREV_BUILD_TAG}" ]]; then
@@ -57,20 +57,20 @@ if [[ "${BUILD_TAG}" == "${PREV_BUILD_TAG}" ]]; then
   exit 0
 fi
 
-readonly REGISTRY_ADDRESS="$(curl -Ssf \
+REGISTRY_ADDRESS="$(curl -Ssf \
   ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/docker_registry_address?raw)"
 
-readonly REGISTRY_PATH="$(curl -Ssf \
+REGISTRY_PATH="$(curl -Ssf \
   ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/docker_registry_path?raw)"
 
-readonly REGISTRY_CREDENTIALS="$(curl -Ssf -X GET \
+REGISTRY_CREDENTIALS="$(curl -Ssf -X GET \
   -H "X-Vault-Token:${VAULT_TOKEN}" \
   "${VAULT_ADDR}/v1/secret/operations/docker-registry" | jq -re .data.value)"
 
-readonly REGISTRY_USERNAME="${REGISTRY_CREDENTIALS%:*}"
-readonly REGISTRY_PASSWORD="${REGISTRY_CREDENTIALS#*:}"
+REGISTRY_USERNAME="${REGISTRY_CREDENTIALS%:*}"
+REGISTRY_PASSWORD="${REGISTRY_CREDENTIALS#*:}"
 
-readonly BUILD_DIR="$(curl -Ssf \
+BUILD_DIR="$(curl -Ssf \
   ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_dir?raw)"
 
 COMPOSE_FILE="${WORKSPACE}/${BUILD_DIR}/docker-compose.yml"
