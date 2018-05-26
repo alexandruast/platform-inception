@@ -23,7 +23,7 @@ curl -Ssf -X PUT \
   "${CONSUL_HTTP_ADDR}/v1/kv/platform-config/sandbox/yaml-to-consul/scm_url" >/dev/null
 
 curl -Ssf -X PUT \
-  -d "./" \
+  -d "." \
   "${CONSUL_HTTP_ADDR}/v1/kv/platform-config/sandbox/yaml-to-consul/build_dir" >/dev/null
 
 curl -Ssf -X PUT \
