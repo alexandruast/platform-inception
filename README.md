@@ -29,7 +29,7 @@ Production infrastructure requires consul/vault clusters for factory and prod.
 ##### Improvements
 * write groovy logic in job-dsl to retrieve all variables from consul
 * yaml-to-consul to delete only non-declared keys
-* mask docker files and nomad jobs - user selects runtime
+* 
 * fluentd to listen on udp socket
 * authenticate consul with vault for write operations
 * hide sensitive info from console output
@@ -44,6 +44,8 @@ Production infrastructure requires consul/vault clusters for factory and prod.
 * docker-enforcer and vulnerability assessment for docker images/files
 
 #### Changelog
+added go sleep service
+NO! - mask docker files and nomad jobs, dev selects runtime (we need to trust developers!)
 parsing all jinja2 files in build directories
 moved variables from parametrized builds to environment using envinject
 added java echo service  
