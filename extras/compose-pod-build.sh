@@ -22,17 +22,11 @@ job "{{lookup('env','POD_NAME')}}" {
     task "{{lookup('env','POD_NAME')}}-{{lookup('env','BUILD_TAG')}}" {
       driver = "docker"
       config {
-        image = "{{lookup('env','REGISTRY_ADDRESS')}}/{{lookup('env','REGISTRY_PATH')}}/fabio:{{lookup('env','BUILD_TAG')}}"
+        image = "{{lookup('env','REGISTRY_ADDRESS')}}/{{lookup('env','REGISTRY_PATH')}}/{{lookup('env','POD_NAME')}}:{{lookup('env','BUILD_TAG')}}"
         auth {
           server_address = "{{lookup('env','REGISTRY_ADDRESS')}}"
           username = "{{lookup('env','REGISTRY_USERNAME')}}"
           password = "{{lookup('env','REGISTRY_PASSWORD')}}"
-        }
-      }
-      resources {
-        memory = 128
-        network {
-          mbits = 100
         }
       }
       service {
