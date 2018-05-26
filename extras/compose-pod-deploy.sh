@@ -30,7 +30,7 @@ NOMAD_ADDR=http://127.0.0.1:${TUNNEL_PORT}
 if curl -Ssf ${NOMAD_ADDR}/v1/job/${POD_NAME} >/dev/null; then
   # Try job planning, so we can catch any issues before actually deploying stuff
   JOB_PLAN_DATA="$(curl -Ssf -X POST \
-    -d @nomad-job.json \
+    -d "@${WORKSPACE}/${BUILD_DIR}/nomad-job.json" \
     ${NOMAD_ADDR}/v1/job/${POD_NAME}/plan)"
   # To go further with the deploy, the FailedTGAllocs field must be null
   FAILED_ALLOCS="$(echo "${JOB_PLAN_DATA}" \
@@ -40,7 +40,9 @@ if curl -Ssf ${NOMAD_ADDR}/v1/job/${POD_NAME} >/dev/null; then
 fi
 
 # Posting job data
-JOB_POST_DATA="$(curl -Ssf -X POST -d @nomad-job.json ${NOMAD_ADDR}/v1/jobs)"
+JOB_POST_DATA="$(curl -Ssf -X POST \
+  -d "@${WORKSPACE}/${BUILD_DIR}/nomad-job.json" \
+  ${NOMAD_ADDR}/v1/jobs)"
 
 # Getting information
 JOB_EVAL_ID="$(echo "${JOB_POST_DATA}" \
@@ -54,15 +56,23 @@ DEPLOYMENT_ID="$(curl -Ssf \
 while :; do
   sleep 10 &
   wait || true
-  DEPLOYMENT_STATUS="$(curl -Ssf ${NOMAD_ADDR}/v1/deployment/${DEPLOYMENT_ID} | jq -re .Status)"
+
+  DEPLOYMENT_STATUS="$(curl -Ssf \
+    ${NOMAD_ADDR}/v1/deployment/${DEPLOYMENT_ID} \
+    | jq -re .Status)"
+
   case "${DEPLOYMENT_STATUS}" in
     successful)
-      curl -Ssf -X PUT -d "${POD_TAG}" ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/deploy_tag >/dev/null
+      curl -Ssf -X PUT \
+        -d "${POD_TAG}" \
+        ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/deploy_tag >/dev/null
       exit 0
     ;;
+
     failed)
       exit 1
   esac
 done
-exit 1
 
+# Script should never end up here!
+exit 1

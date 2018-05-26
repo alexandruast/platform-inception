@@ -112,8 +112,6 @@ docker login "${REGISTRY_ADDRESS}" \
   --username="${REGISTRY_USERNAME}" \
   --password-stdin <<< ${REGISTRY_PASSWORD} >/dev/null
 
-cd "${WORKSPACE}/${BUILD_DIR}"
-
 docker-compose \
   -f "${COMPOSE_FILE}" \
   --project-name "${POD_NAME}-${BUILD_TAG}" \
