@@ -7,7 +7,8 @@ def environments = [
 def pods = [
   "fluentd",
   "fabio",
-  "echo"
+  "echo",
+  "test"
 ]
 
 def jobSuffix='deploy'
