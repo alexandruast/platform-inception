@@ -9,6 +9,6 @@ RUN gem install fluent-plugin-concat \
 
 COPY fluent.conf /fluentd/etc/
 
-USER nobody
+USER www-data
 
 CMD ["fluentd", "-v", "-c", "/fluentd/etc/fluent.conf"]
