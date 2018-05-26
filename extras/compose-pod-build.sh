@@ -4,10 +4,10 @@ trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
 readonly AUTO_COMPOSE_TEMPLATE="$(cat << EOF
 version: '3'
-  services:
-    {{lookup('env','POD_NAME')}}:
-      image: {{lookup('env','REGISTRY_ADDRESS')}}/{{lookup('env','REGISTRY_PATH')}}/{{lookup('env','POD_NAME')}}:{{lookup('env','BUILD_TAG')}}
-      build: ./
+services:
+  {{lookup('env','POD_NAME')}}:
+    image: {{lookup('env','REGISTRY_ADDRESS')}}/{{lookup('env','REGISTRY_PATH')}}/{{lookup('env','POD_NAME')}}:{{lookup('env','BUILD_TAG')}}
+    build: ./
 EOF
 )"
 
@@ -106,7 +106,7 @@ nomad validate \
 nomad run \
   -output "${NOMAD_FILE}" > "${WORKSPACE}/${BUILD_DIR}/nomad-job.json"
 
-trap 'docker-compose --project-name "${POD_NAME}-${BUILD_TAG}" down -v --rmi all --remove-orphans' EXIT
+trap 'docker-compose -f "${COMPOSE_FILE}" --project-name "${POD_NAME}-${BUILD_TAG}" down -v --rmi all --remove-orphans' EXIT
 
 docker login "${REGISTRY_ADDRESS}" \
   --username="${REGISTRY_USERNAME}" \
