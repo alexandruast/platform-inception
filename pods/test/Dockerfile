@@ -1,2 +1,3 @@
-FROM alpine:latest
-CMD ["sleep", "3600"]
+FROM scratch
+COPY /bin/sleep /
+CMD ["sleep", "86400"]
