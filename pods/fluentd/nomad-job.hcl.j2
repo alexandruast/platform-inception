@@ -8,7 +8,7 @@ job "fluentd" {
   update {
     max_parallel = 1
     health_check     = "checks"
-    healthy_deadline = "30s"
+    healthy_deadline = "120s"
     auto_revert      = true
     stagger          = "10s"
   }
@@ -52,8 +52,8 @@ job "fluentd" {
           interval = "10s"
           timeout  = "4s"
           check_restart {
-            limit = 3
-            grace = "60s"
+            limit = 4
+            grace = "90s"
             ignore_warnings = false
           }
         }
