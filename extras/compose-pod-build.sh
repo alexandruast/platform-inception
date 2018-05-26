@@ -48,11 +48,6 @@ BUILD_TAG="$(git rev-parse --short HEAD)"
 PREV_BUILD_TAG="$(curl -Ss \
   ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_tag?raw)"
 
-if [[ "${BUILD_TAG}" == "${PREV_BUILD_TAG}" ]]; then
-  echo "[warning] commit id is the same, will not build again!"
-  exit 0
-fi
-
 REGISTRY_ADDRESS="$(curl -Ssf \
   ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/docker_registry_address?raw)"
 
@@ -106,6 +101,11 @@ nomad validate \
 
 nomad run \
   -output "${NOMAD_FILE}" > "${WORKSPACE}/${BUILD_DIR}/nomad-job.json"
+
+if [[ "${BUILD_TAG}" == "${PREV_BUILD_TAG}" ]]; then
+  echo "[warning] commit id is the same, will not build again!"
+  exit 0
+fi
 
 trap 'docker-compose -f "${COMPOSE_FILE}" --project-name "${POD_NAME}-${BUILD_TAG}" down -v --rmi all --remove-orphans' EXIT
 
