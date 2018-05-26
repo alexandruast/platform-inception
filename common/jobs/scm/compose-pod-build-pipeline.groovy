@@ -7,7 +7,6 @@ node {
       doGenerateSubmoduleConfigurations: false,
       submoduleCfg: [],
       userRemoteConfigs: [[url: gitURL]]])
-    sh("curl -Ssf -X PUT -d ${checkout_info.GIT_COMMIT} http://127.0.0.1:8500/v1/kv/${PLATFORM_ENVIRONMENT}/${POD_NAME}/checkout_commit_id >/dev/null")
   }
   stage('build') {
     withCredentials([
