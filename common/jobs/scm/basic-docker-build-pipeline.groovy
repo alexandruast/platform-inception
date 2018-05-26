@@ -36,10 +36,12 @@ node {
       export POD_TAG
       docker login "${REGISTRY_ADDRESS}" --username="${REGISTRY_USERNAME}" --password-stdin <<< ${REGISTRY_PASSWORD} >/dev/null
       BUILD_DIR="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_dir?raw)"
-      cd "${WORKSPACE}/${BUILD_DIR}"
-      compose_file="docker-compose.yml"
+      while IFS='' read -r -d '' f; do
+        ansible all -i localhost, --connection=local -m template -a "src=${f} dest=${f%%.j2}"
+      done < <(find "${WORKSPACE}/${BUILD_DIR}" -type f -name '*.j2' -print0)
+      compose_file="${WORKSPACE}/${BUILD_DIR}/docker-compose.yml"
       if [[ ! -f "${compose_file}" ]]; then
-        compose_file="docker-compose-auto.yml"
+        compose_file="${WORKSPACE}/${BUILD_DIR}/docker-compose-auto.yml"
         COMPOSE_YAML="version: '3'\nservices:\n  ${POD_NAME}:\n    image: ${REGISTRY_ADDRESS}/${REGISTRY_PATH}/${POD_NAME}:${POD_TAG}\n    build: ./"
         echo -e "${COMPOSE_YAML}" > "${compose_file}"
       fi

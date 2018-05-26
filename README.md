@@ -44,6 +44,7 @@ Production infrastructure requires consul/vault clusters for factory and prod.
 * docker-enforcer and vulnerability assessment for docker images/files
 
 #### Changelog
+parsing all jinja2 files in build directories
 moved variables from parametrized builds to environment using envinject
 added java echo service  
 added ws-cleanup directories purge to hourly cron  
