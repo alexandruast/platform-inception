@@ -1,4 +1,7 @@
 node {
+  stage('cleanup') {
+    cleanWs()
+  }
   stage('checkout') {
     withCredentials([
         string(credentialsId: 'JENKINS_VAULT_TOKEN', variable: 'VAULT_TOKEN'),
@@ -36,7 +39,7 @@ node {
         doGenerateSubmoduleConfigurations: false,
         extensions:[
           [$class: 'SparseCheckoutPaths', sparseCheckoutPaths:[[$class: 'SparseCheckoutPath', path: checkout_dir]]],
-          [$class: 'RelativeTargetDirectory', relativeTargetDir: relative_dir]
+          [$class: 'RelativeTargetDirectory', relativeTargetDir: ".builders"]
         ],
         submoduleCfg: [],
         userRemoteConfigs: [[url: scm_url]]]
@@ -56,8 +59,5 @@ node {
         sh("${relative_dir}/${checkout_dir}/compose-pod-build.sh")
       }
     }
-  }
-  stage('cleanup') {
-    cleanWs()
   }
 }

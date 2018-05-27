@@ -1,4 +1,7 @@
 node {
+  stage('cleanup') {
+    cleanWs()
+  }
   stage('checkout') {
     withCredentials([
         string(credentialsId: 'JENKINS_VAULT_TOKEN', variable: 'VAULT_TOKEN'),
@@ -70,8 +73,5 @@ node {
         sh("${relative_dir}/${checkout_dir}/compose-pod-deploy.sh")
       }
     }
-  }
-  stage('cleanup') {
-    cleanWs()
   }
 }
