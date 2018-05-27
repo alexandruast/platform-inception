@@ -5,6 +5,7 @@ job "{{lookup('env','POD_NAME')}}" {
     max_parallel = 1
   }
   group "{{lookup('env','POD_NAME')}}" {
+    count = {{lookup('env','POD_COUNT')|default(1,true)}}
     task "{{lookup('env','POD_NAME')}}-{{lookup('env','BUILD_TAG')}}" {
       driver = "docker"
       config {
@@ -14,6 +15,9 @@ job "{{lookup('env','POD_NAME')}}" {
           username = "{{lookup('env','REGISTRY_USERNAME')}}"
           password = "{{lookup('env','REGISTRY_PASSWORD')}}"
         }
+      }
+      resources {
+        memory = {{lookup('env','POD_MEMORY')|default(100,true)}}
       }
       service {
         name = "{{lookup('env','POD_NAME')}}"

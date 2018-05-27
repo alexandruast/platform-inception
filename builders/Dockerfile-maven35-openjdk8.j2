@@ -1,0 +1,12 @@
+FROM maven:3.5-jdk-8-slim as BUILDER
+RUN mkdir -p /build/{{lookup('env','POD_NAME')}} \
+&& chown -R nobody:nobody /build/{{lookup('env','POD_NAME')}}
+COPY --chown=nobody:nobody . /build/{{lookup('env','POD_NAME')}}
+WORKDIR /build/{{lookup('env','POD_NAME')}}
+RUN mvn -Dmaven.test.failure.ignore clean package
+
+FROM openjdk:8u171-jre-slim
+COPY --from=BUILDER /build/{{lookup('env','POD_NAME')}}/target/*.jar /
+WORKDIR /
+USER nobody
+CMD ["/bin/sh", "-c", "java -jar *.jar"]
