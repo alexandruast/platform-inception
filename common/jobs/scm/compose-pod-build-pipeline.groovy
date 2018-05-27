@@ -7,7 +7,7 @@ node {
       branches: [[name: scm_branch]],
       doGenerateSubmoduleConfigurations: false,
       extensions:[
-        [$class: 'SparseCheckoutPaths', sparseCheckoutPaths:[[$class: 'SparseCheckoutPath', path: checkout_dir]]]
+        [$class: 'SparseCheckoutPaths', sparseCheckoutPaths:[[$class: 'SparseCheckoutPath', path: "${checkout_dir}/"]]]
       ],
       submoduleCfg: [],
       userRemoteConfigs: [[url: scm_url]]]
@@ -25,7 +25,7 @@ node {
         branches: [[name: scm_branch]],
         doGenerateSubmoduleConfigurations: false,
         extensions:[
-          [$class: 'SparseCheckoutPaths', sparseCheckoutPaths:[[$class: 'SparseCheckoutPath', path: checkout_dir]]],
+          [$class: 'SparseCheckoutPaths', sparseCheckoutPaths:[[$class: 'SparseCheckoutPath', path: "${checkout_dir}/"]]],
           [$class: 'RelativeTargetDirectory', relativeTargetDir: '.builders']
         ],
         submoduleCfg: [],
