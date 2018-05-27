@@ -27,14 +27,26 @@ REGISTRY_CREDENTIALS="$(curl -Ssf -X GET \
 REGISTRY_USERNAME="${REGISTRY_CREDENTIALS%:*}"
 REGISTRY_PASSWORD="${REGISTRY_CREDENTIALS#*:}"
 
-BUILD_DIR="$(curl -Ssf \
-  ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}/checkout_dir?raw)"
+# getting the shell file to source with all variables inside prefix
+echo "[info] getting all dynamic variables from consul..."
+export CONSUL_PREFIX="${PLATFORM_ENVIRONMENT}/${POD_NAME}"
+: > .jenkins-profile
+for v in $(curl -Ssf \
+  "${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}?recurse=true" \
+  | jq --arg STRIP "${#IMPORT_PATH}" -r \
+  '.[] | (.Key|ascii_upcase|.[$CONSUL_PREFIX|tonumber+1:]) + ":" + .Value'); \
+do
+  b64encstr="$(echo ${v} | cut -d ":" -f2)"
+  b64decstr="$(echo ${b64encstr} | openssl enc -base64 -d)"
+  echo ${v} | sed -e "s|${b64encstr}|\"${b64decstr}\"|g" | tr ":" "="
+  echo "export $(echo ${v} | sed -e "s|${b64encstr}|\"${b64decstr}\"|g" | tr ":" "=")" >> .jenkins-profile
+done
+source .jenkins-profile
 
 # Config file creation order, if not found: bundled -> pod_name -> pod_profile -> auto
 COMPOSE_FILE="${WORKSPACE}/${BUILD_DIR}/docker-compose.yml"
 if [[ ! -f "${COMPOSE_FILE}" ]] && [[ ! -f "${COMPOSE_FILE}.j2" ]]; then
   if ! cp -v "${LOCAL_DIR}/docker-compose-${POD_NAME}.hcl.j2" "${COMPOSE_FILE}.j2" 2>/dev/null; then
-    COMPOSE_PROFILE="$(curl -Ss ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}/compose_profile?raw || echo 'false')"
     if ! cp -v "${LOCAL_DIR}/docker-compose-${COMPOSE_PROFILE}.hcl.j2" "${COMPOSE_FILE}.j2" 2>/dev/null; then
       cp -v "${LOCAL_DIR}/docker-compose-auto.yml.j2" "${COMPOSE_FILE}.j2"
     fi
@@ -44,7 +56,6 @@ fi
 NOMAD_FILE="${WORKSPACE}/${BUILD_DIR}/nomad-job.hcl"
 if [[ ! -f "${NOMAD_FILE}" ]] && [[ ! -f "${NOMAD_FILE}.j2" ]]; then
   if ! cp -v "${LOCAL_DIR}/nomad-job-${POD_NAME}.hcl.j2" "${NOMAD_FILE}.j2" 2>/dev/null; then
-    NOMAD_PROFILE="$(curl -Ss ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}/nomad_profile?raw || echo 'false')"
     if ! cp -v "${LOCAL_DIR}/nomad-job-${NOMAD_PROFILE}.hcl.j2" "${NOMAD_FILE}.j2" 2>/dev/null; then
       cp -v "${LOCAL_DIR}/nomad-job-auto.hcl.j2" "${NOMAD_FILE}.j2"
     fi
@@ -60,7 +71,7 @@ export BUILD_TAG
 
 echo "[info] parsing jinja2 templates, if any..."
 
-# Parsing all jinja2 templates
+# Parsing all jinja2 templates, except for .dot directores
 while IFS='' read -r -d '' f; do
   ansible all -i localhost, \
     --connection=local \

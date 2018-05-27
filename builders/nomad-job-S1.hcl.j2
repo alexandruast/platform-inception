@@ -1,4 +1,4 @@
-job "echo" {
+job "{{lookup('env','POD_NAME')}}" {
   datacenters = ["dc1"]
   type = "service"
   update {
@@ -8,25 +8,25 @@ job "echo" {
     auto_revert      = true
     stagger          = "10s"
   }
-  group "echo" {
-    count = 1
+  group "{{lookup('env','POD_NAME')}}" {
+    count = {{lookup('env','POD_COUNT')|default(1)}}
     restart {
       attempts = 3
       delay    = "60s"
       interval = "15m"
       mode     = "delay"
     }
-    task "echo-{{lookup('env','BUILD_TAG')}}" {
+    task "{{lookup('env','POD_NAME')}}-{{lookup('env','BUILD_TAG')}}" {
       driver = "docker"
       config {
-        image = "{{lookup('env','REGISTRY_ADDRESS')}}/{{lookup('env','REGISTRY_PATH')}}/echo:{{lookup('env','BUILD_TAG')}}"
+        image = "{{lookup('env','REGISTRY_ADDRESS')}}/{{lookup('env','REGISTRY_PATH')}}/{{lookup('env','POD_NAME')}}:{{lookup('env','BUILD_TAG')}}"
         auth {
           server_address = "{{lookup('env','REGISTRY_ADDRESS')}}"
           username = "{{lookup('env','REGISTRY_USERNAME')}}"
           password = "{{lookup('env','REGISTRY_PASSWORD')}}"
         }
         port_map {
-          http = 8080
+          http = {{lookup('env','POD_LISTEN')|default(8080)}}
         }
         dns_servers = [
           "${attr.unique.network.ip-address}"
@@ -35,12 +35,12 @@ job "echo" {
           type = "fluentd"
           config {
             fluentd-address = "fluentd.service.consul:24224"
-            tag = "docker.{{lookup('env','POD_NAME')}}.echo-{{lookup('env','BUILD_TAG')}}.${attr.unique.hostname}.{%raw%}{{.ID}}{%endraw%}"
+            tag = "docker.{{lookup('env','POD_NAME')}}.{{lookup('env','POD_NAME')}}-{{lookup('env','BUILD_TAG')}}.${attr.unique.hostname}.{%raw%}{{.ID}}{%endraw%}"
           }
         }
       }
       resources {
-        memory = 500
+        memory = {{lookup('env','POD_MEMORY')|default(500)}}
         network {
           mbits = 100
           port "http" {}
@@ -48,13 +48,13 @@ job "echo" {
       }
       service {
         tags = [
-          "urlprefix-/echo strip=/echo"
+          "urlprefix-/{{lookup('env','POD_NAME')}} strip=/{{lookup('env','POD_NAME')}}"
         ]
-        name = "echo"
+        name = "{{lookup('env','POD_NAME')}}"
         port = "http"
         check {
           type = "http"
-          path = "/health"
+          path = "{{lookup('env','POD_HEALTH_PATH')|default('/health')}}"
           interval = "10s"
           timeout  = "4s"
           check_restart {
