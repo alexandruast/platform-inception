@@ -1,12 +1,12 @@
 node {
   stage('checkout') {
-    gitBranch = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}/scm_branch?raw").trim()
-    gitURL = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}/scm_url?raw").trim()
+    scm_branch = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}/scm_branch?raw").trim()
+    scm_url = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}/scm_url?raw").trim()
     checkout_info = checkout([$class: 'GitSCM',
-      branches: [[name: gitBranch]],
+      branches: [[name: scm_branch]],
       doGenerateSubmoduleConfigurations: false,
       submoduleCfg: [],
-      userRemoteConfigs: [[url: gitURL]]])
+      userRemoteConfigs: [[url: scm_url]]])
   }
   stage('build') {
     withCredentials([
