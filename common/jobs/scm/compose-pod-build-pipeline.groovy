@@ -39,7 +39,7 @@ node {
         doGenerateSubmoduleConfigurations: false,
         extensions:[
           [$class: 'SparseCheckoutPaths', sparseCheckoutPaths:[[$class: 'SparseCheckoutPath', path: checkout_dir]]],
-          [$class: 'RelativeTargetDirectory', relativeTargetDir: ".builders"]
+          [$class: 'RelativeTargetDirectory', relativeTargetDir: relative_dir]
         ],
         submoduleCfg: [],
         userRemoteConfigs: [[url: scm_url]]]
