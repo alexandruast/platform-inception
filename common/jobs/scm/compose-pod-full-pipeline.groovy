@@ -15,6 +15,9 @@ node {
         checkout_info = checkout([$class: 'GitSCM',
           branches: [[name: scm_branch]],
           doGenerateSubmoduleConfigurations: false,
+          extensions:[
+            [$class: 'CleanBeforeCheckout']
+          ],
           submoduleCfg: [],
           userRemoteConfigs: [[url: scm_url]]]
         )
