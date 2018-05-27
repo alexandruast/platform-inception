@@ -3,7 +3,7 @@ RUN mkdir -p /build/{{lookup('env','POD_NAME')}} \
 && chown -R nobody:nogroup /build/{{lookup('env','POD_NAME')}}
 COPY --chown=nobody:nogroup . /build/{{lookup('env','POD_NAME')}}
 WORKDIR /build/{{lookup('env','POD_NAME')}}
-RUN mvn -Dmaven.test.failure.ignore clean package
+RUN mvn --batch-mode -Dmaven.test.failure.ignore clean package
 
 FROM openjdk:8u171-jre-slim
 COPY --from=BUILDER /build/{{lookup('env','POD_NAME')}}/target/*.jar /
