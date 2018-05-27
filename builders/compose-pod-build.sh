@@ -45,7 +45,7 @@ source .jenkins-profile
 
 # Config file creation order, if not found: bundled -> pod_name -> pod_profile -> auto
 COMPOSE_PROFILE="${COMPOSE_PROFILE:-null}"
-COMPOSE_FILE="${WORKSPACE}/${BUILD_DIR}/docker-compose.yml"
+COMPOSE_FILE="${WORKSPACE}/${CHECKOUT_DIR}/docker-compose.yml"
 if [[ ! -f "${COMPOSE_FILE}" ]] && [[ ! -f "${COMPOSE_FILE}.j2" ]]; then
   if ! cp -v "${LOCAL_DIR}/docker-compose-${POD_NAME}.hcl.j2" "${COMPOSE_FILE}.j2" 2>/dev/null; then
     if ! cp -v "${LOCAL_DIR}/docker-compose-${COMPOSE_PROFILE}.hcl.j2" "${COMPOSE_FILE}.j2" 2>/dev/null; then
@@ -55,7 +55,7 @@ if [[ ! -f "${COMPOSE_FILE}" ]] && [[ ! -f "${COMPOSE_FILE}.j2" ]]; then
 fi
 
 NOMAD_PROFILE="${NOMAD_PROFILE:-null}"
-NOMAD_FILE="${WORKSPACE}/${BUILD_DIR}/nomad-job.hcl"
+NOMAD_FILE="${WORKSPACE}/${CHECKOUT_DIR}/nomad-job.hcl"
 if [[ ! -f "${NOMAD_FILE}" ]] && [[ ! -f "${NOMAD_FILE}.j2" ]]; then
   if ! cp -v "${LOCAL_DIR}/nomad-job-${POD_NAME}.hcl.j2" "${NOMAD_FILE}.j2" 2>/dev/null; then
     if ! cp -v "${LOCAL_DIR}/nomad-job-${NOMAD_PROFILE}.hcl.j2" "${NOMAD_FILE}.j2" 2>/dev/null; then
@@ -79,7 +79,7 @@ while IFS='' read -r -d '' f; do
     --connection=local \
     -m template \
     -a "src=${f} dest=${f%%.j2}"
-done < <(find "${WORKSPACE}/${BUILD_DIR}" -path "${WORKSPACE}/${BUILD_DIR}/.*" -prune -o -name '*.j2' -print0)
+done < <(find "${WORKSPACE}/${CHECKOUT_DIR}" -path "${WORKSPACE}/${CHECKOUT_DIR}/.*" -prune -o -name '*.j2' -print0)
 
 echo "[info] validating nomad job file..."
 
@@ -87,7 +87,7 @@ nomad validate \
   "${NOMAD_FILE}"
 
 nomad run \
-  -output "${NOMAD_FILE}" > "${WORKSPACE}/${BUILD_DIR}/nomad-job.json"
+  -output "${NOMAD_FILE}" > "${WORKSPACE}/${CHECKOUT_DIR}/nomad-job.json"
 
 if [[ "${BUILD_TAG}" == "${PREV_BUILD_TAG}" ]]; then
   echo "[warning] commit id is the same, will not build again!"

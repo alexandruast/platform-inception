@@ -9,7 +9,7 @@ echo "[info] getting all information required for the deploy to start..."
 VAULT_ADDR="$(curl -Ssf \
   ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/vault_address?raw)"
 
-BUILD_DIR="$(curl -Ssf \
+CHECKOUT_DIR="$(curl -Ssf \
   ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}/checkout_dir?raw)"
 
 BUILD_TAG="$(curl -Ssf \
@@ -47,7 +47,7 @@ echo "[info] getting information about currently running deployment for this pod
 if curl -Ssf ${NOMAD_ADDR}/v1/job/${POD_NAME} >/dev/null; then
   # Try job planning, so we can catch any issues before actually deploying stuff
   JOB_PLAN_DATA="$(curl -Ssf -X POST \
-    -d "@${WORKSPACE}/${BUILD_DIR}/nomad-job.json" \
+    -d "@${WORKSPACE}/${CHECKOUT_DIR}/nomad-job.json" \
     ${NOMAD_ADDR}/v1/job/${POD_NAME}/plan)"
   # To go further with the deploy, the FailedTGAllocs field must be null
   FAILED_ALLOCS="$(echo "${JOB_PLAN_DATA}" \
@@ -60,7 +60,7 @@ echo "[info] posting job data to Nomad API..."
 
 # Posting job data
 JOB_POST_DATA="$(curl -Ssf -X POST \
-  -d "@${WORKSPACE}/${BUILD_DIR}/nomad-job.json" \
+  -d "@${WORKSPACE}/${CHECKOUT_DIR}/nomad-job.json" \
   ${NOMAD_ADDR}/v1/jobs)"
 
 echo "[info] getting information back from Nomad API..."
