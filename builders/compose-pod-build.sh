@@ -29,7 +29,7 @@ REGISTRY_PASSWORD="${REGISTRY_CREDENTIALS#*:}"
 
 # getting the shell file to source with all variables inside prefix
 echo "[info] getting all dynamic variables from consul..."
-export CONSUL_PREFIX="${PLATFORM_ENVIRONMENT}/${POD_NAME}"
+export CONSUL_PREFIX="platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}"
 : > .jenkins-profile
 for v in $(curl -Ssf \
   "${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}?recurse=true" \
