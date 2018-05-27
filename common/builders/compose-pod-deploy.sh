@@ -2,6 +2,8 @@
 set -eEuo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
+LOCAL_DIR="$(cd "$(dirname $0)" && pwd)"
+
 echo "[info] getting all information required for the deploy to start..."
 
 VAULT_ADDR="$(curl -Ssf \

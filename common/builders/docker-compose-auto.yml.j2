@@ -1,0 +1,5 @@
+version: '3'
+services:
+  {{lookup('env','POD_NAME')}}:
+    image: {{lookup('env','REGISTRY_ADDRESS')}}/{{lookup('env','REGISTRY_PATH')}}/{{lookup('env','POD_NAME')}}:{{lookup('env','BUILD_TAG')}}
+    build: ./

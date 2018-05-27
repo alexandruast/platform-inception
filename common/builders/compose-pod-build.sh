@@ -2,43 +2,9 @@
 set -eEuo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
+LOCAL_DIR="$(cd "$(dirname $0)" && pwd)"
+
 echo "[info] getting all information required for the build to start..."
-
-AUTO_COMPOSE_TEMPLATE="$(cat << EOF
-version: '3'
-services:
-  {{lookup('env','POD_NAME')}}:
-    image: {{lookup('env','REGISTRY_ADDRESS')}}/{{lookup('env','REGISTRY_PATH')}}/{{lookup('env','POD_NAME')}}:{{lookup('env','BUILD_TAG')}}
-    build: ./
-EOF
-)"
-
-AUTO_NOMAD_TEMPLATE="$(cat << EOF
-job "{{lookup('env','POD_NAME')}}" {
-  datacenters = ["dc1"]
-  type = "service"
-  update {
-    max_parallel = 1
-  }
-  group "{{lookup('env','POD_NAME')}}" {
-    task "{{lookup('env','POD_NAME')}}-{{lookup('env','BUILD_TAG')}}" {
-      driver = "docker"
-      config {
-        image = "{{lookup('env','REGISTRY_ADDRESS')}}/{{lookup('env','REGISTRY_PATH')}}/{{lookup('env','POD_NAME')}}:{{lookup('env','BUILD_TAG')}}"
-        auth {
-          server_address = "{{lookup('env','REGISTRY_ADDRESS')}}"
-          username = "{{lookup('env','REGISTRY_USERNAME')}}"
-          password = "{{lookup('env','REGISTRY_PASSWORD')}}"
-        }
-      }
-      service {
-        name = "{{lookup('env','POD_NAME')}}"
-      }
-    }
-  }
-}
-EOF
-)"
 
 VAULT_ADDR="$(curl -Ssf \
   ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/vault_address?raw)"
@@ -67,13 +33,13 @@ BUILD_DIR="$(curl -Ssf \
 COMPOSE_FILE="${WORKSPACE}/${BUILD_DIR}/docker-compose.yml"
 if [[ ! -f "${COMPOSE_FILE}" ]] && [[ ! -f "${COMPOSE_FILE}.j2" ]]; then
   COMPOSE_FILE="${WORKSPACE}/${BUILD_DIR}/docker-compose-auto.yml"
-  echo "${AUTO_COMPOSE_TEMPLATE}" > "${COMPOSE_FILE}.j2"
+  cp -v "${LOCAL_DIR}/docker-compose-auto.yml.j2" "${COMPOSE_FILE}.j2"
 fi
 
 NOMAD_FILE="${WORKSPACE}/${BUILD_DIR}/nomad-job.hcl"
 if [[ ! -f "${NOMAD_FILE}" ]] && [[ ! -f "${NOMAD_FILE}.j2" ]]; then
   NOMAD_FILE="${WORKSPACE}/${BUILD_DIR}/nomad-job-auto.hcl"
-  echo "${AUTO_NOMAD_TEMPLATE}" > "${NOMAD_FILE}.j2"
+  cp -v "${LOCAL_DIR}/nomad-job-auto.hcl.j2" "${NOMAD_FILE}.j2"
 fi
 
 export REGISTRY_ADDRESS
