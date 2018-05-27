@@ -1,7 +1,4 @@
 node {
-  stage('cleanup') {
-    cleanWs()
-  }
   stage('checkout') {
     withCredentials([
         string(credentialsId: 'JENKINS_VAULT_TOKEN', variable: 'VAULT_TOKEN'),
