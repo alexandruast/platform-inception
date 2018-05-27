@@ -28,6 +28,7 @@ REGISTRY_USERNAME="${REGISTRY_CREDENTIALS%:*}"
 REGISTRY_PASSWORD="${REGISTRY_CREDENTIALS#*:}"
 
 # getting the shell file to source with all variables inside prefix
+# jq 1.6 will support base64decode
 echo "[info] getting all dynamic variables from consul..."
 export CONSUL_PREFIX="platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}"
 : > .jenkins-profile
@@ -56,26 +57,27 @@ then
   fi
 fi
 
-NOMAD_PROFILE="${NOMAD_PROFILE:-null}"
-NOMAD_FILE="${WORKSPACE}/${CHECKOUT_DIR}/nomad-job.hcl"
-if [[ ! -f "${NOMAD_FILE}" ]] \
-&& [[ ! -f "${NOMAD_FILE}.j2" ]]
-then
-  if ! cp -v "${LOCAL_DIR}/nomad-job-${POD_NAME}.hcl.j2" "${NOMAD_FILE}.j2" 2>/dev/null; then
-    if ! cp -v "${LOCAL_DIR}/nomad-job-${NOMAD_PROFILE}.hcl.j2" "${NOMAD_FILE}.j2" 2>/dev/null; then
-      cp -v "${LOCAL_DIR}/nomad-job-auto.hcl.j2" "${NOMAD_FILE}.j2"
-    fi
-  fi
-fi
-
-DOCKER_PROFILE="${DOCKER_PROFILE:-null}"
+BUILD_PROFILE="${BUILD_PROFILE:-null}"
 DOCKER_FILE="${WORKSPACE}/${CHECKOUT_DIR}/Dockerfile"
 if [[ ! -f "${DOCKER_FILE}" ]] \
 && [[ ! -f "${DOCKER_FILE}.j2" ]]
 then
   if ! cp -v "${LOCAL_DIR}/Dockerfile-${POD_NAME}.j2" "${DOCKER_FILE}.j2" 2>/dev/null; then
-    if ! cp -v "${LOCAL_DIR}/Dockerfile-${DOCKER_PROFILE}.j2" "${DOCKER_FILE}.j2" 2>/dev/null; then
-      echo "[warning] could not determine a valid Dockerfile!"
+    if ! cp -v "${LOCAL_DIR}/Dockerfile-${BUILD_PROFILE}.j2" "${DOCKER_FILE}.j2" 2>/dev/null; then
+      # Will fail if no Dockerfile present
+      find "${WORKSPACE}/${CHECKOUT_DIR}" -type f -name 'Dockerfile' | grep -q '.'
+    fi
+  fi
+fi
+
+DEPLOY_PROFILE="${DEPLOY_PROFILE:-null}"
+NOMAD_FILE="${WORKSPACE}/${CHECKOUT_DIR}/nomad-job.hcl"
+if [[ ! -f "${NOMAD_FILE}" ]] \
+&& [[ ! -f "${NOMAD_FILE}.j2" ]]
+then
+  if ! cp -v "${LOCAL_DIR}/nomad-job-${POD_NAME}.hcl.j2" "${NOMAD_FILE}.j2" 2>/dev/null; then
+    if ! cp -v "${LOCAL_DIR}/nomad-job-${DEPLOY_PROFILE}.hcl.j2" "${NOMAD_FILE}.j2" 2>/dev/null; then
+      cp -v "${LOCAL_DIR}/nomad-job-auto.hcl.j2" "${NOMAD_FILE}.j2"
     fi
   fi
 fi
