@@ -35,7 +35,7 @@ node {
         doGenerateSubmoduleConfigurations: false,
         extensions:[
           [$class: 'SparseCheckoutPaths', sparseCheckoutPaths:[[$class: 'SparseCheckoutPath', path: checkout_dir]]],
-          [$class: 'RelativeTargetDirectory', relativeTargetDir: '.builders']
+          [$class: 'RelativeTargetDirectory', relativeTargetDir: '.scm-builders']
         ],
         submoduleCfg: [],
         userRemoteConfigs: [[url: scm_url]]]
@@ -51,7 +51,7 @@ node {
       wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
         [password: 'thePassword', var: 'MY_PASSWORD']
       ]]) {
-        sh(".builders/${checkout_dir}/compose-pod-build.sh")
+        sh(".scm-builders/${checkout_dir}/compose-pod-build.sh")
       }
     }
   }
