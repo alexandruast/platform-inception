@@ -66,7 +66,7 @@ while IFS='' read -r -d '' f; do
     --connection=local \
     -m template \
     -a "src=${f} dest=${f%%.j2}"
-done < <(find "${WORKSPACE}/${BUILD_DIR}" -path './.*' -prune -o -name '*.j2' -print0)
+done < <(find "${WORKSPACE}/${BUILD_DIR}" -path "${WORKSPACE}/${BUILD_DIR}/.*" -prune -o -name '*.j2' -print0)
 
 echo "[info] validating nomad job file..."
 
