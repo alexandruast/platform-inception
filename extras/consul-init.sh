@@ -49,6 +49,10 @@ curl -Ssf -X PUT \
   -d "common/builders" \
   "${CONSUL_HTTP_ADDR}/v1/kv/platform-config/sandbox/builders/checkout_dir" >/dev/null
 
+curl -Ssf -X PUT \
+  -d ".extra-builders" \
+  "${CONSUL_HTTP_ADDR}/v1/kv/platform-config/sandbox/builders/relative_dir" >/dev/null
+
 # we need to build yaml-to-consul
 curl -Ssf -X PUT \
   -d "https://github.com/alexandruast/yaml-to-consul" \

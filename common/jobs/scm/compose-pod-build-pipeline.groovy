@@ -30,12 +30,13 @@ node {
       scm_url = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/builders/scm_url?raw").trim()
       scm_branch = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/builders/scm_branch?raw").trim()
       checkout_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/builders/checkout_dir?raw").trim()
+      relative_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/builders/relative_dir?raw").trim()
       checkout_info = checkout([$class: 'GitSCM',
         branches: [[name: scm_branch]],
         doGenerateSubmoduleConfigurations: false,
         extensions:[
           [$class: 'SparseCheckoutPaths', sparseCheckoutPaths:[[$class: 'SparseCheckoutPath', path: checkout_dir]]],
-          [$class: 'RelativeTargetDirectory', relativeTargetDir: '.scm-builders']
+          [$class: 'RelativeTargetDirectory', relativeTargetDir: relative_dir]
         ],
         submoduleCfg: [],
         userRemoteConfigs: [[url: scm_url]]]
@@ -48,10 +49,11 @@ node {
         string(credentialsId: 'JENKINS_VAULT_ROLE_ID', variable: 'VAULT_ROLE_ID'),
     ]) {
       checkout_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/builders/checkout_dir?raw").trim()
+      relative_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/builders/relative_dir?raw").trim()
       wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
         [password: 'thePassword', var: 'MY_PASSWORD']
       ]]) {
-        sh(".scm-builders/${checkout_dir}/compose-pod-build.sh")
+        sh("${relative_dir}/${checkout_dir}/compose-pod-build.sh")
       }
     }
   }
