@@ -8,8 +8,7 @@ def pods = [
   "fluentd",
   "fabio",
   "echo",
-  "sleep",
-  "simple"
+  "sleep"
 ]
 
 def jobSuffix='deploy'
