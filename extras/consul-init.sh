@@ -38,7 +38,7 @@ curl -Ssf -X PUT \
 
 # builders data
 curl -Ssf -X PUT \
-  -d "https://github.com/alexandruast/platform-data" \
+  -d "https://github.com/alexandruast/platform-inception" \
   "${CONSUL_HTTP_ADDR}/v1/kv/platform-config/sandbox/builders/scm_url" >/dev/null
 
 curl -Ssf -X PUT \
