@@ -45,7 +45,7 @@ Production infrastructure requires consul/vault clusters for factory and prod.
 #### Changelog
 moved all embedded shell scripts out of groovy files  
 added go sleep service  
-NO! - mask docker files and nomad jobs, dev selects runtime (we need to trust developers!)  
+mask docker files, nomad jobs, docker-compose files, dev selects runtime or place files in build dir to override  
 parsing all jinja2 files in build directories  
 moved variables from parametrized builds to environment using envinject  
 added java echo service  
