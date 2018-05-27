@@ -6,6 +6,7 @@
 
 - lineinfile:
     path: "{{ source_file }}"
+    create: yes
     regexp: '^export {{ item.Key|basename|upper }}='
     line: 'export {{ item.Key|basename|upper }}="{{ item.Value|b64decode }}"'
   with_items: "{{ result.json }}"
