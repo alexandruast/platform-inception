@@ -34,7 +34,7 @@ export CONSUL_PREFIX="${PLATFORM_ENVIRONMENT}/${POD_NAME}"
 for v in $(curl -Ssf \
   "${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}?recurse=true" \
   | jq --arg STRIP "${#CONSUL_PREFIX}" -r \
-  '.[] | (.Key|ascii_upcase|.[$CONSUL_PREFIX|tonumber+1:]) + ":" + .Value'); \
+  '.[] | (.Key|ascii_upcase|.[$STRIP|tonumber+1:]) + ":" + .Value'); \
 do
   b64encstr="$(echo ${v} | cut -d ":" -f2)"
   b64decstr="$(echo ${b64encstr} | openssl enc -base64 -d)"
