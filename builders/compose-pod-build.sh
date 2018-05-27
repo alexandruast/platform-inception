@@ -44,6 +44,7 @@ done
 source .jenkins-profile
 
 # Config file creation order, if not found: bundled -> pod_name -> pod_profile -> auto
+COMPOSE_PROFILE="${COMPOSE_PROFILE:-null}"
 COMPOSE_FILE="${WORKSPACE}/${BUILD_DIR}/docker-compose.yml"
 if [[ ! -f "${COMPOSE_FILE}" ]] && [[ ! -f "${COMPOSE_FILE}.j2" ]]; then
   if ! cp -v "${LOCAL_DIR}/docker-compose-${POD_NAME}.hcl.j2" "${COMPOSE_FILE}.j2" 2>/dev/null; then
@@ -53,6 +54,7 @@ if [[ ! -f "${COMPOSE_FILE}" ]] && [[ ! -f "${COMPOSE_FILE}.j2" ]]; then
   fi
 fi
 
+NOMAD_PROFILE="${NOMAD_PROFILE:-null}"
 NOMAD_FILE="${WORKSPACE}/${BUILD_DIR}/nomad-job.hcl"
 if [[ ! -f "${NOMAD_FILE}" ]] && [[ ! -f "${NOMAD_FILE}.j2" ]]; then
   if ! cp -v "${LOCAL_DIR}/nomad-job-${POD_NAME}.hcl.j2" "${NOMAD_FILE}.j2" 2>/dev/null; then
