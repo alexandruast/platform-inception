@@ -3,15 +3,24 @@ node {
     scm_url = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}/scm_url?raw").trim()
     scm_branch = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}/scm_branch?raw").trim()
     checkout_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}/checkout_dir?raw").trim()
-    checkout_info = checkout([$class: 'GitSCM',
-      branches: [[name: scm_branch]],
-      doGenerateSubmoduleConfigurations: false,
-      extensions:[
-        [$class: 'SparseCheckoutPaths', sparseCheckoutPaths:[[$class: 'SparseCheckoutPath', path: ""]]]
-      ],
-      submoduleCfg: [],
-      userRemoteConfigs: [[url: scm_url]]]
-    )
+    if (checkout_dir == ".") {
+      checkout_info = checkout([$class: 'GitSCM',
+        branches: [[name: scm_branch]],
+        doGenerateSubmoduleConfigurations: false,
+        submoduleCfg: [],
+        userRemoteConfigs: [[url: scm_url]]]
+      )
+    } else {
+      checkout_info = checkout([$class: 'GitSCM',
+        branches: [[name: scm_branch]],
+        doGenerateSubmoduleConfigurations: false,
+        extensions:[
+          [$class: 'SparseCheckoutPaths', sparseCheckoutPaths:[[$class: 'SparseCheckoutPath', path: ""]]]
+        ],
+        submoduleCfg: [],
+        userRemoteConfigs: [[url: scm_url]]]
+      )
+    }
   }
   stage('build') {
     withCredentials([
