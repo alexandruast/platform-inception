@@ -9,7 +9,7 @@ job "{{lookup('env','POD_NAME')}}" {
     stagger          = "10s"
   }
   group "{{lookup('env','POD_NAME')}}" {
-    count = {{lookup('env','POD_COUNT')|default(1)}}
+    count = {{lookup('env','POD_COUNT')|default(1,true)}}
     restart {
       attempts = 3
       delay    = "60s"
@@ -26,7 +26,7 @@ job "{{lookup('env','POD_NAME')}}" {
           password = "{{lookup('env','REGISTRY_PASSWORD')}}"
         }
         port_map {
-          http = {{lookup('env','POD_LISTEN')|default(8080)}}
+          http = {{lookup('env','POD_LISTEN')|default(8080,true)}}
         }
         dns_servers = [
           "${attr.unique.network.ip-address}"
@@ -40,7 +40,7 @@ job "{{lookup('env','POD_NAME')}}" {
         }
       }
       resources {
-        memory = {{lookup('env','POD_MEMORY')|default(500)}}
+        memory = {{lookup('env','POD_MEMORY')|default(500,true)}}
         network {
           mbits = 100
           port "http" {}
@@ -54,7 +54,7 @@ job "{{lookup('env','POD_NAME')}}" {
         port = "http"
         check {
           type = "http"
-          path = "{{lookup('env','POD_HEALTH_PATH')|default('/health')}}"
+          path = "{{lookup('env','POD_HEALTH_PATH')|default('/health',true)}}"
           interval = "10s"
           timeout  = "4s"
           check_restart {
