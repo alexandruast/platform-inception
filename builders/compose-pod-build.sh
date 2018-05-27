@@ -30,16 +30,27 @@ REGISTRY_PASSWORD="${REGISTRY_CREDENTIALS#*:}"
 BUILD_DIR="$(curl -Ssf \
   ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}/checkout_dir?raw)"
 
+# Config file creation order, if not found: bundled -> pod_name -> pod_profile -> auto
 COMPOSE_FILE="${WORKSPACE}/${BUILD_DIR}/docker-compose.yml"
 if [[ ! -f "${COMPOSE_FILE}" ]] && [[ ! -f "${COMPOSE_FILE}.j2" ]]; then
-  COMPOSE_FILE="${WORKSPACE}/${BUILD_DIR}/docker-compose-auto.yml"
-  cp -v "${LOCAL_DIR}/docker-compose-auto.yml.j2" "${COMPOSE_FILE}.j2"
+  if ! cp -v "${LOCAL_DIR}/docker-compose-${POD_NAME}.hcl.j2" "${COMPOSE_FILE}.j2"; then
+    COMPOSE_PROFILE="$(curl -Ss \
+      ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}/compose_profile?raw || echo 'false')"
+    if ! cp -v "${LOCAL_DIR}/docker-compose-${COMPOSE_PROFILE}.hcl.j2" "${COMPOSE_FILE}.j2"; then
+      cp -v "${LOCAL_DIR}/docker-compose-auto.yml.j2" "${COMPOSE_FILE}.j2"
+    fi
+  fi
 fi
 
 NOMAD_FILE="${WORKSPACE}/${BUILD_DIR}/nomad-job.hcl"
 if [[ ! -f "${NOMAD_FILE}" ]] && [[ ! -f "${NOMAD_FILE}.j2" ]]; then
-  NOMAD_FILE="${WORKSPACE}/${BUILD_DIR}/nomad-job-auto.hcl"
-  cp -v "${LOCAL_DIR}/nomad-job-auto.hcl.j2" "${NOMAD_FILE}.j2"
+  if ! cp -v "${LOCAL_DIR}/nomad-job-${POD_NAME}.hcl.j2" "${NOMAD_FILE}.j2"; then
+    NOMAD_PROFILE="$(curl -Ss \
+      ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}/nomad_profile?raw || echo 'false')"
+    if ! cp -v "${LOCAL_DIR}/nomad-job-${NOMAD_PROFILE}.hcl.j2" "${NOMAD_FILE}.j2"; then
+      cp -v "${LOCAL_DIR}/nomad-job-auto.hcl.j2" "${NOMAD_FILE}.j2"
+    fi
+  fi
 fi
 
 export REGISTRY_ADDRESS
@@ -48,7 +59,6 @@ export REGISTRY_PASSWORD
 export REGISTRY_PATH
 export POD_NAME
 export BUILD_TAG
-
 
 echo "[info] parsing jinja2 templates, if any..."
 

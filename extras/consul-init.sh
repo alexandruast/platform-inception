@@ -46,7 +46,7 @@ curl -Ssf -X PUT \
   "${CONSUL_HTTP_ADDR}/v1/kv/platform-config/sandbox/builders/scm_branch" >/dev/null
 
 curl -Ssf -X PUT \
-  -d "common/builders" \
+  -d "builders" \
   "${CONSUL_HTTP_ADDR}/v1/kv/platform-config/sandbox/builders/checkout_dir" >/dev/null
 
 curl -Ssf -X PUT \

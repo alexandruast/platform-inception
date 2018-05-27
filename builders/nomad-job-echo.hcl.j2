@@ -1,0 +1,69 @@
+job "echo" {
+  datacenters = ["dc1"]
+  type = "service"
+  update {
+    max_parallel = 1
+    health_check     = "checks"
+    healthy_deadline = "300s"
+    auto_revert      = true
+    stagger          = "10s"
+  }
+  group "echo" {
+    count = 1
+    restart {
+      attempts = 3
+      delay    = "60s"
+      interval = "15m"
+      mode     = "delay"
+    }
+    task "echo-{{lookup('env','BUILD_TAG')}}" {
+      driver = "docker"
+      config {
+        image = "{{lookup('env','REGISTRY_ADDRESS')}}/{{lookup('env','REGISTRY_PATH')}}/echo:{{lookup('env','BUILD_TAG')}}"
+        auth {
+          server_address = "{{lookup('env','REGISTRY_ADDRESS')}}"
+          username = "{{lookup('env','REGISTRY_USERNAME')}}"
+          password = "{{lookup('env','REGISTRY_PASSWORD')}}"
+        }
+        port_map {
+          http = 8080
+        }
+        dns_servers = [
+          "${attr.unique.network.ip-address}"
+        ]
+        logging {
+          type = "fluentd"
+          config {
+            fluentd-address = "fluentd.service.consul:24224"
+            tag = "docker.{{lookup('env','POD_NAME')}}.echo-{{lookup('env','BUILD_TAG')}}.${attr.unique.hostname}.{%raw%}{{.ID}}{%endraw%}"
+          }
+        }
+      }
+      resources {
+        memory = 500
+        network {
+          mbits = 100
+          port "http" {}
+        }
+      }
+      service {
+        tags = [
+          "urlprefix-/echo strip=/echo"
+        ]
+        name = "echo"
+        port = "http"
+        check {
+          type = "http"
+          path = "/health"
+          interval = "10s"
+          timeout  = "4s"
+          check_restart {
+            limit = 4
+            grace = "90s"
+            ignore_warnings = false
+          }
+        }
+      }
+    }
+  }
+}
