@@ -23,6 +23,7 @@ node {
           branches: [[name: scm_branch]],
           doGenerateSubmoduleConfigurations: false,
           extensions:[
+            [$class: 'CleanBeforeCheckout'],
             [$class: 'SparseCheckoutPaths', sparseCheckoutPaths:[[$class: 'SparseCheckoutPath', path: checkout_dir]]]
           ],
           submoduleCfg: [],
@@ -38,6 +39,7 @@ node {
         branches: [[name: scm_branch]],
         doGenerateSubmoduleConfigurations: false,
         extensions:[
+          [$class: 'CleanBeforeCheckout'],
           [$class: 'SparseCheckoutPaths', sparseCheckoutPaths:[[$class: 'SparseCheckoutPath', path: checkout_dir]]],
           [$class: 'RelativeTargetDirectory', relativeTargetDir: relative_dir]
         ],
