@@ -33,7 +33,7 @@ export CONSUL_PREFIX="${PLATFORM_ENVIRONMENT}/${POD_NAME}"
 : > .jenkins-profile
 for v in $(curl -Ssf \
   "${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}?recurse=true" \
-  | jq --arg STRIP "${#IMPORT_PATH}" -r \
+  | jq --arg STRIP "${#CONSUL_PREFIX}" -r \
   '.[] | (.Key|ascii_upcase|.[$CONSUL_PREFIX|tonumber+1:]) + ":" + .Value'); \
 do
   b64encstr="$(echo ${v} | cut -d ":" -f2)"
