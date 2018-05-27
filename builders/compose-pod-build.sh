@@ -29,21 +29,27 @@ REGISTRY_PASSWORD="${REGISTRY_CREDENTIALS#*:}"
 
 # getting the shell file to source with all variables inside prefix
 # jq 1.6 will support base64decode - this is ugly as hell
-echo "[info] getting all dynamic variables from consul..."
-: > .jenkins-profile
-export CONSUL_PREFIX="platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}"
-for v in $(curl -Ssf \
-  "${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}?recurse=true" \
-  | jq --arg STRIP "${#CONSUL_PREFIX}" -r \
-  '.[] | (.Key|ascii_upcase|.[$STRIP|tonumber+1:]) + ":" + .Value'); \
-do
-  b64encstr="$(echo ${v} | cut -d ":" -f2)"
-  b64decstr="$(echo ${b64encstr} | openssl enc -base64 -d)"
-  varline="$(echo ${v} | sed -e "s|${b64encstr}|\"${b64decstr}\"|g" | tr ":" "=")"
-  echo "${varline}"
-  echo "export ${varline}" >> .jenkins-profile
-done
-source .jenkins-profile
+# echo "[info] getting all dynamic variables from consul..."
+# : > .build-env
+# export CONSUL_PREFIX="platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}"
+# for v in $(curl -Ssf \
+#   "${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}?recurse=true" \
+#   | jq --arg STRIP "${#CONSUL_PREFIX}" -r \
+#   '.[] | (.Key|ascii_upcase|.[$STRIP|tonumber+1:]) + ":" + .Value'); \
+# do
+#   b64encstr="$(echo ${v} | cut -d ":" -f2)"
+#   b64decstr="$(echo ${b64encstr} | openssl enc -base64 -d)"
+#   varline="$(echo ${v} | sed -e "s|${b64encstr}|\"${b64decstr}\"|g" | tr ":" "=")"
+#   echo "${varline}"
+#   echo "export ${varline}" >> .build-env
+# done
+
+ansible-playbook -i 127.0.0.1, \
+  --connection=local \
+  --module-path=${LOCAL_DIR} \
+  ${LOCAL_DIR}/compose-pod-build.yml
+
+source .build-env
 
 # Config file creation order, if not found: bundled -> pod_name -> pod_profile -> auto
 COMPOSE_PROFILE="${COMPOSE_PROFILE:-null}"

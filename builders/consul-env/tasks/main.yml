@@ -1,0 +1,13 @@
+- uri:
+    url: "{{ base_url }}?recurse=true"
+    method: GET
+    status: 200
+  register: result
+
+- lineinfile:
+    path: "{{ source_file }}"
+    regexp: '^export {{ item.Key|basename|upper }}='
+    line: 'export {{ item.Key|basename|upper }}="{{ item.Value|b64decode }}"'
+  with_items: "{{ result.json }}"
+  loop_control: 
+      label: "{{ item.Key|basename|upper }}"
