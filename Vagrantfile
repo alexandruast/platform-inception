@@ -58,7 +58,14 @@ compute_nodes = [
     :hostname => "node1",
     :ip => "192.168.169.191",
     :box => box,
-    :memory => 640,
+    :memory => 1000,
+    :cpus => 2
+  },
+  {
+    :hostname => "node2",
+    :ip => "192.168.169.192",
+    :box => box,
+    :memory => 1000,
     :cpus => 2
   }
 ]
