@@ -39,9 +39,9 @@ for v in $(curl -Ssf \
 do
   b64encstr="$(echo ${v} | cut -d ":" -f2)"
   b64decstr="$(echo ${b64encstr} | openssl enc -base64 -d)"
-  varline="export $(echo ${v} | sed -e "s|${b64encstr}|\"${b64decstr}\"|g" | tr ":" "=")"
+  varline="$(echo ${v} | sed -e "s|${b64encstr}|\"${b64decstr}\"|g" | tr ":" "=")"
   echo "${varline}"
-  echo "${varline}" >> .jenkins-profile
+  echo "export ${varline}" >> .jenkins-profile
 done
 source .jenkins-profile
 
