@@ -46,7 +46,9 @@ source .jenkins-profile
 # Config file creation order, if not found: bundled -> pod_name -> pod_profile -> auto
 COMPOSE_PROFILE="${COMPOSE_PROFILE:-null}"
 COMPOSE_FILE="${WORKSPACE}/${CHECKOUT_DIR}/docker-compose.yml"
-if [[ ! -f "${COMPOSE_FILE}" ]] && [[ ! -f "${COMPOSE_FILE}.j2" ]]; then
+if [[ ! -f "${COMPOSE_FILE}" ]] \
+&& [[ ! -f "${COMPOSE_FILE}.j2" ]]
+then
   if ! cp -v "${LOCAL_DIR}/docker-compose-${POD_NAME}.hcl.j2" "${COMPOSE_FILE}.j2" 2>/dev/null; then
     if ! cp -v "${LOCAL_DIR}/docker-compose-${COMPOSE_PROFILE}.hcl.j2" "${COMPOSE_FILE}.j2" 2>/dev/null; then
       cp -v "${LOCAL_DIR}/docker-compose-auto.yml.j2" "${COMPOSE_FILE}.j2"
@@ -56,10 +58,24 @@ fi
 
 NOMAD_PROFILE="${NOMAD_PROFILE:-null}"
 NOMAD_FILE="${WORKSPACE}/${CHECKOUT_DIR}/nomad-job.hcl"
-if [[ ! -f "${NOMAD_FILE}" ]] && [[ ! -f "${NOMAD_FILE}.j2" ]]; then
+if [[ ! -f "${NOMAD_FILE}" ]] \
+&& [[ ! -f "${NOMAD_FILE}.j2" ]]
+then
   if ! cp -v "${LOCAL_DIR}/nomad-job-${POD_NAME}.hcl.j2" "${NOMAD_FILE}.j2" 2>/dev/null; then
     if ! cp -v "${LOCAL_DIR}/nomad-job-${NOMAD_PROFILE}.hcl.j2" "${NOMAD_FILE}.j2" 2>/dev/null; then
       cp -v "${LOCAL_DIR}/nomad-job-auto.hcl.j2" "${NOMAD_FILE}.j2"
+    fi
+  fi
+fi
+
+DOCKER_PROFILE="${DOCKER_PROFILE:-null}"
+DOCKER_FILE="${WORKSPACE}/${CHECKOUT_DIR}/Dockerfile"
+if [[ ! -f "${DOCKER_FILE}" ]] \
+&& [[ ! -f "${DOCKER_FILE}.j2" ]]
+then
+  if ! cp -v "${LOCAL_DIR}/Dockerfile-${POD_NAME}.j2" "${DOCKER_FILE}.j2" 2>/dev/null; then
+    if ! cp -v "${LOCAL_DIR}/Dockerfile-${DOCKER_PROFILE}.j2" "${DOCKER_FILE}.j2" 2>/dev/null; then
+      echo "[warning] could not determine a valid Dockerfile!"
     fi
   fi
 fi
