@@ -60,13 +60,9 @@
 
     - include_role:
         name: consul
-      vars:
-        service_mode: dev
 
     - include_role:
         name: nomad
-      vars:
-        service_mode: dev
 
     - include_role:
         name: vault

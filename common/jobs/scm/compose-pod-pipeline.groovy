@@ -48,6 +48,7 @@ node {
         submoduleCfg: [],
         userRemoteConfigs: [[url: scm_url]]]
       )
+      sh("${builders_relative_dir}/${builders_checkout_dir}/compose-pod-build-env.sh")
     }
   }
   stage('build') {
@@ -55,13 +56,14 @@ node {
         string(credentialsId: 'JENKINS_VAULT_TOKEN', variable: 'VAULT_TOKEN'),
         string(credentialsId: 'JENKINS_VAULT_ROLE_ID', variable: 'VAULT_ROLE_ID'),
     ]) {
-      // ToDo: Retrieve this from Consul
-      checkout_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_checkout_dir?raw").trim()
-      relative_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_relative_dir?raw").trim()
       wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
-        [password: 'thePassword', var: 'MY_PASSWORD']
+        [password: VAULT_TOKEN, var: 'VAULT_TOKEN'],
+        [password: VAULT_ROLE_ID, var: 'VAULT_ROLE_ID']
       ]]) {
-        sh("${relative_dir}/${checkout_dir}/compose-pod-build.sh")
+        sh '''
+          source .build-env
+          ${BUILDERS_RELATIVE_DIR}/${BUILDERS_CHECKOUT_DIR}/compose-pod-build.sh
+        '''
       }
     }
   }
@@ -71,14 +73,14 @@ node {
           string(credentialsId: 'JENKINS_VAULT_TOKEN', variable: 'VAULT_TOKEN'),
           string(credentialsId: 'JENKINS_VAULT_ROLE_ID', variable: 'VAULT_ROLE_ID'),
       ]) {
-        // ToDo: Retrieve this from Consul
-        checkout_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_checkout_dir?raw").trim()
-        relative_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_relative_dir?raw").trim()
-        // ToDo: Hide all passwords
         wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
-          [password: 'thePassword', var: 'MY_PASSWORD']
+          [password: VAULT_TOKEN, var: 'VAULT_TOKEN'],
+          [password: VAULT_ROLE_ID, var: 'VAULT_ROLE_ID']
         ]]) {
-          sh("${relative_dir}/${checkout_dir}/compose-pod-deploy.sh")
+          sh '''
+            source .build-env
+            ${BUILDERS_RELATIVE_DIR}/${BUILDERS_CHECKOUT_DIR}/compose-pod-deploy.sh
+          '''
         }
       }
     }
