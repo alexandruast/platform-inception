@@ -1,4 +1,4 @@
-job "fluentd" {
+job "{{lookup('env','POD_NAME')}}" {
   datacenters = ["dc1"]
   type = "service"
   constraint {
@@ -12,17 +12,17 @@ job "fluentd" {
     auto_revert      = true
     stagger          = "10s"
   }
-  group "fluentd" {
+  group "{{lookup('env','POD_NAME')}}" {
     restart {
       attempts = 3
       delay    = "60s"
       interval = "15m"
       mode     = "delay"
     }
-    task "fluentd-{{lookup('env','BUILD_TAG')}}" {
+    task "{{lookup('env','POD_NAME')}}-{{lookup('env','BUILD_TAG')}}" {
       driver = "docker"
       config {
-        image = "{{lookup('env','REGISTRY_ADDRESS')}}/{{lookup('env','REGISTRY_PATH')}}/fluentd:{{lookup('env','BUILD_TAG')}}"
+        image = "{{lookup('env','REGISTRY_ADDRESS')}}/{{lookup('env','REGISTRY_PATH')}}/{{lookup('env','POD_NAME')}}:{{lookup('env','BUILD_TAG')}}"
         auth {
           server_address = "{{lookup('env','REGISTRY_ADDRESS')}}"
           username = "{{lookup('env','REGISTRY_USERNAME')}}"
@@ -45,7 +45,7 @@ job "fluentd" {
         }
       }
       service {
-        name = "fluentd"
+        name = "{{lookup('env','POD_NAME')}}"
         port = "service"
         check {
           type = "tcp"

@@ -1,4 +1,4 @@
-job "fabio" {
+job "{{lookup('env','POD_NAME')}}" {
   datacenters = ["dc1"]
   type = "service"
   constraint {
@@ -12,17 +12,17 @@ job "fabio" {
     auto_revert      = true
     stagger          = "10s"
   }
-  group "fabio" {
+  group "{{lookup('env','POD_NAME')}}" {
     restart {
       attempts = 3
       delay    = "60s"
       interval = "15m"
       mode     = "delay"
     }
-    task "fabio-{{lookup('env','BUILD_TAG')}}" {
+    task "{{lookup('env','POD_NAME')}}-{{lookup('env','BUILD_TAG')}}" {
       driver = "docker"
       config {
-        image = "{{lookup('env','REGISTRY_ADDRESS')}}/{{lookup('env','REGISTRY_PATH')}}/fabio:{{lookup('env','BUILD_TAG')}}"
+        image = "{{lookup('env','REGISTRY_ADDRESS')}}/{{lookup('env','REGISTRY_PATH')}}/{{lookup('env','POD_NAME')}}:{{lookup('env','BUILD_TAG')}}"
         auth {
           server_address = "{{lookup('env','REGISTRY_ADDRESS')}}"
           username = "{{lookup('env','REGISTRY_USERNAME')}}"
@@ -39,7 +39,7 @@ job "fabio" {
           type = "fluentd"
           config {
             fluentd-address = "fluentd.service.consul:24224"
-            tag = "docker.{{lookup('env','POD_NAME')}}.fabio-{{lookup('env','BUILD_TAG')}}.${attr.unique.hostname}.{%raw%}{{.ID}}{%endraw%}"
+            tag = "docker.{{lookup('env','POD_NAME')}}.{{lookup('env','POD_NAME')}}-{{lookup('env','BUILD_TAG')}}.${attr.unique.hostname}.{%raw%}{{.ID}}{%endraw%}"
           }
         }
       }
@@ -61,7 +61,7 @@ job "fabio" {
         }
       }
       service {
-        name = "fabio"
+        name = "{{lookup('env','POD_NAME')}}"
         port = "ui"
         check {
           type = "http"
