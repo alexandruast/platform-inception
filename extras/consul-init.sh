@@ -22,15 +22,15 @@ curl -Ssf -X PUT \
 # general configuration
 curl -Ssf -X PUT \
   -d "${VAULT_ADDR}" \
-  "${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/vault_address" >/dev/null
+  "${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/vault_address" >/dev/null
 
 curl -Ssf -X PUT \
   -d "docker.io" \
-  "${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/docker_registry_address" >/dev/null
+  "${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/docker_registry_address" >/dev/null
 
 curl -Ssf -X PUT \
   -d "platformdemo" \
-  "${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/docker_registry_path" >/dev/null
+  "${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/docker_registry_path" >/dev/null
 
 curl -Ssf -X PUT \
   -d "${SSH_DEPLOY_ADDRESS}" \

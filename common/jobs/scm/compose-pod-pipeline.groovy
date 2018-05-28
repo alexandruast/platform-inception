@@ -5,6 +5,7 @@ node {
         string(credentialsId: 'JENKINS_VAULT_ROLE_ID', variable: 'VAULT_ROLE_ID'),
     ]) {
       // get project files
+      // ToDo: Retrieve this from Consul
       scm_url = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/${POD_CATEGORY}/${POD_NAME}/scm_url?raw").trim()
       scm_branch = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/${POD_CATEGORY}/${POD_NAME}/scm_branch?raw").trim()
       checkout_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/${POD_CATEGORY}/${POD_NAME}/checkout_dir?raw").trim()
@@ -31,6 +32,7 @@ node {
         )
       }
       // get builders
+      // ToDo: Retrieve this from Consul
       scm_url = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_scm_url?raw").trim()
       scm_branch = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_scm_branch?raw").trim()
       checkout_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_checkout_dir?raw").trim()
@@ -53,6 +55,7 @@ node {
         string(credentialsId: 'JENKINS_VAULT_TOKEN', variable: 'VAULT_TOKEN'),
         string(credentialsId: 'JENKINS_VAULT_ROLE_ID', variable: 'VAULT_ROLE_ID'),
     ]) {
+      // ToDo: Retrieve this from Consul
       checkout_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_checkout_dir?raw").trim()
       relative_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_relative_dir?raw").trim()
       wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
@@ -67,8 +70,10 @@ node {
         string(credentialsId: 'JENKINS_VAULT_TOKEN', variable: 'VAULT_TOKEN'),
         string(credentialsId: 'JENKINS_VAULT_ROLE_ID', variable: 'VAULT_ROLE_ID'),
     ]) {
+      // ToDo: Retrieve this from Consul
       checkout_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_checkout_dir?raw").trim()
       relative_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_relative_dir?raw").trim()
+      // ToDo: Hide all passwords
       wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
         [password: 'thePassword', var: 'MY_PASSWORD']
       ]]) {
