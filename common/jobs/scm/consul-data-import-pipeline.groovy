@@ -1,7 +1,7 @@
 node {
   stage('checkout') {
-    scm_branch = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/bootstrap/scm_branch?raw").trim()
-    scm_url = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/bootstrap/scm_url?raw").trim()
+    scm_branch = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/bootstrap_scm_branch?raw").trim()
+    scm_url = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/bootstrap_scm_url?raw").trim()
     checkout_info = checkout([$class: 'GitSCM', 
       branches: [[name: scm_branch]], 
       doGenerateSubmoduleConfigurations: false, 

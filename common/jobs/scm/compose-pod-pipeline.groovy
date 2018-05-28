@@ -5,7 +5,7 @@ node {
         string(credentialsId: 'JENKINS_VAULT_ROLE_ID', variable: 'VAULT_ROLE_ID'),
     ]) {
       // get project files
-      // ToDo: Retrieve this from Consul
+      // ToDo: Retrieve this with native API interaction
       scm_url = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/${POD_CATEGORY}/${POD_NAME}/scm_url?raw").trim()
       scm_branch = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/${POD_CATEGORY}/${POD_NAME}/scm_branch?raw").trim()
       checkout_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/${POD_CATEGORY}/${POD_NAME}/checkout_dir?raw").trim()
@@ -32,7 +32,7 @@ node {
         )
       }
       // get builders
-      // ToDo: Retrieve this from Consul
+      // ToDo: Retrieve this with native API interaction
       builders_scm_url = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_scm_url?raw").trim()
       builders_scm_branch = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_scm_branch?raw").trim()
       builders_checkout_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_checkout_dir?raw").trim()
@@ -56,15 +56,10 @@ node {
         string(credentialsId: 'JENKINS_VAULT_TOKEN', variable: 'VAULT_TOKEN'),
         string(credentialsId: 'JENKINS_VAULT_ROLE_ID', variable: 'VAULT_ROLE_ID'),
     ]) {
-      wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
-        [password: VAULT_TOKEN, var: 'VAULT_TOKEN'],
-        [password: VAULT_ROLE_ID, var: 'VAULT_ROLE_ID']
-      ]]) {
-        sh '''
-          source "${WORKSPACE}/.build-env"
-          "${BUILDERS_RELATIVE_DIR}/${BUILDERS_CHECKOUT_DIR}/compose-pod-build.sh"
-        '''
-      }
+      sh '''
+        source "${WORKSPACE}/.build-env"
+        "${BUILDERS_RELATIVE_DIR}/${BUILDERS_CHECKOUT_DIR}/compose-pod-build.sh"
+      '''
     }
   }
   if ( POD_CATEGORY == "services" ) {
@@ -73,15 +68,10 @@ node {
           string(credentialsId: 'JENKINS_VAULT_TOKEN', variable: 'VAULT_TOKEN'),
           string(credentialsId: 'JENKINS_VAULT_ROLE_ID', variable: 'VAULT_ROLE_ID'),
       ]) {
-        wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
-          [password: VAULT_TOKEN, var: 'VAULT_TOKEN'],
-          [password: VAULT_ROLE_ID, var: 'VAULT_ROLE_ID']
-        ]]) {
-          sh '''
-            source "${WORKSPACE}/.build-env"
-            "${BUILDERS_RELATIVE_DIR}/${BUILDERS_CHECKOUT_DIR}/compose-pod-deploy.sh"
-          '''
-        }
+        sh '''
+          source "${WORKSPACE}/.build-env"
+          "${BUILDERS_RELATIVE_DIR}/${BUILDERS_CHECKOUT_DIR}/compose-pod-deploy.sh"
+        '''
       }
     }
   }

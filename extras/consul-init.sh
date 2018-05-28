@@ -13,11 +13,11 @@ echo "[info] kv data purged from consul"
 # bootstrap platform config
 curl -Ssf -X PUT \
   -d "https://github.com/alexandruast/platform-conf" \
-  "${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/bootstrap/scm_url" >/dev/null
+  "${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/bootstrap_scm_url" >/dev/null
 
 curl -Ssf -X PUT \
   -d "*/master" \
-  "${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/bootstrap/scm_branch" >/dev/null
+  "${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/bootstrap_scm_branch" >/dev/null
 
 # global platform config
 curl -Ssf -X PUT \
