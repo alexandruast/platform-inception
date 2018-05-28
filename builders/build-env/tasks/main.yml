@@ -1,7 +1,7 @@
 - uri:
     url:    "{{ recurse_url }}?recurse=true"
     method: GET
-    status: 200,404
+    status: 200, 404
   register: consul_data
 
 - lineinfile:
