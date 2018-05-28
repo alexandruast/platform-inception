@@ -13,6 +13,7 @@ Set<String> installPlugins = [
   "job-dsl",
   "mask-passwords",
   "matrix-auth",
+  "rebuild",
   "workflow-aggregator",
   "ws-cleanup"
 ]
