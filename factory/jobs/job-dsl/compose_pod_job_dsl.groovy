@@ -1,34 +1,8 @@
 // ToDo: Retrieve this from Consul
 def environments = [
   sandbox: [
-    fabio: [
-      url:    "https://github.com/alexandruast/platform-inception",
-      branch: "*/devel"
-    ],
-    fluentd: [
-      url:    "https://github.com/alexandruast/platform-inception",
-      branch: "*/devel"
-    ]
-  ],
-  integration: [
-    fabio: [
-      url:    "https://github.com/alexandruast/platform-inception",
-      branch: "*/devel"
-    ],
-    fluentd: [
-      url:    "https://github.com/alexandruast/platform-inception",
-      branch: "*/devel"
-    ]
-  ],
-  qa: [
-    fabio: [
-      url:    "https://github.com/alexandruast/platform-inception",
-      branch: "*/devel"
-    ],
-    fluentd: [
-      url:    "https://github.com/alexandruast/platform-inception",
-      branch: "*/devel"
-    ]
+    services: ["sys-fluentd","sys-fabio","be-java-echo","be-go-demo"],
+    images: ["sys-py-yaml-to-consul"]
   ]
 ]
 
