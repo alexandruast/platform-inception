@@ -2,7 +2,7 @@
     url:    "{{ recurse_url }}?recurse=true"
     method: GET
     status: 200
-  register: consul-data
+  register: consul_data
 
 - lineinfile:
     path:   "{{ build_env }}"
@@ -10,6 +10,6 @@
     regexp: '^export {{ item.Key|basename|upper }}='
     line:   'export {{ item.Key|basename|upper }}="{{ item.Value|b64decode }}"'
   with_items: 
-    - "{{ consul-data.json }}"
+    - "{{ consul_data.json }}"
   loop_control: 
     label: "{{ item.Key|basename|upper }}"
