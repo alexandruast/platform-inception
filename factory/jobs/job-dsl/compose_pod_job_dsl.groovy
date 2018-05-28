@@ -6,8 +6,8 @@ def environments = [
   ]
 ]
 
-environments.each { environment ->
-  environment.each { category, pods ->
+environments.each { environment, categories ->
+  categories.each { category, pods ->
     if (category == 'services') {
       jobSuffix='deploy'
     } else {
