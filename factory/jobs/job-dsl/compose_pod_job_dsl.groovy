@@ -1,9 +1,7 @@
 // ToDo: Retrieve this from Consul
 def environments = [
-  sandbox: [
     'a',
     'b'
-  ]
 ]
 
 environments.each { environment ->
