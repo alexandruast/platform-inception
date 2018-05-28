@@ -1,14 +1,14 @@
 - uri:
-    url:    "{{ config_url }}?recurse=true"
+    url:    "{{ pod_conf }}?recurse=true"
     method: GET
     status: 200
-  register: platform/conf
+  register: platform-conf
 
 - uri:
-    url:    "{{ config_url }}?recurse=true"
+    url:    "{{ pod_data }}?recurse=true"
     method: GET
     status: 200
-  register: platform/data
+  register: platform-data
 
 - lineinfile:
     path:   "{{ source_file }}"
