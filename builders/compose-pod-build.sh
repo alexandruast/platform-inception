@@ -85,7 +85,7 @@ fi
 
 trap 'docker-compose -f "${COMPOSE_FILE}" --project-name "${POD_NAME}-${BUILD_TAG}" down -v --rmi all --remove-orphans' EXIT
 
-docker login "${REGISTRY_ADDRESS}" \
+docker login "${DOCKER_REGISTRY_ADDRESS}" \
   --username="${REGISTRY_USERNAME}" \
   --password-stdin <<< ${REGISTRY_PASSWORD} >/dev/null
 
