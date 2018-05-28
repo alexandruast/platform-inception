@@ -8,7 +8,8 @@ BUILDERS_DIR="$(cd "$(dirname $0)" && pwd)"
 
 BUILD_TAG="$(git rev-parse --short HEAD)"
 
-CURRENT_BUILD_TAG="${CURRENT_BUILD_TAG:-0000000}"
+CURRENT_BUILD_TAG="$(curl -Ss \
+  ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${POD_CATEGORY}/${POD_NAME}/current_build_tag?raw)"
 
 REGISTRY_CREDENTIALS="$(curl -Ssf -X GET \
   -H "X-Vault-Token:${VAULT_TOKEN}" \
