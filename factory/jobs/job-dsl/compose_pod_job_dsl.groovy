@@ -1,22 +1,13 @@
 // ToDo: Retrieve this from Consul
 def environments = [
   sandbox: [
-    services: [
-      'sys-fluentd',
-      'sys-fabio',
-      'be-java-echo',
-      'be-go-demo'
-    ],
-    images: [
-      'sys-py-yaml-to-consul'
-    ]
+    services: ['sys-fluentd','sys-fabio','be-java-echo','be-go-demo'],
+    images: ['sys-py-yaml-to-consul']
   ],
-
   integration: [
     services: [],
     images: []
   ],
-  
   qa: [
     services: [],
     images: []
