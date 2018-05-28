@@ -38,19 +38,13 @@ export VAULT_ADDR="http://vault.service.consul:8200"
 export SSH_DEPLOY_ADDRESS="vagrant@${server1_ip}"
 ./extras/consul-init.sh
 
-echo "Sdsdsd"
-
 JENKINS_ENV_VAR_NAME="CONSUL_HTTP_ADDR" \
   JENKINS_ENV_VAR_VALUE="${CONSUL_HTTP_ADDR}" \
   ./jenkins-query.sh common/env-update.groovy
-  
-echo "Sdsdsd"
-  
+
 JENKINS_ENV_VAR_NAME="JENKINS_IP_ADDR" \
   JENKINS_ENV_VAR_VALUE="${!ip_addr_var}" \
   ./jenkins-query.sh common/env-update.groovy
-
-echo "Sdsdd"
 
 # setting up vault, tokens stored on last initialized jenkins server
 declare -a ARR_VAULT_SERVERS=(
@@ -64,7 +58,7 @@ export VAULT_SERVERS="${ARR_VAULT_SERVERS[*]}"
 curl -Ssf -X PUT "http://${server1_ip}:4646/v1/system/gc"
 
 # bringing up platform services
-JENKINS_BUILD_JOB="	sandbox-sys-py-yaml-to-consul-images-build"
+JENKINS_BUILD_JOB="sandbox-sys-py-yaml-to-consul-images-build"
 echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
 JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
 PLATFORM_ENVIRONMENT="sandbox" \

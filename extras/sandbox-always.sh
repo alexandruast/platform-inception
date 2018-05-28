@@ -46,7 +46,7 @@ export VAULT_SERVERS="${ARR_VAULT_SERVERS[*]}"
 curl -Ssf -X PUT "http://127.0.0.1:4646/v1/system/gc"
 
 # bringing up platform services
-JENKINS_BUILD_JOB="	sandbox-sys-py-yaml-to-consul-images-build"
+JENKINS_BUILD_JOB="sandbox-sys-py-yaml-to-consul-images-build"
 echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
 JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
 PLATFORM_ENVIRONMENT="sandbox" \
