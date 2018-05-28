@@ -45,7 +45,7 @@ job "{{lookup('env','POD_NAME')}}" {
         }
       }
       service {
-        name = "{{lookup('env','POD_NAME')}}"
+        name = "fluentd"
         port = "service"
         check {
           type = "tcp"

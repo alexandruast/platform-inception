@@ -61,7 +61,7 @@ job "{{lookup('env','POD_NAME')}}" {
         }
       }
       service {
-        name = "{{lookup('env','POD_NAME')}}"
+        name = "fabio"
         port = "ui"
         check {
           type = "http"
