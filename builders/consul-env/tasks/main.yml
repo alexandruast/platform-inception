@@ -1,14 +1,22 @@
 - uri:
-    url: "{{ base_url }}?recurse=true"
+    url:    "{{ config_url }}?recurse=true"
     method: GET
     status: 200
-  register: result
+  register: platform/conf
+
+- uri:
+    url:    "{{ config_url }}?recurse=true"
+    method: GET
+    status: 200
+  register: platform-data
 
 - lineinfile:
-    path: "{{ source_file }}"
+    path:   "{{ source_file }}"
     create: yes
     regexp: '^export {{ item.Key|basename|upper }}='
-    line: 'export {{ item.Key|basename|upper }}="{{ item.Value|b64decode }}"'
-  with_items: "{{ result.json }}"
+    line:   'export {{ item.Key|basename|upper }}="{{ item.Value|b64decode }}"'
+  with_items: 
+    - "{{ platform/conf.json }}"
+    - "{{ platform-data.json }}"
   loop_control: 
-      label: "{{ item.Key|basename|upper }}"
+    label: "{{ item.Key|basename|upper }}"

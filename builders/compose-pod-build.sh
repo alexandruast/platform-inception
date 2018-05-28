@@ -7,7 +7,7 @@ LOCAL_DIR="$(cd "$(dirname $0)" && pwd)"
 echo "[info] getting all information required for the build to start..."
 
 VAULT_ADDR="$(curl -Ssf \
-  ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/vault_address?raw)"
+  ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/vault_address?raw)"
 
 BUILD_TAG="$(git rev-parse --short HEAD)"
 
@@ -15,10 +15,10 @@ PREV_BUILD_TAG="$(curl -Ss \
   ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_tag?raw)"
 
 REGISTRY_ADDRESS="$(curl -Ssf \
-  ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/docker_registry_address?raw)"
+  ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/docker_registry_address?raw)"
 
 REGISTRY_PATH="$(curl -Ssf \
-  ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/docker_registry_path?raw)"
+  ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/docker_registry_path?raw)"
 
 REGISTRY_CREDENTIALS="$(curl -Ssf -X GET \
   -H "X-Vault-Token:${VAULT_TOKEN}" \
@@ -31,9 +31,9 @@ REGISTRY_PASSWORD="${REGISTRY_CREDENTIALS#*:}"
 # jq 1.6 will support base64decode - this is ugly as hell
 # echo "[info] getting all dynamic variables from consul..."
 # : > .build-env
-# export CONSUL_PREFIX="platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}"
+# export CONSUL_PREFIX="platform/conf/${PLATFORM_ENVIRONMENT}/${POD_NAME}"
 # for v in $(curl -Ssf \
-#   "${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}?recurse=true" \
+#   "${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/${POD_NAME}?recurse=true" \
 #   | jq --arg STRIP "${#CONSUL_PREFIX}" -r \
 #   '.[] | (.Key|ascii_upcase|.[$STRIP|tonumber+1:]) + ":" + .Value'); \
 # do

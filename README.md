@@ -35,7 +35,7 @@ Production infrastructure requires consul/vault clusters for factory and prod.
 * store archives/backups
 
 ##### Features
-* platform-config to have a structure to permit multi-tenancy
+* platform/conf to have a structure to permit multi-tenancy
 * streamlined CI tool to trigger jobs per tenant
 * streamlined health, logging, metrics and monitoring dashboard
 * artifact repository

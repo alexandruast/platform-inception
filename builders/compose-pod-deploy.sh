@@ -7,10 +7,10 @@ LOCAL_DIR="$(cd "$(dirname $0)" && pwd)"
 echo "[info] getting all information required for the deploy to start..."
 
 VAULT_ADDR="$(curl -Ssf \
-  ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/vault_address?raw)"
+  ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/vault_address?raw)"
 
 CHECKOUT_DIR="$(curl -Ssf \
-  ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/${POD_NAME}/checkout_dir?raw)"
+  ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/${POD_NAME}/checkout_dir?raw)"
 
 BUILD_TAG="$(curl -Ssf \
   ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_tag?raw)"
@@ -24,7 +24,7 @@ SSH_OPTS=(
 )
 
 SSH_DEPLOY_ADDRESS="$(curl -Ssf \
-  ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/${PLATFORM_ENVIRONMENT}/ssh_deploy_address?raw)"
+  ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/ssh_deploy_address?raw)"
 
 trap 'ssh -S "${WORKSPACE}/ssh-control-socket" -O exit ${SSH_DEPLOY_ADDRESS}' EXIT
 

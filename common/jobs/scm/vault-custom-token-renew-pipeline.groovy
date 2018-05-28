@@ -6,7 +6,7 @@ node {
       sh '''#!/usr/bin/env bash
       set -xeEuo pipefail
       trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
-      VAULT_ADDR="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform-config/vault_address?raw)"
+      VAULT_ADDR="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/vault_address?raw)"
       curl -Ssf -X POST \
         -H "X-Vault-Token:${VAULT_TOKEN}" \
         -d "{\\"increment\\": \\"${RENEW_INCREMENT}\\"}" \
