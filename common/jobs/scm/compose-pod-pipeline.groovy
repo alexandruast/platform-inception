@@ -33,20 +33,20 @@ node {
       }
       // get builders
       // ToDo: Retrieve this from Consul
-      scm_url = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_scm_url?raw").trim()
-      scm_branch = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_scm_branch?raw").trim()
-      checkout_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_checkout_dir?raw").trim()
-      relative_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_relative_dir?raw").trim()
+      builders_scm_url = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_scm_url?raw").trim()
+      builders_scm_branch = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_scm_branch?raw").trim()
+      builders_checkout_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_checkout_dir?raw").trim()
+      builders_relative_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_relative_dir?raw").trim()
       checkout_info = checkout([$class: 'GitSCM',
-        branches: [[name: scm_branch]],
+        branches: [[name: builders_scm_branch]],
         doGenerateSubmoduleConfigurations: false,
         extensions:[
           [$class: 'CleanBeforeCheckout'],
-          [$class: 'SparseCheckoutPaths', sparseCheckoutPaths:[[$class: 'SparseCheckoutPath', path: checkout_dir]]],
-          [$class: 'RelativeTargetDirectory', relativeTargetDir: relative_dir]
+          [$class: 'SparseCheckoutPaths', sparseCheckoutPaths:[[$class: 'SparseCheckoutPath', path: builders_checkout_dir]]],
+          [$class: 'RelativeTargetDirectory', relativeTargetDir: builders_relative_dir]
         ],
         submoduleCfg: [],
-        userRemoteConfigs: [[url: scm_url]]]
+        userRemoteConfigs: [[url: builders_scm_url]]]
       )
       sh("${builders_relative_dir}/${builders_checkout_dir}/compose-pod-build-env.sh")
     }
