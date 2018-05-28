@@ -7,13 +7,13 @@ def environments = [
 ]
 
 environments.each { environment ->
-  environment.each { category ->
-    category.each { pod ->
-      if (category == 'services') {
-        jobSuffix='deploy'
-      } else {
-        jobSuffix='build'
-      }
+  environment.each { category, pods ->
+    if (category == 'services') {
+      jobSuffix='deploy'
+    } else {
+      jobSuffix='build'
+    }
+    pods.each { pod ->
       pipelineJob("${environment}-${pod}-${category}-${jobSuffix}") {
         description("Dynamically generated with job-dsl by ${JOB_NAME}\nAny changes to this item will be overwritten without notice.")
         def repo = 'https://github.com/alexandruast/platform-inception'
