@@ -21,39 +21,27 @@ REGISTRY_PASSWORD="${REGISTRY_CREDENTIALS#*:}"
 # Config file creation order, if not found: bundled -> pod_name -> pod_profile -> auto
 COMPOSE_PROFILE="${COMPOSE_PROFILE:-none}"
 COMPOSE_FILE="${WORKSPACE}/${CHECKOUT_DIR}/docker-compose.yml"
-if [[ ! -f "${COMPOSE_FILE}" ]] \
-&& [[ ! -f "${COMPOSE_FILE}.j2" ]]
-then
-  if ! cp -v "${BUILDERS_DIR}/docker-compose-${POD_NAME}.hcl.j2" "${COMPOSE_FILE}.j2" 2>/dev/null; then
-    if ! cp -v "${BUILDERS_DIR}/docker-compose-${COMPOSE_PROFILE}.hcl.j2" "${COMPOSE_FILE}.j2" 2>/dev/null; then
-      cp -v "${BUILDERS_DIR}/docker-compose-auto.yml.j2" "${COMPOSE_FILE}.j2"
-    fi
-  fi
+if [[ ! -f "${COMPOSE_FILE}" ]] && [[ ! -f "${COMPOSE_FILE}.j2" ]]; then
+  cp -v "${BUILDERS_DIR}/docker-compose-${POD_NAME}.hcl.j2" "${COMPOSE_FILE}.j2" 2>/dev/null \
+  || cp -v "${BUILDERS_DIR}/docker-compose-${COMPOSE_PROFILE}.hcl.j2" "${COMPOSE_FILE}.j2" 2>/dev/null \
+  || cp -v "${BUILDERS_DIR}/docker-compose-auto.yml.j2" "${COMPOSE_FILE}.j2"
 fi
 
 BUILD_PROFILE="${BUILD_PROFILE:-none}"
 DOCKER_FILE="${WORKSPACE}/${CHECKOUT_DIR}/Dockerfile"
-if [[ ! -f "${DOCKER_FILE}" ]] \
-&& [[ ! -f "${DOCKER_FILE}.j2" ]]
-then
-  if ! cp -v "${BUILDERS_DIR}/Dockerfile-${POD_NAME}.j2" "${DOCKER_FILE}.j2" 2>/dev/null; then
-    if ! cp -v "${BUILDERS_DIR}/Dockerfile-${BUILD_PROFILE}.j2" "${DOCKER_FILE}.j2" 2>/dev/null; then
-      # Will fail if no Dockerfile present
-      find "${WORKSPACE}/${CHECKOUT_DIR}" -type f -name 'Dockerfile' | grep -q '.'
-    fi
-  fi
+if [[ ! -f "${DOCKER_FILE}" ]] && [[ ! -f "${DOCKER_FILE}.j2" ]]; then
+  # Will fail if no Dockerfile present
+  cp -v "${BUILDERS_DIR}/Dockerfile-${POD_NAME}.j2" "${DOCKER_FILE}.j2" 2>/dev/null \
+  || cp -v "${BUILDERS_DIR}/Dockerfile-${BUILD_PROFILE}.j2" "${DOCKER_FILE}.j2" 2>/dev/null \
+  || find "${WORKSPACE}/${CHECKOUT_DIR}" -type f -name 'Dockerfile' | grep -q '.'
 fi
 
 DEPLOY_PROFILE="${DEPLOY_PROFILE:-none}"
 NOMAD_FILE="${WORKSPACE}/${CHECKOUT_DIR}/nomad-job.hcl"
-if [[ ! -f "${NOMAD_FILE}" ]] \
-&& [[ ! -f "${NOMAD_FILE}.j2" ]]
-then
-  if ! cp -v "${BUILDERS_DIR}/nomad-job-${POD_NAME}.hcl.j2" "${NOMAD_FILE}.j2" 2>/dev/null; then
-    if ! cp -v "${BUILDERS_DIR}/nomad-job-${DEPLOY_PROFILE}.hcl.j2" "${NOMAD_FILE}.j2" 2>/dev/null; then
-      cp -v "${BUILDERS_DIR}/nomad-job-auto.hcl.j2" "${NOMAD_FILE}.j2"
-    fi
-  fi
+if [[ ! -f "${NOMAD_FILE}" ]] && [[ ! -f "${NOMAD_FILE}.j2" ]]; then
+  cp -v "${BUILDERS_DIR}/nomad-job-${POD_NAME}.hcl.j2" "${NOMAD_FILE}.j2" 2>/dev/null \
+  || cp -v "${BUILDERS_DIR}/nomad-job-${DEPLOY_PROFILE}.hcl.j2" "${NOMAD_FILE}.j2" 2>/dev/null \
+  || cp -v "${BUILDERS_DIR}/nomad-job-auto.hcl.j2" "${NOMAD_FILE}.j2"
 fi
 
 export REGISTRY_USERNAME
