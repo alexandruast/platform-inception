@@ -17,7 +17,7 @@ curl -Ssf -X PUT \
 
 curl -Ssf -X PUT \
   -d "*/master" \
-  "${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/bootstrap/scm_branch" >/dev/null
+  "${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/bootstrap/scm_branch" >/dev/null
 
 # global platform config
 curl -Ssf -X PUT \
