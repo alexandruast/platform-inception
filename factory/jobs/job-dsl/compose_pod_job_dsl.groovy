@@ -1,12 +1,11 @@
 // ToDo: Retrieve this from Consul
 def environments = [
-  'sandbox': [
-    'services': ['sys-fluentd','sys-fabio','be-java-echo','be-go-demo'],
-    'images': ['sys-py-yaml-to-consul']
+  sandbox: [
+    services: ['sys-fluentd','sys-fabio','be-java-echo','be-go-demo'],
+    images: ['sys-py-yaml-to-consul']
   ]
 ]
 
-def jobSuffix='deploy'
 environments.each { environment ->
   environment.each { category ->
     category.each { pod ->
