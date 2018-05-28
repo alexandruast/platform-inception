@@ -65,19 +65,21 @@ node {
       }
     }
   }
-  stage('deploy') {
-    withCredentials([
-        string(credentialsId: 'JENKINS_VAULT_TOKEN', variable: 'VAULT_TOKEN'),
-        string(credentialsId: 'JENKINS_VAULT_ROLE_ID', variable: 'VAULT_ROLE_ID'),
-    ]) {
-      // ToDo: Retrieve this from Consul
-      checkout_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_checkout_dir?raw").trim()
-      relative_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_relative_dir?raw").trim()
-      // ToDo: Hide all passwords
-      wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
-        [password: 'thePassword', var: 'MY_PASSWORD']
-      ]]) {
-        sh("${relative_dir}/${checkout_dir}/compose-pod-deploy.sh")
+  if ( POD_CATEGORY == "services" ) {
+    stage('deploy') {
+      withCredentials([
+          string(credentialsId: 'JENKINS_VAULT_TOKEN', variable: 'VAULT_TOKEN'),
+          string(credentialsId: 'JENKINS_VAULT_ROLE_ID', variable: 'VAULT_ROLE_ID'),
+      ]) {
+        // ToDo: Retrieve this from Consul
+        checkout_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_checkout_dir?raw").trim()
+        relative_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/builders_relative_dir?raw").trim()
+        // ToDo: Hide all passwords
+        wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
+          [password: 'thePassword', var: 'MY_PASSWORD']
+        ]]) {
+          sh("${relative_dir}/${checkout_dir}/compose-pod-deploy.sh")
+        }
       }
     }
   }
