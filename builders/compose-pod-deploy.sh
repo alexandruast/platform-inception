@@ -19,7 +19,7 @@ SSH_OPTS=(
 )
 
 SSH_DEPLOY_ADDRESS="$(curl -Ssf \
-  ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/ssh_deploy_address?raw)"
+  ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/ssh_deploy_address?raw)"
 
 trap 'ssh -S "${WORKSPACE}/ssh-control-socket" -O exit ${SSH_DEPLOY_ADDRESS}' EXIT
 
