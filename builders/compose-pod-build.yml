@@ -1,4 +1,6 @@
 - hosts: all
   gather_facts: no
   roles:
-    - role: consul-env
+    - role: build-env
+      recurse_url: "{{lookup('env','CONSUL_HTTP_ADDR')}}/v1/kv/platform/conf/{{lookup('env','PLATFORM_ENVIRONMENT')}}/{{lookup('env','POD_CATEGORY')}}/{{lookup('env','POD_NAME')}}"
+      

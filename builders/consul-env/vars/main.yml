@@ -1,2 +1,0 @@
-build_env: "{{lookup('env','WORKSPACE')}}/.build-env"
-pod_conf:  "{{lookup('env','CONSUL_HTTP_ADDR')}}/v1/kv/platform/conf/{{lookup('env','PLATFORM_ENVIRONMENT')}}/{{lookup('env','POD_CATEGORY')}}/{{lookup('env','POD_NAME')}}"

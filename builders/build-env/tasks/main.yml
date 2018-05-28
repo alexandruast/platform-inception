@@ -1,15 +1,15 @@
 - uri:
-    url:    "{{ pod_conf }}?recurse=true"
+    url:    "{{ recurse_url }}?recurse=true"
     method: GET
     status: 200
-  register: platform-conf
+  register: consul-data
 
 - lineinfile:
-    path:   "{{ source_file }}"
+    path:   "{{ build_env }}"
     create: yes
     regexp: '^export {{ item.Key|basename|upper }}='
     line:   'export {{ item.Key|basename|upper }}="{{ item.Value|b64decode }}"'
   with_items: 
-    - "{{ platform/conf.json }}"
+    - "{{ consul-data.json }}"
   loop_control: 
     label: "{{ item.Key|basename|upper }}"
