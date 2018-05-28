@@ -4,11 +4,8 @@ trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
 echo "[info] getting all information required for the deploy to start..."
 
-CHECKOUT_DIR="$(curl -Ssf \
-  ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/${POD_CATEGORY}/${POD_NAME}/checkout_dir?raw)"
-
-BUILD_TAG="$(curl -Ssf \
-  ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${POD_CATEGORY}/${POD_NAME}/build_tag?raw)"
+CURRENT_BUILD_TAG="$(curl -Ssf \
+  ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${POD_CATEGORY}/${POD_NAME}/current_build_tag?raw)"
 
 SSH_OPTS=(
   "-o LogLevel=error"
@@ -17,9 +14,6 @@ SSH_OPTS=(
   "-o BatchMode=yes"
   "-o ExitOnForwardFailure=yes"
 )
-
-SSH_DEPLOY_ADDRESS="$(curl -Ssf \
-  ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/global/ssh_deploy_address?raw)"
 
 trap 'ssh -S "${WORKSPACE}/ssh-control-socket" -O exit ${SSH_DEPLOY_ADDRESS}' EXIT
 
@@ -84,8 +78,8 @@ while :; do
   case "${DEPLOYMENT_STATUS}" in
     successful)
       curl -Ssf -X PUT \
-        -d "${BUILD_TAG}" \
-        ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${POD_CATEGORY}/${POD_NAME}/deploy_tag >/dev/null
+        -d "${CURRENT_BUILD_TAG}" \
+        ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${POD_CATEGORY}/${POD_NAME}/current_deploy_tag >/dev/null
       exit 0
     ;;
 

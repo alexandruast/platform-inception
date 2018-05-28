@@ -6,19 +6,9 @@ echo "[info] getting all information required for the build to start..."
 
 BUILDERS_DIR="$(cd "$(dirname $0)" && pwd)"
 
-VAULT_ADDR="$(curl -Ssf \
-  ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/vault_address?raw)"
-
 BUILD_TAG="$(git rev-parse --short HEAD)"
 
-PREV_BUILD_TAG="$(curl -Ss \
-  ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${POD_CATEGORY}/${POD_NAME}/build_tag?raw)"
-
-REGISTRY_ADDRESS="$(curl -Ssf \
-  ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/docker_registry_address?raw)"
-
-REGISTRY_PATH="$(curl -Ssf \
-  ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/docker_registry_path?raw)"
+CURRENT_BUILD_TAG="${CURRENT_BUILD_TAG:-0000000}"
 
 REGISTRY_CREDENTIALS="$(curl -Ssf -X GET \
   -H "X-Vault-Token:${VAULT_TOKEN}" \
@@ -28,7 +18,7 @@ REGISTRY_USERNAME="${REGISTRY_CREDENTIALS%:*}"
 REGISTRY_PASSWORD="${REGISTRY_CREDENTIALS#*:}"
 
 # Config file creation order, if not found: bundled -> pod_name -> pod_profile -> auto
-COMPOSE_PROFILE="${COMPOSE_PROFILE:-null}"
+COMPOSE_PROFILE="${COMPOSE_PROFILE:-none}"
 COMPOSE_FILE="${WORKSPACE}/${CHECKOUT_DIR}/docker-compose.yml"
 if [[ ! -f "${COMPOSE_FILE}" ]] \
 && [[ ! -f "${COMPOSE_FILE}.j2" ]]
@@ -40,7 +30,7 @@ then
   fi
 fi
 
-BUILD_PROFILE="${BUILD_PROFILE:-null}"
+BUILD_PROFILE="${BUILD_PROFILE:-none}"
 DOCKER_FILE="${WORKSPACE}/${CHECKOUT_DIR}/Dockerfile"
 if [[ ! -f "${DOCKER_FILE}" ]] \
 && [[ ! -f "${DOCKER_FILE}.j2" ]]
@@ -53,7 +43,7 @@ then
   fi
 fi
 
-DEPLOY_PROFILE="${DEPLOY_PROFILE:-null}"
+DEPLOY_PROFILE="${DEPLOY_PROFILE:-none}"
 NOMAD_FILE="${WORKSPACE}/${CHECKOUT_DIR}/nomad-job.hcl"
 if [[ ! -f "${NOMAD_FILE}" ]] \
 && [[ ! -f "${NOMAD_FILE}.j2" ]]
@@ -65,11 +55,8 @@ then
   fi
 fi
 
-export REGISTRY_ADDRESS
 export REGISTRY_USERNAME
 export REGISTRY_PASSWORD
-export REGISTRY_PATH
-export POD_NAME
 export BUILD_TAG
 
 echo "[info] parsing jinja2 templates, if any..."
@@ -90,7 +77,7 @@ nomad validate \
 nomad run \
   -output "${NOMAD_FILE}" > "${WORKSPACE}/${CHECKOUT_DIR}/nomad-job.json"
 
-if [[ "${BUILD_TAG}" == "${PREV_BUILD_TAG}" ]]; then
+if [[ "${BUILD_TAG}" == "${CURRENT_BUILD_TAG}" ]]; then
   echo "[warning] commit id is the same, will not build again!"
   exit 0
 fi
@@ -119,5 +106,5 @@ docker-compose \
 
 curl -Ssf -X PUT \
   -d "${BUILD_TAG}" \
-  ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${POD_CATEGORY}/${POD_NAME}/build_tag >/dev/null
+  ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${POD_CATEGORY}/${POD_NAME}/current_build_tag >/dev/null
 

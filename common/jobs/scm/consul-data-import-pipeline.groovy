@@ -18,9 +18,9 @@ node {
       ansible all -i localhost, --connection=local -m template -a "src=${f} dest=${f%%.j2}"
     done < <(find . -type f -name '*.j2' -print0)
     TAG_VERSION="$(
-      curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/qa/images/sys-py-yaml-to-consul/build_tag?raw \
-      || curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/integration/images/sys-py-yaml-to-consul/build_tag?raw \
-      || curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/sandbox/images/sys-py-yaml-to-consul/build_tag?raw
+      curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/qa/images/sys-py-yaml-to-consul/current_build_tag?raw \
+      || curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/integration/images/sys-py-yaml-to-consul/current_build_tag?raw \
+      || curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/sandbox/images/sys-py-yaml-to-consul/current_build_tag?raw
     )"
     docker run --rm \
       -v "$(pwd)/config:/config" \
