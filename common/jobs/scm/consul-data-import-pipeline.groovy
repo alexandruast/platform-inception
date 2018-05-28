@@ -1,12 +1,12 @@
 node {
   stage('checkout') {
-    bootstrap_scm_branch = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/bootstrap_scm_branch?raw").trim()
-    bootstrap_scm_url = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/bootstrap_scm_url?raw").trim()
+    scm_url = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/bootstrap/scm_url?raw").trim()
+    scm_branch = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/bootstrap/scm_branch?raw").trim()
     checkout_info = checkout([$class: 'GitSCM', 
-      branches: [[name: bootstrap_scm_branch]], 
+      branches: [[name: scm_branch]], 
       doGenerateSubmoduleConfigurations: false, 
       submoduleCfg: [], 
-      userRemoteConfigs: [[url: bootstrap_scm_url]]])
+      userRemoteConfigs: [[url: scm_url]]])
   }
   stage('import') {
     sh '''#!/usr/bin/env bash
