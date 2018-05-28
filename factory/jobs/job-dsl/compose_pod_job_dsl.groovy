@@ -32,31 +32,32 @@ def jobSuffix='deploy'
 environments.each { environment ->
   environment.each { category ->
     category.each { pod ->
-    if (category == 'services') {
-      jobSuffix='deploy'
-    } else {
-      jobSuffix='build'
-    }
-    pipelineJob("${environment}-${pod}-${category}-${jobSuffix}") {
-      description("Dynamically generated with job-dsl by ${JOB_NAME}\nAny changes to this item will be overwritten without notice.")
-      def repo = 'https://github.com/alexandruast/platform-inception'
-      keepDependencies(false)
-      environmentVariables {
-        env('PLATFORM_ENVIRONMENT', "${environment}")
-        env('POD_NAME', "${pod}")
-        env('POD_CATEGORY', "${category}")
+      if (category == 'services') {
+        jobSuffix='deploy'
+      } else {
+        jobSuffix='build'
       }
-      definition {
-        cpsScm {
-          scm {
-            git {
-              remote { url(repo) }
-              branches('devel')
-              scriptPath("common/jobs/scm/compose-pod-pipeline.groovy")
-              extensions {
-                cleanBeforeCheckout()
+      pipelineJob("${environment}-${pod}-${category}-${jobSuffix}") {
+        description("Dynamically generated with job-dsl by ${JOB_NAME}\nAny changes to this item will be overwritten without notice.")
+        def repo = 'https://github.com/alexandruast/platform-inception'
+        keepDependencies(false)
+        environmentVariables {
+          env('PLATFORM_ENVIRONMENT', "${environment}")
+          env('POD_NAME', "${pod}")
+          env('POD_CATEGORY', "${category}")
+        }
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote { url(repo) }
+                branches('devel')
+                scriptPath("common/jobs/scm/compose-pod-pipeline.groovy")
+                extensions {
+                  cleanBeforeCheckout()
+                }
+                lightweight(true)
               }
-              lightweight(true)
             }
           }
         }
