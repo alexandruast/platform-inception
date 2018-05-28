@@ -13,7 +13,7 @@ CHECKOUT_DIR="$(curl -Ssf \
   ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/${POD_NAME}/checkout_dir?raw)"
 
 BUILD_TAG="$(curl -Ssf \
-  ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_tag?raw)"
+  ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_tag?raw)"
 
 SSH_OPTS=(
   "-o LogLevel=error"
@@ -90,7 +90,7 @@ while :; do
     successful)
       curl -Ssf -X PUT \
         -d "${BUILD_TAG}" \
-        ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/deploy_tag >/dev/null
+        ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/deploy_tag >/dev/null
       exit 0
     ;;
 

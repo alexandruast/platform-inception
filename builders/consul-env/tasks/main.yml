@@ -8,7 +8,7 @@
     url:    "{{ config_url }}?recurse=true"
     method: GET
     status: 200
-  register: platform-data
+  register: platform/data
 
 - lineinfile:
     path:   "{{ source_file }}"
@@ -17,6 +17,6 @@
     line:   'export {{ item.Key|basename|upper }}="{{ item.Value|b64decode }}"'
   with_items: 
     - "{{ platform/conf.json }}"
-    - "{{ platform-data.json }}"
+    - "{{ platform/data.json }}"
   loop_control: 
     label: "{{ item.Key|basename|upper }}"

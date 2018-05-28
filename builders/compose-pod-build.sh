@@ -12,7 +12,7 @@ VAULT_ADDR="$(curl -Ssf \
 BUILD_TAG="$(git rev-parse --short HEAD)"
 
 PREV_BUILD_TAG="$(curl -Ss \
-  ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_tag?raw)"
+  ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_tag?raw)"
 
 REGISTRY_ADDRESS="$(curl -Ssf \
   ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/docker_registry_address?raw)"
@@ -143,5 +143,5 @@ docker-compose \
 
 curl -Ssf -X PUT \
   -d "${BUILD_TAG}" \
-  ${CONSUL_HTTP_ADDR}/v1/kv/platform-data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_tag >/dev/null
+  ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${POD_NAME}/build_tag >/dev/null
 
