@@ -4,8 +4,6 @@ trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
 echo "[info] getting all information required for the deploy to start..."
 
-source "${WORKSPACE}/.build-env"
-
 CHECKOUT_DIR="$(curl -Ssf \
   ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/${POD_CATEGORY}/${POD_NAME}/checkout_dir?raw)"
 

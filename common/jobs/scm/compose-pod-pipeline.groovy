@@ -61,8 +61,8 @@ node {
         [password: VAULT_ROLE_ID, var: 'VAULT_ROLE_ID']
       ]]) {
         sh '''
-          source .build-env
-          ${BUILDERS_RELATIVE_DIR}/${BUILDERS_CHECKOUT_DIR}/compose-pod-build.sh
+          source "${WORKSPACE}/.build-env"
+          "${BUILDERS_RELATIVE_DIR}/${BUILDERS_CHECKOUT_DIR}/compose-pod-build.sh"
         '''
       }
     }
@@ -78,8 +78,8 @@ node {
           [password: VAULT_ROLE_ID, var: 'VAULT_ROLE_ID']
         ]]) {
           sh '''
-            source .build-env
-            ${BUILDERS_RELATIVE_DIR}/${BUILDERS_CHECKOUT_DIR}/compose-pod-deploy.sh
+            source "${WORKSPACE}/.build-env"
+            "${BUILDERS_RELATIVE_DIR}/${BUILDERS_CHECKOUT_DIR}/compose-pod-deploy.sh"
           '''
         }
       }

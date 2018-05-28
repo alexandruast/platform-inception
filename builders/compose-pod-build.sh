@@ -4,8 +4,6 @@ trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
 echo "[info] getting all information required for the build to start..."
 
-source "${WORKSPACE}/.build-env"
-
 BUILDERS_DIR="$(cd "$(dirname $0)" && pwd)"
 
 VAULT_ADDR="$(curl -Ssf \
