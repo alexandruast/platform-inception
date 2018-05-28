@@ -22,7 +22,7 @@ curl -Ssf -X PUT \
 # global platform config
 curl -Ssf -X PUT \
   -d "${VAULT_ADDR}" \
-  "${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/vault_address" >/dev/null
+  "${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/vault_addr" >/dev/null
 
 curl -Ssf -X PUT \
   -d "docker.io" \
