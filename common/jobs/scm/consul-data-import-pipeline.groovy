@@ -1,12 +1,12 @@
 node {
   stage('checkout') {
-    scm_branch = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/bootstrap_scm_branch?raw").trim()
-    scm_url = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/bootstrap_scm_url?raw").trim()
+    bootstrap_scm_branch = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/bootstrap_scm_branch?raw").trim()
+    bootstrap_scm_url = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/bootstrap_scm_url?raw").trim()
     checkout_info = checkout([$class: 'GitSCM', 
-      branches: [[name: scm_branch]], 
+      branches: [[name: bootstrap_scm_branch]], 
       doGenerateSubmoduleConfigurations: false, 
       submoduleCfg: [], 
-      userRemoteConfigs: [[url: scm_url]]])
+      userRemoteConfigs: [[url: bootstrap_scm_url]]])
   }
   stage('import') {
     sh '''#!/usr/bin/env bash
@@ -26,7 +26,7 @@ node {
       -v "$(pwd)/config:/config" \
       -v "$(pwd)/import:/import" \
       --net=host \
-      ${REGISTRY_ADDRESS}/$REGISTRY_PATH/yaml-to-consul:${TAG_VERSION}
+      ${REGISTRY_ADDRESS}/$REGISTRY_PATH/sys-py-yaml-to-consul:${TAG_VERSION}
     '''
   }
   stage('cleanup') {
