@@ -4,11 +4,13 @@
     patterns:  "*.j2"
     recurse:   yes
     excludes:  "{{ find_excludes }}"
-  register: find_result.files
+  register: find_result
 
 - debug:
     msg:
-      - "{{ find_result }}"
+      - "{{ item }}"
+  with_items: find_result.files
+
 
 - template:
     src:  "{{ item.path }}"
