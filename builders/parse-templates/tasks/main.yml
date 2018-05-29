@@ -4,7 +4,7 @@
     recurse:   yes
     use_regex: true
     pattern:  "^.*[.]j2$"
-    excludes: ".*"
+    excludes: "^.*$"
   register: find_result
 
 - template:
