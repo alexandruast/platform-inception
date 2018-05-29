@@ -1,9 +1,10 @@
 - find:
     paths:     "{{ find_paths }}"
     file_type: file
-    patterns:  "*.j2"
     recurse:   yes
-    excludes:  "{{ find_excludes }}"
+    use_regex: true
+    patterns:  "^.*\.j2$"
+    excludes:  "^({{ find_excludes }}).*$"
   register: find_result
 
 - template:
