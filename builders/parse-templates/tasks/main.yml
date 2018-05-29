@@ -1,4 +1,4 @@
-- find:
+- find: >
     path:     "{{ find_path }}"
     file_type: file
     recurse:   yes
