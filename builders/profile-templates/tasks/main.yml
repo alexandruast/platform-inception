@@ -22,7 +22,7 @@
 
   - debug:
       msg:
-        - "{{ builders_check.results | map(attribute='path')  | list }}"
+        - "{{ builders_check.results | selectattr(stat['path'], 'defined')  | list }}"
 
   - copy:
       src:  "{{ item.path }}"
