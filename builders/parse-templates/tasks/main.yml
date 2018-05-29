@@ -1,9 +1,9 @@
-- find: >
+- find:
     path:     "{{ find_path }}"
     file_type: file
     recurse:   yes
     use_regex: true
-    pattern:  "^.*\\.j2$"
+    pattern:  "^.*[.]j2$"
     exclude:  "^({{ find_exclude }}).*$"
   register: find_result
 
