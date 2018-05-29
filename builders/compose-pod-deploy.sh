@@ -56,14 +56,13 @@ echo "[info] getting information back from Nomad API..."
 # Getting information
 JOB_EVAL_ID="$(echo "${JOB_POST_DATA}" | jq -re .EvalID)"
 
-
-until DEPLOYMENT_ID="$(curl -Ssf \
-  ${NOMAD_ADDR}/v1/evaluation/${JOB_EVAL_ID} \
-  | jq -re .DeploymentID)"
-do
+until [[ "${DEPLOYMENT_ID:-}" != "" ]]; do
   sleep 1
-  echo "[info] retrying ${NOMAD_ADDR}/v1/evaluation/${JOB_EVAL_ID}"
-done  
+  echo "[info] trying ${NOMAD_ADDR}/v1/evaluation/${JOB_EVAL_ID}"
+  DEPLOYMENT_ID="$(curl -Ssf \
+    ${NOMAD_ADDR}/v1/evaluation/${JOB_EVAL_ID} \
+    | jq -re .DeploymentID)"
+done
 
 echo "[info] waiting for deployment to finish..."
 
