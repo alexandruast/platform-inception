@@ -22,7 +22,7 @@
 
   - debug:
     msg:
-      - "{{ builders_check }}"
+      - "{{ builders_check.results }}"
 
   - copy:
       src:  "{{ item.path }}"
