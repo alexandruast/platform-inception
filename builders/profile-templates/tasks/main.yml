@@ -1,11 +1,11 @@
 - stat:
     path: "{{ checkout_dir }}/{{ target_file }}.j2"
-  register: stat_target_file_j2
+  register: target_file_j2_check
 
 - stat:
     path: "{{ checkout_dir }}/{{ target_file }}"
-  when: not stat_target_file_j2.exists
-  register: stat_target_file
+  when: not target_file_j2_check.stat.exists
+  register: target_file_check
 
 - block:
 
@@ -28,5 +28,5 @@
     when: copy_by_pod_name.failed
       and copy_by_target_profile.failed|default(true)
 
-  when: not stat_target_file_j2.exists
-    and not stat_target_file.exists|default(false)
+  when: not target_file_j2_check.stat.exists
+    and not target_file_check.stat.exists|default(false)
