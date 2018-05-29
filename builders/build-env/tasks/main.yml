@@ -12,5 +12,6 @@
     line:   'export {{ item.Key|basename|upper }}="{{ item.Value|b64decode }}"'
   with_items: 
     - "{{ consul_data.json }}"
+  when: consul_data.json exists
   loop_control: 
     label: "{{ item.Key|basename|upper }}"
