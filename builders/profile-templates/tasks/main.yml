@@ -29,6 +29,8 @@
       dest: "{{ checkout_dir }}/{{ target_file }}.j2"
     with_items:
       - "{{ builders_check.results | selectattr('stat.path', 'defined') | list | first }}"
+    loop_control:
+      label: "{{ item.stat.path }}"
 
   when: not target_file_j2_check.stat.exists
     and not target_file_check.stat.exists|default(false)
