@@ -1,2 +1,2 @@
 find_path:    "{{ lookup('env','WORKSPACE') }}/{{ lookup('env','CHECKOUT_DIR') }}"
-find_exclude: "{{ lookup('env','BUILDERS_DIR')|replace('.', '[.]') }}"
+find_exclude: "{{ lookup('env','BUILDERS_DIR')|replace('.', '[.]')|replace('-', '[-]') }}"
