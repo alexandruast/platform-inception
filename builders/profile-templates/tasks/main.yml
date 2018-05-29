@@ -24,7 +24,7 @@
       src:  "{{ item.path }}"
       dest: "{{ checkout_dir }}/{{ target_file }}.j2"
     with_items:
-      - "{{ bilders_check.stat | selectattr("path", "defined") | list }}"
+      - '{{ bilders_check.stat | selectattr("path", "defined") | list }}'
 
   when: not target_file_j2_check.stat.exists
     and not target_file_check.stat.exists|default(false)
