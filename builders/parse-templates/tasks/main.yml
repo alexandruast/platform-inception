@@ -9,10 +9,12 @@
 - debug:
     msg:
       - "{{ item }}"
-  with_items: find_result
+  with_items:
+    - find_result
 
 
 - template:
     src:  "{{ item.path }}"
     dest: "{{ (item.path|splitext)[0] }}"
-  with_items: find_result.files
+  with_items:
+    - find_result.files
