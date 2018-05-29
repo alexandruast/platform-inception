@@ -7,7 +7,7 @@
   register: find_result
 
 - debug:
-  when: not item.path|contains(find_exclude)
+  when: find_exclude not in item.path
   register: j2_files
   with_items: find_result
 
