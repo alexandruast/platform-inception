@@ -32,7 +32,7 @@
 
   - name: "copy {{ builders_dir }}/{{ target_file }}-{{ target_default }}.j2"
     copy:
-      src:  "{{ item.path }}"
+      src:  "{{ item.stat.path }}"
       dest: "{{ checkout_dir }}/{{ target_file }}.j2"
     with_first_found:
       - builder_by_pod_name_check
