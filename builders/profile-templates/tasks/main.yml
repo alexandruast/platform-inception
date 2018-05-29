@@ -1,18 +1,32 @@
+- stat:
+    path: "{{ checkout_dir }}/{{ target_file }}.j2"
+  register: stat_target_file_j2
 
-- name: "Get {{ recurse_url }}"
-  uri:
-    url:    "{{ recurse_url }}?recurse=true"
-    method: GET
-  register: consul_data
-  failed_when: consul_data.status not in [200,404]
+- stat:
+    path: "{{ checkout_dir }}/{{ target_file }}"
+  when: not stat_target_file_j2.exists
+  register: stat_target_file
 
-- name: "Write variables in {{ build_env }}"
-  lineinfile:
-    path:   "{{ build_env }}"
-    create: yes
-    regexp: '^export {{ item.Key|basename|upper }}='
-    line:   'export {{ item.Key|basename|upper }}="{{ item.Value|b64decode }}"'
-  with_items: 
-    - "{{ consul_data.json|default([]) }}"
-  loop_control: 
-    label: "{{ item.Key|basename|upper }}"
+- block:
+
+  - copy:
+      src:  "{{ builders_dir }}/{{ target_file }}-{{ lookup('env','POD_NAME') }}.j2"
+      dest: "{{ checkout_dir }}/{{ target_file }}.j2"
+    register: copy_by_pod_name
+    failed_when: false
+  
+  - copy:
+      src:  "{{ builders_dir }}/{{ target_file }}-{{ target_profile }}.j2"
+      dest: "{{ checkout_dir }}/{{ target_file }}.j2"
+    register: copy_by_target_profile
+    when: copy_by_pod_name.failed
+    failed_when: false
+  
+  - copy:
+      src:  "{{ builders_dir }}/{{ target_file }}-{{ target_default }}.j2"
+      dest: "{{ checkout_dir }}/{{ target_file }}.j2"
+    when: copy_by_pod_name.failed
+      and copy_by_target_profile.failed|default(true)
+
+  when: not stat_target_file_j2.exists
+    and not stat_target_file.exists|default(false)

@@ -17,14 +17,10 @@ REGISTRY_CREDENTIALS="$(curl -Ssf -X GET \
 REGISTRY_USERNAME="${REGISTRY_CREDENTIALS%:*}"
 REGISTRY_PASSWORD="${REGISTRY_CREDENTIALS#*:}"
 
+# Config file creation order, if not found: bundled -> pod_name -> pod_profile -> auto
 COMPOSE_PROFILE="${COMPOSE_PROFILE:-"none"}"
 COMPOSE_FILE="${WORKSPACE}/${CHECKOUT_DIR}/docker-compose.yml"
-# File processing order, if not found in build dir: pod_name -> pod_profile -> auto
 if [[ ! -f "${COMPOSE_FILE}" ]] && [[ ! -f "${COMPOSE_FILE}.j2" ]]; then
-  -f "${BUILDERS_DIR}/docker-compose-${POD_NAME}.hcl.j2"
-  
-
-
   cp -v "${BUILDERS_DIR}/docker-compose-${POD_NAME}.hcl.j2" "${COMPOSE_FILE}.j2" 2>/dev/null \
   || cp -v "${BUILDERS_DIR}/docker-compose-${COMPOSE_PROFILE}.hcl.j2" "${COMPOSE_FILE}.j2" 2>/dev/null \
   || cp -v "${BUILDERS_DIR}/docker-compose-auto.yml.j2" "${COMPOSE_FILE}.j2"
