@@ -3,6 +3,7 @@
     method: GET
     status: 200
   register: consul_data
+  failed_when: consul_data.status not in [200,404]
 
 - lineinfile:
     path:   "{{ build_env }}"
