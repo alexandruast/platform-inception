@@ -9,7 +9,7 @@
 
 - debug:
     msg:
-      - "{{ find_exclude }}"
+      - "^{{ find_exclude|replace('.', '\\.') }}.*$"
 
 - template:
     src:  "{{ item.path }}"
