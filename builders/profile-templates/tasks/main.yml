@@ -22,7 +22,7 @@
 
   - debug:
       msg:
-        - "{{ builders_check.results | selectattr(stat['path'], 'defined')  | list }}"
+        - "{{ builders_check.results | selectattr("stat", defined) | selectattr("exists") | map(attribute='stat.path')  | list }}"
 
   - copy:
       src:  "{{ item.path }}"
