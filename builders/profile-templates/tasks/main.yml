@@ -30,9 +30,9 @@
       src:  "{{ item }}"
       dest: "{{ checkout_dir }}/{{ target_file }}.j2"
     with_items:
-      - builder_by_pod_name_check.stat.path|default(null)
-      - builder_by_target_profile_check.stat.path|default(null)
-      - builder_by_target_default_check.stat.path|default(null)
+      - "{{ builder_by_pod_name_check.stat.path|default(null) }}"
+      - "{{ builder_by_target_profile_check.stat.path|default(null) }}"
+      - "{{ builder_by_target_default_check.stat.path|default(null) }}"
 
   when: not target_file_j2_check.stat.exists
     and not target_file_check.stat.exists|default(false)
