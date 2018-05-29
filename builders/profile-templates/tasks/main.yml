@@ -21,8 +21,8 @@
     register: builders_check
 
   - debug:
-    msg:
-      - "{{ builders_check.results }}"
+      msg:
+        - "{{ builders_check.results }}"
 
   - copy:
       src:  "{{ item.path }}"
