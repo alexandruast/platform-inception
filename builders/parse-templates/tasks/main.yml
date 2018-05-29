@@ -11,6 +11,6 @@
     src:  "{{ item.path }}"
     dest: "{{ (item.path|splitext)[0] }}"
   with_items:
-    - "{{ find_result.files|select('match', '^'+ find_exclude|replace('.','[.]') +'.*$')|list }}"
+    - "{{ find_result.files }}"
   loop_control:
     label: "{{ item.path }}"
