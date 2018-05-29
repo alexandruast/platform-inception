@@ -4,7 +4,7 @@
     recurse:   yes
     use_regex: true
     pattern:  "^.*\\.j2$"
-    exclude:  "^{{ find_exclude|replace('.', '\\.') }}.*$"
+    exclude:  "^({{ find_exclude|replace('.', '\\.') }}).*$"
   register: find_result
 
 - debug:
