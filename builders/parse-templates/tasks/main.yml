@@ -4,8 +4,7 @@
     recurse:   yes
     use_regex: true
     pattern:  "^.*[.]j2$"
-    exclude: >-
-      "^{{ find_exclude|replace('.','\.') }}.*"
+    exclude: "^.*(\.builders).*"
   register: find_result
 
 - template:
