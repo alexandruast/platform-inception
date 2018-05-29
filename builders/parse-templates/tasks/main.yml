@@ -4,17 +4,13 @@
     recurse:   yes
     use_regex: true
     pattern:  "^.*[.]j2$"
+    excludes: "^.*echo.*$"
   register: find_result
-
-- debug:
-  when: find_exclude not in item.path
-  register: j2_files
-  with_items: find_result
 
 - template:
     src:  "{{ item.path }}"
     dest: "{{ (item.path|splitext)[0] }}"
   with_items:
-    - "{{ j2_files }}"
+    - "{{ find_result.files }}"
   loop_control:
     label: "{{ item.path }}"
