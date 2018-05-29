@@ -14,11 +14,11 @@
   - name: "searching order for profile templates"
     stat:
       path: "{{ item }}"
-    register: builders_check
     with_items:
       - "{{ builders_dir }}/{{ target_file }}-{{ lookup('env','POD_NAME') }}.j2"
       - "{{ builders_dir }}/{{ target_file }}-{{ target_profile }}.j2"
       - "{{ builders_dir }}/{{ target_file }}-{{ target_default }}.j2"
+    register: builders_check
 
   - debug:
     msg:
@@ -28,7 +28,7 @@
       src:  "{{ item.path }}"
       dest: "{{ checkout_dir }}/{{ target_file }}.j2"
     with_items:
-      - '{{ builders_check.stat | selectattr("path", "defined") | list }}'
+      - '{{ builders_check.results | selectattr("path", "defined") | list }}'
 
   when: not target_file_j2_check.stat.exists
     and not target_file_check.stat.exists|default(false)
