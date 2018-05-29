@@ -11,7 +11,7 @@
 
 - block:
 
-
+  - name: "searching order for profile templates"
   - stat:
       path: "{{ item }}"
     register: builders_check
@@ -19,6 +19,10 @@
       - "{{ builders_dir }}/{{ target_file }}-{{ lookup('env','POD_NAME') }}.j2"
       - "{{ builders_dir }}/{{ target_file }}-{{ target_profile }}.j2"
       - "{{ builders_dir }}/{{ target_file }}-{{ target_default }}.j2"
+
+  - debug:
+    msg:
+      - "{{ builders_check }}"
 
   - copy:
       src:  "{{ item.path }}"
