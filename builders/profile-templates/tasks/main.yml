@@ -22,6 +22,18 @@
 
   - debug:
       msg:
+        - "{{ builders_check.results }}"
+
+  - debug:
+      msg:
+        - "{{ builders_check.results | selectattr('stat', 'defined') | list }}"
+
+  - debug:
+      msg:
+        - "{{ builders_check.results | selectattr('stat', 'defined') | selectattr('exists') | list }}"
+
+  - debug:
+      msg:
         - "{{ builders_check.results | selectattr('stat', 'defined') | selectattr('exists') | map(attribute='stat.path')  | list }}"
 
   - copy:
