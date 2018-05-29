@@ -30,7 +30,7 @@
 
   - debug:
       msg:
-        - "{{ builders_check.results | selectattr('stat[\"exists\"]', 'defined') | list }}"
+        - "{{ builders_check.results | selectattr('stat.exists', 'defined') | list }}"
 
   - debug:
       msg:
