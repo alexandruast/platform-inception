@@ -1,1 +1,2 @@
-checkout_dir: "{{lookup('env','WORKSPACE')}}/{{lookup('env','CHECKOUT_DIR')}}"
+find_paths:    "{{ lookup('env','WORKSPACE') }}/{{ lookup('env','CHECKOUT_DIR') }}"
+find_excludes: "{{ lookup('env','BUILDERS_DIR') }}"

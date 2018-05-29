@@ -1,9 +1,9 @@
 - find:
-    paths:     "{{ checkout_dir }}"
+    paths:     "{{ find_paths }}"
     file_type: file
     patterns:  "*.j2"
     recurse:   yes
-    excludes:  "{{ lookup('env','BUILDERS_DIR') }}"
+    excludes:  "{{ find_excludes }}"
   register: find_result
 
 - template:
