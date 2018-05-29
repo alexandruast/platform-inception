@@ -54,12 +54,16 @@ JOB_POST_DATA="$(curl -Ssf -X POST \
 echo "[info] getting information back from Nomad API..."
 
 # Getting information
-JOB_EVAL_ID="$(echo "${JOB_POST_DATA}" \
-  | jq -re .EvalID)"
+JOB_EVAL_ID="$(echo "${JOB_POST_DATA}" | jq -re .EvalID)"
 
-DEPLOYMENT_ID="$(curl -Ssf \
+
+until DEPLOYMENT_ID="$(curl -Ssf \
   ${NOMAD_ADDR}/v1/evaluation/${JOB_EVAL_ID} \
   | jq -re .DeploymentID)"
+do
+  sleep 1
+  echo "[info] retrying ${NOMAD_ADDR}/v1/evaluation/${JOB_EVAL_ID}"
+done  
 
 echo "[info] waiting for deployment to finish..."
 
