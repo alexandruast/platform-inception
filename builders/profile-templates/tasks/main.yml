@@ -1,9 +1,9 @@
-- name: "{{ checkout_dir }}/{{ target_file }}.j2 exists?"
+- name: "stat {{ checkout_dir }}/{{ target_file }}.j2"
   stat:
     path: "{{ checkout_dir }}/{{ target_file }}.j2"
   register: target_file_j2_check
 
-- name: "{{ checkout_dir }}/{{ target_file }} exists?"
+- name: "stat {{ checkout_dir }}/{{ target_file }}"
   stat:
     path: "{{ checkout_dir }}/{{ target_file }}"
   when: not target_file_j2_check.stat.exists
@@ -11,14 +11,14 @@
 
 - block:
 
-  - name: "Copy {{ builders_dir }}/{{ target_file }}-{{ lookup('env','POD_NAME') }}.j2"
+  - name: "copy {{ builders_dir }}/{{ target_file }}-{{ lookup('env','POD_NAME') }}.j2"
     copy:
       src:  "{{ builders_dir }}/{{ target_file }}-{{ lookup('env','POD_NAME') }}.j2"
       dest: "{{ checkout_dir }}/{{ target_file }}.j2"
     register: copy_by_pod_name
     ignore_errors: true
   
-  - name: "Copy {{ builders_dir }}/{{ target_file }}-{{ target_profile }}.j2"
+  - name: "copy {{ builders_dir }}/{{ target_file }}-{{ target_profile }}.j2"
     copy:
       src:  "{{ builders_dir }}/{{ target_file }}-{{ target_profile }}.j2"
       dest: "{{ checkout_dir }}/{{ target_file }}.j2"
@@ -26,7 +26,7 @@
     when: copy_by_pod_name.failed
     ignore_errors: true
   
-  - name: "Copy {{ builders_dir }}/{{ target_file }}-{{ target_default }}.j2"
+  - name: "copy {{ builders_dir }}/{{ target_file }}-{{ target_default }}.j2"
     copy:
       src:  "{{ builders_dir }}/{{ target_file }}-{{ target_default }}.j2"
       dest: "{{ checkout_dir }}/{{ target_file }}.j2"
