@@ -4,7 +4,7 @@
     patterns:  "*.j2"
     recurse:   yes
     excludes:  "{{ find_excludes }}"
-  register: find_result
+  register: find_result.files
 
 - debug:
     msg:
