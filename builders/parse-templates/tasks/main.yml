@@ -3,8 +3,8 @@
     file_type: file
     recurse:   yes
     use_regex: true
-    patterns:  '^.*\.j2$'
-    excludes:  '^({{ find_excludes }}).*$'
+    pattern:  "^.*\\.j2$"
+    exclude:  "^({{ find_excludes }}).*$"
   register: find_result
 
 - template:
