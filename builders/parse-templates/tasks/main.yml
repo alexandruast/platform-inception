@@ -6,6 +6,10 @@
     excludes:  "{{ find_excludes }}"
   register: find_result
 
+- debug:
+    msg:
+      - "{{ find_result }}"
+
 - template:
     src:  "{{ item.path }}"
     dest: "{{ (item.path|splitext)[0] }}"
