@@ -26,14 +26,13 @@
       path: "{{ builders_dir }}/{{ target_file }}-{{ target_default }}.j2"
     register: builder_by_target_default_check
 
-  - name: "copy {{ item }}"
-    copy:
+  - copy:
       src:  "{{ item }}"
       dest: "{{ checkout_dir }}/{{ target_file }}.j2"
     with_first_found:
-      - builder_by_pod_name_check.stat.path
-      - builder_by_target_profile_check.stat.path
-      - builder_by_target_default_check.stat.path
+      - builder_by_pod_name_check.stat.path|default(null)
+      - builder_by_target_profile_check.stat.path|default(null)
+      - builder_by_target_default_check.stat.path|default(null)
 
   when: not target_file_j2_check.stat.exists
     and not target_file_check.stat.exists|default(false)
