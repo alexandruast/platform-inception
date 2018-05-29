@@ -4,3 +4,5 @@
   with_filetree: "{{ checkout_dir }}"
   when: item.state == 'file'
     and (item.src|splitext)[1] == '.j2'
+  loop_control: 
+    label: "{{ item.src }}"
