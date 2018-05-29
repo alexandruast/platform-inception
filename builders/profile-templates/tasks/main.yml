@@ -11,28 +11,20 @@
 
 - block:
 
-  - name: "stat {{ builders_dir }}/{{ target_file }}-{{ lookup('env','POD_NAME') }}.j2"
-    stat:
-      path: "{{ builders_dir }}/{{ target_file }}-{{ lookup('env','POD_NAME') }}.j2"
-    register: builder_by_pod_name_check
-    
-  - name: "stat {{ builders_dir }}/{{ target_file }}-{{ target_profile }}.j2"
-    stat:
-      path: "{{ builders_dir }}/{{ target_file }}-{{ target_profile }}.j2"
-    register: builder_by_target_profile_check
 
-  - name: "stat {{ builders_dir }}/{{ target_file }}-{{ target_default }}.j2"
-    stat:
-      path: "{{ builders_dir }}/{{ target_file }}-{{ target_default }}.j2"
-    register: builder_by_target_default_check
+  - stat:
+      path: "{{ item }}"
+    register: builders_check
+    with_items:
+      - "{{ builders_dir }}/{{ target_file }}-{{ lookup('env','POD_NAME') }}.j2"
+      - "{{ builders_dir }}/{{ target_file }}-{{ target_profile }}.j2"
+      - "{{ builders_dir }}/{{ target_file }}-{{ target_default }}.j2"
 
   - copy:
       src:  "{{ item }}"
       dest: "{{ checkout_dir }}/{{ target_file }}.j2"
     with_items:
-      - "{{ builder_by_pod_name_check.stat.path }}"
-      - "{{ builder_by_target_profile_check.stat.path }}"
-      - "{{ builder_by_target_default_check.stat.path }}"
+      - "{{ bilders_check.stat | | selectattr("path", "defined") | list }}"
 
   when: not target_file_j2_check.stat.exists
     and not target_file_check.stat.exists|default(false)
