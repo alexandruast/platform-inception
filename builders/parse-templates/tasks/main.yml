@@ -4,13 +4,12 @@
     recurse:   yes
     use_regex: true
     pattern:  "^.*[.]j2$"
-    excludes: "^.*echo.*$"
   register: find_result
 
 - template:
     src:  "{{ item.path }}"
     dest: "{{ (item.path|splitext)[0] }}"
   with_items:
-    - "{{ find_result.files }}"
+    - '{{ find_result.files | selectattr("path", "match", "^((?!/.extra-builders/).)*$") | list }}'
   loop_control:
     label: "{{ item.path }}"
