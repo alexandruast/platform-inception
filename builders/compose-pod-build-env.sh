@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-set -eEuo pipefail
-trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
 BUILDERS_DIR="$(cd "$(dirname $0)" && pwd)"
 

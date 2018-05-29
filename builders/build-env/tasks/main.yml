@@ -1,11 +1,13 @@
-- uri:
+
+- name: "Get {{ recurse_url }}"
+  uri:
     url:    "{{ recurse_url }}?recurse=true"
     method: GET
-    status: 200
   register: consul_data
   failed_when: consul_data.status not in [200,404]
 
-- lineinfile:
+- name: "Write variables in {{ build_env }}"
+  lineinfile:
     path:   "{{ build_env }}"
     create: yes
     regexp: '^export {{ item.Key|basename|upper }}='
