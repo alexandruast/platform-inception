@@ -9,7 +9,7 @@
 - debug:
     msg:
       - "{{ item }}"
-  with_items: find_result.files
+  with_items: find_result
 
 
 - template:
