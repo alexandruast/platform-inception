@@ -1,11 +1,11 @@
-- name: "Get {{ recurse_url }}"
+- name: "get {{ recurse_url }}"
   uri:
     url:    "{{ recurse_url }}?recurse=true"
     method: GET
   register: consul_data
   failed_when: consul_data.status not in [200,404]
 
-- name: "Write variables in {{ build_env }}"
+- name: "write variables in {{ build_env }}"
   lineinfile:
     path:   "{{ build_env }}"
     create: yes
