@@ -11,7 +11,6 @@
     regexp: '^export {{ item.Key|basename|upper }}='
     line:   'export {{ item.Key|basename|upper }}="{{ item.Value|b64decode }}"'
   with_items: 
-    - "{{ consul_data.json }}"
-  when: consul_data.json exists
+    - "{{ consul_data.json|default([]) }}"
   loop_control: 
     label: "{{ item.Key|basename|upper }}"
