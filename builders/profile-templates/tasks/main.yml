@@ -29,7 +29,7 @@
   - copy:
       src:  "{{ item }}"
       dest: "{{ checkout_dir }}/{{ target_file }}.j2"
-    with_first_found:
+    with_items:
       - builder_by_pod_name_check.stat.path|default(null)
       - builder_by_target_profile_check.stat.path|default(null)
       - builder_by_target_default_check.stat.path|default(null)
