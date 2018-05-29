@@ -1,0 +1,2 @@
+builders_dir: "{{lookup('env','BUILDERS_DIR')}}"
+checkout_dir: "{{lookup('env','WORKSPACE')"}}/{{lookup('env','CHECKOUT_DIR')}}"
