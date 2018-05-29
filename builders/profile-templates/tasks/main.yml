@@ -12,7 +12,7 @@
 - block:
 
   - name: "searching order for profile templates"
-  - stat:
+    stat:
       path: "{{ item }}"
     register: builders_check
     with_items:
