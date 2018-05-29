@@ -4,12 +4,12 @@
     recurse:   yes
     use_regex: true
     pattern:  "^.*\\.j2$"
-    exclude:  "^({{ find_exclude|replace('.', '\.') }}).*$"
+    exclude:  "^({{ find_exclude }}).*$"
   register: find_result
 
 - debug:
     msg:
-      - "^({{ find_exclude|replace('.', '\.') }}).*$"
+      - "^({{ find_exclude }}).*$"
 
 - template:
     src:  "{{ item.path }}"
