@@ -16,7 +16,7 @@
       src:  "{{ builders_dir }}/{{ target_file }}-{{ lookup('env','POD_NAME') }}.j2"
       dest: "{{ checkout_dir }}/{{ target_file }}.j2"
     register: copy_by_pod_name
-    failed_when: false
+    ignore_errors: true
   
   - name: "Copy {{ builders_dir }}/{{ target_file }}-{{ target_profile }}.j2"
     copy:
@@ -24,7 +24,7 @@
       dest: "{{ checkout_dir }}/{{ target_file }}.j2"
     register: copy_by_target_profile
     when: copy_by_pod_name.failed
-    failed_when: false
+    ignore_errors: true
   
   - name: "Copy {{ builders_dir }}/{{ target_file }}-{{ target_default }}.j2"
     copy:
