@@ -4,8 +4,7 @@ trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
 echo "[info] getting all information required for the deploy to start..."
 
-CURRENT_BUILD_TAG="$(curl -Ssf \
-  ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${POD_CATEGORY}/${POD_NAME}/current_build_tag?raw)"
+CURRENT_BUILD_TAG="${CURRENT_BUILD_TAG:-"0000000"}"
 
 SSH_OPTS=(
   "-o LogLevel=error"

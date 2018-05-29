@@ -8,8 +8,7 @@ BUILDERS_DIR="$(cd "$(dirname $0)" && pwd)"
 
 BUILD_TAG="$(git rev-parse --short HEAD)"
 
-CURRENT_BUILD_TAG="$(curl -Ss \
-  ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${POD_CATEGORY}/${POD_NAME}/current_build_tag?raw)"
+CURRENT_BUILD_TAG="${CURRENT_BUILD_TAG:-"0000000"}"
 
 REGISTRY_CREDENTIALS="$(curl -Ssf -X GET \
   -H "X-Vault-Token:${VAULT_TOKEN}" \
@@ -19,7 +18,7 @@ REGISTRY_USERNAME="${REGISTRY_CREDENTIALS%:*}"
 REGISTRY_PASSWORD="${REGISTRY_CREDENTIALS#*:}"
 
 # Config file creation order, if not found: bundled -> pod_name -> pod_profile -> auto
-COMPOSE_PROFILE="${COMPOSE_PROFILE:-none}"
+COMPOSE_PROFILE="${COMPOSE_PROFILE:-"none"}"
 COMPOSE_FILE="${WORKSPACE}/${CHECKOUT_DIR}/docker-compose.yml"
 if [[ ! -f "${COMPOSE_FILE}" ]] && [[ ! -f "${COMPOSE_FILE}.j2" ]]; then
   cp -v "${BUILDERS_DIR}/docker-compose-${POD_NAME}.hcl.j2" "${COMPOSE_FILE}.j2" 2>/dev/null \
@@ -27,7 +26,7 @@ if [[ ! -f "${COMPOSE_FILE}" ]] && [[ ! -f "${COMPOSE_FILE}.j2" ]]; then
   || cp -v "${BUILDERS_DIR}/docker-compose-auto.yml.j2" "${COMPOSE_FILE}.j2"
 fi
 
-BUILD_PROFILE="${BUILD_PROFILE:-none}"
+BUILD_PROFILE="${BUILD_PROFILE:-"none"}"
 DOCKER_FILE="${WORKSPACE}/${CHECKOUT_DIR}/Dockerfile"
 if [[ ! -f "${DOCKER_FILE}" ]] && [[ ! -f "${DOCKER_FILE}.j2" ]]; then
   # Will fail if no Dockerfile present
@@ -36,7 +35,7 @@ if [[ ! -f "${DOCKER_FILE}" ]] && [[ ! -f "${DOCKER_FILE}.j2" ]]; then
   || find "${WORKSPACE}/${CHECKOUT_DIR}" -type f -name 'Dockerfile' | grep -q '.'
 fi
 
-DEPLOY_PROFILE="${DEPLOY_PROFILE:-none}"
+DEPLOY_PROFILE="${DEPLOY_PROFILE:-"none"}"
 NOMAD_FILE="${WORKSPACE}/${CHECKOUT_DIR}/nomad-job.hcl"
 if [[ ! -f "${NOMAD_FILE}" ]] && [[ ! -f "${NOMAD_FILE}.j2" ]]; then
   cp -v "${BUILDERS_DIR}/nomad-job-${POD_NAME}.hcl.j2" "${NOMAD_FILE}.j2" 2>/dev/null \
