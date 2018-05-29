@@ -4,7 +4,7 @@
     recurse:   yes
     use_regex: true
     pattern:  "^.*[.]j2$"
-    exclude: "^.*([.]extra-builders).*"
+    exclude: "^.*extra-builders.*$"
   register: find_result
 
 - template:
