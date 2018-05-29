@@ -6,15 +6,10 @@
     excludes:  "{{ find_excludes }}"
   register: find_result
 
-- debug:
-    msg:
-      - "{{ item }}"
-  with_items:
-    - "{{ find_result.files }}"
-
-
 - template:
     src:  "{{ item.path }}"
     dest: "{{ (item.path|splitext)[0] }}"
   with_items:
     - "{{ find_result.files }}"
+  loop_control:
+    label: "{{ item.path }}"
