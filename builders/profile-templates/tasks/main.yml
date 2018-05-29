@@ -22,25 +22,13 @@
 
   - debug:
       msg:
-        - "{{ builders_check.results }}"
-
-  - debug:
-      msg:
-        - "{{ builders_check.results | selectattr('stat', 'defined') | list }}"
-
-  - debug:
-      msg:
-        - "{{ builders_check.results | selectattr('stat.exists', 'defined') | list }}"
-
-  - debug:
-      msg:
-        - "{{ builders_check.results | selectattr('stat', 'defined') | selectattr('exists') | map(attribute='stat.path')  | list }}"
+        - "{{ builders_check.results | selectattr('stat.path', 'defined') | list }}"
 
   - copy:
       src:  "{{ item.path }}"
       dest: "{{ checkout_dir }}/{{ target_file }}.j2"
     with_items:
-      - '{{ builders_check.results | selectattr("", "defined") | list }}'
+      - '{{ builders_check.results | selectattr('stat.path', 'defined') | list }}'
 
   when: not target_file_j2_check.stat.exists
     and not target_file_check.stat.exists|default(false)
