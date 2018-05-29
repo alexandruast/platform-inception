@@ -108,7 +108,7 @@ join_cluster_members() {
   echo "joining consul cluster members..."
   ssh ${SSH_OPTS} ${server1_ip} "consul join ${server2_ip}"
   echo "joining nomad cluster members..."
-  ssh ${SSH_OPTS} ${server1_ip} "NOMAD_ADDR=http://${server1_ip}:4646 nomad server-join ${server2_ip}"
+  ssh ${SSH_OPTS} ${server1_ip} "NOMAD_ADDR=http://${server1_ip}:4646 nomad server join ${server2_ip}"
 }
 
 install_jq() {
