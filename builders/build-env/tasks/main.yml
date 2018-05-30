@@ -9,7 +9,7 @@
 
 - debug:
   - msg:
-    - {{ consul_data }}
+    - "{{ consul_data }}"
 
 - name: "write variables in {{ build_env }}"
   lineinfile:
