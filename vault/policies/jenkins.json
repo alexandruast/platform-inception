@@ -1,0 +1,10 @@
+{
+  "path": {
+    "secret/operations/*": {
+      "capabilities": ["read","list"]
+    },
+    "auth/approle/role/jenkins/secret-id": {
+      "capabilities": ["read", "update"]
+    }
+  }
+}

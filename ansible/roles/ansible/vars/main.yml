@@ -1,0 +1,1 @@
+ansible_pip_package: "ansible==2.5.2"

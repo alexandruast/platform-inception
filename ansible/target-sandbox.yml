@@ -1,0 +1,101 @@
+- hosts: all
+  gather_facts: no
+  serial: "{{serial_value|default(1)}}"
+
+  vars:
+    - repos_enabled: true
+    - force_setup: true
+
+  tasks:
+    - include_role:
+        name: alive
+
+    - include_role:
+        name: gather-facts
+
+    - include_role:
+        name: check-sudo
+
+    - include_role:
+        name: housekeeping
+
+    - block:
+      - include_role:
+          name: base
+
+      - include_role:
+          name: swap
+
+      - include_role:
+          name: dnsmasq
+        vars:
+          dnsmasq_resolv: prepend
+          dnsmasq_bind: dynamic
+          dns_servers:
+            - "/consul/127.0.0.1#8600"
+
+      - include_role:
+          name: mo
+
+      - include_role:
+          name: jq
+
+      - include_role:
+          name: rsyslog
+
+      - include_role:
+          name: td-agent-bit
+
+      - include_role:
+          name: setup-completed
+
+      when: not ansible_local.setup_completed|default(false) or force_setup|default(false)
+
+    - include_role:
+        name: ansible
+
+    - include_role:
+        name: pumba
+
+    - include_role:
+        name: docker
+
+    - include_role:
+        name: docker-compose
+
+    - include_role:
+        name: consul
+      vars:
+        service_mode: dev
+
+    - include_role:
+        name: nomad
+      vars:
+        service_mode: dev
+
+    - include_role:
+        name: vault
+      vars:
+        service_mode: server
+
+    - include_role:
+        name: packer
+
+    - include_role:
+        name: terraform
+
+    - include_role:
+        name: terragrunt
+
+    - include_role:
+        name: java8-jre
+      vars:
+        java_provider: oracle
+
+    - include_role:
+        name: jenkins
+
+    - include_role:
+        name: user-ssh-key
+      vars:
+        run_as: jenkins

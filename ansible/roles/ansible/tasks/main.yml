@@ -1,5 +1,10 @@
-- name: "ansible package present"
+- name: "ansible os package absent"
   package:
     name: ansible
-    state: present
+    state: absent
+  become: true
+
+- name: "{{ansible_pip_package}} pip package installed"
+  pip:
+    name: "{{ansible_pip_package}}"
   become: true

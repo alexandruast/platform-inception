@@ -4,6 +4,4 @@
 
   roles:
     - role: gather-facts
-      tags: always
     - role: debug
-      tags: always

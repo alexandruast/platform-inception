@@ -2,6 +2,8 @@ import jenkins.model.Jenkins
 import hudson.security.csrf.DefaultCrumbIssuer
 import javaposse.jobdsl.plugin.GlobalJobDslSecurityConfiguration
 import jenkins.model.GlobalConfiguration
+import org.jenkinsci.plugins.workflow.flow.GlobalDefaultFlowDurabilityLevel
+import org.jenkinsci.plugins.workflow.flow.FlowDurabilityHint
 
 instance = Jenkins.instance
 
@@ -34,5 +36,8 @@ GlobalConfiguration.all().get(GlobalJobDslSecurityConfiguration.class).save()
 
 println "Disable sending usage statistics to Jenkins Project"
 instance.setNoUsageStatistics(true)
+
+println "PERFORMANCE_OPTIMIZED mode set for Pipelines"
+instance.getExtensionList(GlobalDefaultFlowDurabilityLevel.DescriptorImpl.class)[0].setDurabilityHint(FlowDurabilityHint.PERFORMANCE_OPTIMIZED)
 
 instance.save()

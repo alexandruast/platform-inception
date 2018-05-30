@@ -1,13 +1,11 @@
 #jinja2: lstrip_blocks: True
 bind_addr= "0.0.0.0"
 {% if service_bind_ip is defined %}
-{% if service_bind_ip %}
 advertise {
   http = "{{service_bind_ip}}"
   rpc  = "{{service_bind_ip}}"
   serf = "{{service_bind_ip}}"
 }
-{% endif %}
 {% endif %}
 log_level = "DEBUG"
 data_dir = "{{service_data_dir}}"
@@ -18,9 +16,12 @@ server {
   bootstrap_expect = 2
   rejoin_after_leave = true
 }
-{% else %}
+{% elif service_mode == 'client' %}
 client {
   enabled = true
+  {% if service_network_interface is defined %}
+  network_interface = "{{service_network_interface}}"
+  {% endif %}
   meta {
     {% for key, value in service_meta.iteritems() %}
     {{key}} = "{{value}}"

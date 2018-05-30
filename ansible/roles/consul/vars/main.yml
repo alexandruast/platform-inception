@@ -1,11 +1,14 @@
 service_name:     consul
-service_version:  1.0.6
+service_version:  1.1.0
 service_user:     "{{service_name}}"
 service_group:    "{{service_name}}"
 service_data_dir: "/usr/local/share/{{service_name}}"
 service_conf_dir: "/etc/{{service_name}}.d"
 service_env: {
-  GOMAXPROCS:     "${GOMAXPROCS:-2}"
+  GOMAXPROCS:     "${GOMAXPROCS:-2}",
+  CONSUL_UI_BETA: "true"
 }
 service_exec:     "/usr/local/bin/{{service_name}}"
-service_args:     "agent -config-dir={{service_conf_dir}}"
+service_args_def: "agent -config-dir={{service_conf_dir}}"
+service_args_dev: "agent -dev -bind={{service_bind_ip|default('127.0.0.1')}} -client=0.0.0.0"
+service_args:     "{{ service_args_dev if service_mode == 'dev' else service_args_def }}"

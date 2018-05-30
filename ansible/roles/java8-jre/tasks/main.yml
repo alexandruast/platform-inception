@@ -1,0 +1,50 @@
+- block:
+  - name: "{{java8_openjdk_yum}} package installed"
+    package:
+      name: "{{java8_openjdk_yum}}"
+      state: present
+    become: true
+
+  - name: "get location of java binary"
+    command: find /usr/lib/jvm -type f -name java -print
+    register: find_openjdk
+    changed_when: false
+
+  - name: "select default java version"
+    alternatives:
+      name: "{{item.name}}"
+      link: /usr/bin/java
+      path: "{{item.path}}"
+    with_items:
+      - { name: "java",  path: "{{find_openjdk.stdout}}" }
+    register: openjdk_java_installed
+    become: true
+
+  when: java_provider == 'openjdk'
+
+- block:
+  - name: "{{oracle_java_get_url}} package downloaded"
+    get_url:
+      url: "{{oracle_java_get_url}}"
+      dest: "{{artifacts_dir}}/{{oracle_java_installer}}"
+      headers: 'Cookie:oraclelicense=accept-securebackup-cookie'
+      force: no
+    become: true
+
+  - name: "{{oracle_java_installer}} package installed"
+    yum:
+      name: "{{artifacts_dir}}/{{oracle_java_installer}}"
+      state: present
+    become: true
+  
+  - name: "select default java version"
+    alternatives:
+      name: "{{item.name}}"
+      link: /usr/bin/java
+      path: "{{item.path}}"
+    with_items:
+      - { name: "java",  path: "/usr/java/jre1.{{oracle_java_version_major}}.0_{{oracle_java_version_minor}}-amd64/bin/java" }
+    register: oracle_java_installed
+    become: true
+  
+  when: java_provider == 'oracle'

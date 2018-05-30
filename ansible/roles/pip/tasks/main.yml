@@ -1,0 +1,5 @@
+- name: "python pip package installed"
+  shell: "which pip >/dev/null || curl -LSs https://bootstrap.pypa.io/get-pip.py | python"
+  register: python_pip_installed
+  changed_when: python_pip_installed.stdout != ''
+  become: true

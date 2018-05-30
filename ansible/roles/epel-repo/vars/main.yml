@@ -1,0 +1,2 @@
+epel_release_installer: epel-release-latest-7.noarch.rpm
+epel_release_installer_url: "https://dl.fedoraproject.org/pub/epel/{{epel_release_installer}}"

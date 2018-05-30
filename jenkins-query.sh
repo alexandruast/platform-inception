@@ -3,7 +3,7 @@
 set -eEo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 which mo >/dev/null 2>&1
-readonly max_timeout=120
+readonly max_timeout=180
 readonly connect_timeout=5
 declare -a auth_args EXCEPTIONS PASS
 
@@ -54,7 +54,7 @@ fi
 CSRF="$(curl --connect-timeout $connect_timeout ${auth_args[*]} -s ${JENKINS_ADDR}/api/json?pretty=true | jq -r '.useCrumbs' | awk '{print tolower($0)}')"
 
 if [[ $CSRF == "true" ]]; then
-  token=$(curl --connect-timeout $connect_timeout ${auth_args[*]} -s ${JENKINS_ADDR}/crumbIssuer/api/json | jq -r '.crumbRequestField + "=" + .crumb')
+  token=$(curl --connect-timeout $connect_timeout ${auth_args[*]} -s ${JENKINS_ADDR}/crumbIssuer/api/json | jq -re '.crumbRequestField + "=" + .crumb')
   auth_args=(${auth_args[@]} -d $token)
 fi
 

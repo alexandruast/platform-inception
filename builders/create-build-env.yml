@@ -1,0 +1,33 @@
+- hosts: all
+  gather_facts: no
+
+  roles:
+    - role: consul-to-env
+      recurse_from:
+        # Get platform-conf default variables
+        - "{{lookup('env','CONSUL_HTTP_ADDR')}}\
+          /v1/kv/platform/conf/defaults"
+
+        # Get platform-conf global variables
+        - "{{lookup('env','CONSUL_HTTP_ADDR')}}\
+          /v1/kv/platform/conf/global"
+
+        # Get platform-conf environment global variables
+        - "{{lookup('env','CONSUL_HTTP_ADDR')}}\
+          /v1/kv/platform/conf\
+          /{{lookup('env','PLATFORM_ENVIRONMENT')}}\
+          /global"
+
+        # Get platform-conf environment pod variables
+        - "{{lookup('env','CONSUL_HTTP_ADDR')}}\
+          /v1/kv/platform/conf\
+          /{{lookup('env','PLATFORM_ENVIRONMENT')}}\
+          /{{lookup('env','POD_CATEGORY')}}\
+          /{{lookup('env','POD_NAME')}}"
+
+        # Get platform-data environment pod variables
+        - "{{lookup('env','CONSUL_HTTP_ADDR')}}\
+          /v1/kv/platform/data\
+          /{{lookup('env','PLATFORM_ENVIRONMENT')}}\
+          /{{lookup('env','POD_CATEGORY')}}\
+          /{{lookup('env','POD_NAME')}}"

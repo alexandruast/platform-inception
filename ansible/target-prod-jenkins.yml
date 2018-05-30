@@ -4,25 +4,72 @@
 
   vars:
     - repos_enabled: true
+    - force_setup: true
 
-  roles:
-    - role: alive
-    - role: gather-facts
-    - role: check-sudo
-    - role: housekeeping
-    - role: base
-    - role: dnsmasq
-      dnsmasq_supersede: yes
-      dns_servers:
-        - "/consul/127.0.0.1#8600"
-        - "8.8.8.8"
-        - "8.8.4.4"    
-    - role: ansible
-    - role: terraform
-    - role: terragrunt
-    - role: mo
-    - role: jq
-    - role: java8-openjdk
-    - role: jenkins
-    - role: user-ssh-key
-      run_as: jenkins
+  tasks:
+    - include_role:
+        name: alive
+
+    - include_role:
+        name: gather-facts
+
+    - include_role:
+        name: check-sudo
+        
+    - include_role:
+        name: housekeeping
+
+    - block:
+      - include_role:
+          name: base
+
+      - include_role:
+          name: swap
+
+      - include_role:
+          name: dnsmasq
+
+      - include_role:
+          name: mo
+
+      - include_role:
+          name: jq
+
+      - include_role:
+          name: td-agent-bit
+
+      - include_role:
+          name: rsyslog
+
+      - include_role:
+          name: setup-completed
+
+      when: not ansible_local.setup_completed|default(false) or force_setup|default(false)
+
+    - include_role:
+        name: ansible
+
+    - include_role:
+        name: consul
+
+    - include_role:
+        name: nomad
+
+    - include_role:
+        name: terraform
+
+    - include_role:
+        name: terragrunt
+
+    - include_role:
+        name: java8-jre
+      vars:
+        java_provider: oracle
+
+    - include_role:
+        name: jenkins
+
+    - include_role:
+        name: user-ssh-key
+      vars:
+        run_as: jenkins

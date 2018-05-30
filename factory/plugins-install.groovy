@@ -8,10 +8,12 @@ uc = instance.updateCenter
 Set<String> installPlugins = [
   "build-timeout",
   "credentials",
+  "envinject",
   "git",
   "job-dsl",
   "mask-passwords",
   "matrix-auth",
+  "rebuild",
   "workflow-aggregator",
   "ws-cleanup"
 ]

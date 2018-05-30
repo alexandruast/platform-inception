@@ -1,5 +1,5 @@
 service_name:     nomad
-service_version:  0.7.1
+service_version:  0.8.3
 service_user:     "{{service_name}}"
 service_group:    "{{service_name}}"
 service_data_dir: "/usr/local/share/{{service_name}}"
@@ -7,6 +7,9 @@ service_conf_dir: "/etc/{{service_name}}.d"
 service_env: {
   GOMAXPROCS:     "${GOMAXPROCS:-4}"
 }
+service_meta: {}
 service_exec:     "/usr/local/bin/{{service_name}}"
-service_args:     "agent -config={{service_conf_dir}}"
+service_args_def: "agent -config={{service_conf_dir}}"
+service_args_dev: "agent -dev -network-interface={{service_network_interface|default('lo')}}"
+service_args:     "{{ service_args_dev if service_mode == 'dev' else service_args_def }}"
 

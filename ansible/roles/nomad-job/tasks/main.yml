@@ -1,0 +1,4 @@
+- name: "nomad job file updated"
+  template:
+    src: "{{lookup('env','POD_PATH')}}/nomad-job.hcl.j2"
+    dest: "{{lookup('env','POD_PATH')}}/nomad-job.hcl"

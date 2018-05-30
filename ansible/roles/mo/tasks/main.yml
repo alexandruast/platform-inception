@@ -1,8 +1,23 @@
-- name: "binary is downloaded and installed"
+- name: "service binaries downloaded and installed"
   get_url:
-    url:  https://raw.githubusercontent.com/tests-always-included/mo/master/mo
-    dest: /usr/local/bin/mo
-    force: "{{download_force|default(false)}}"
-    mode: +x
+    url:  "https://raw.githubusercontent.com/tests-always-included/{{service_name}}/{{service_version}}/{{service_name}}"
+    dest: "{{artifacts_dir}}/{{service_name}}-{{service_version}}"
+    force: no
+  register: service_archive
   become: true
 
+- name: "service binary check"
+  stat:
+    path: "/usr/local/bin/{{service_name}}"
+  register: service_binary_check
+  changed_when: false
+
+- name: "service binaries installed"
+  copy:
+    src:  "{{artifacts_dir}}/{{service_name}}-{{service_version}}"
+    dest: "/usr/local/bin/{{service_name}}"
+    mode: +x
+    remote_src: yes
+  become: true
+  when: service_archive.changed
+      or not service_binary_check.stat.exists

@@ -1,0 +1,10 @@
+FROM gradle:4.7-jdk8 as BUILDER
+COPY --chown=gradle:gradle . /home/gradle/{{lookup('env','POD_NAME')}}
+WORKDIR /home/gradle/{{lookup('env','POD_NAME')}}
+RUN gradle build
+
+FROM openjdk:8u171-jre-slim
+COPY --from=BUILDER /home/gradle/{{lookup('env','POD_NAME')}}/build/libs/*.jar /
+WORKDIR /
+USER nobody
+CMD ["/bin/sh", "-c", "java -jar *.jar"]

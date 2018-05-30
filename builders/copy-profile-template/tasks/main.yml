@@ -1,0 +1,24 @@
+- stat:
+    path: "{{ item }}"
+  with_items:
+    - "{{ checkout_dir }}/{{ target_file }}"
+    - "{{ checkout_dir }}/{{ target_file }}.j2"
+  register: target_file_check
+
+- block:
+  - stat:
+      path: "{{ item }}"
+    with_items:
+      - "{{ playbook_dir }}/{{ target_file }}-{{ lookup('env','POD_NAME') }}.j2"
+      - "{{ playbook_dir }}/{{ target_file }}-{{ target_profile }}.j2"
+    register: builders_check
+
+  - copy:
+      src:  "{{ item.stat.path }}"
+      dest: "{{ checkout_dir }}/{{ target_file }}.j2"
+    with_items:
+      - "{{ builders_check.results | selectattr('stat.path', 'defined') | list | first }}"
+    loop_control:
+      label: "{{ item.stat.path }}"
+
+  when: (target_file_check.results | selectattr('stat.path', 'defined') | list | length) == 0

@@ -1,22 +1,54 @@
 - hosts: all
   gather_facts: no
   serial: "{{serial_value|default(1)}}"
-  
+
   vars:
     - repos_enabled: true
+    - force_setup: true
 
-  roles:
-    - role: alive
-    - role: gather-facts
-    - role: check-sudo
-    - role: housekeeping
-    - role: base
-    - role: dnsmasq
-      dnsmasq_supersede: yes
-      dns_servers:
-        - "8.8.8.8"
-        - "8.8.4.4"
-    - role: jq
-    - role: consul
-      service_mode: client
-    - role: vault
+  tasks:
+    - include_role:
+        name: alive
+
+    - include_role:
+        name: gather-facts
+
+    - include_role:
+        name: check-sudo
+
+    - include_role:
+        name: housekeeping
+
+    - block:
+      - block:
+        - include_role:
+            name: base
+
+        - include_role:
+            name: dnsmasq
+
+        - include_role:
+            name: jq
+
+        - include_role:
+            name: td-agent-bit
+
+        - include_role:
+            name: rsyslog
+
+        - include_role:
+            name: setup-completed
+
+        when: not ansible_local.setup_completed|default(false) or force_setup|default(false)
+
+      - include_role:
+          name: consul
+        vars:
+          service_mode: server
+
+      when: standalone_install|default(true)
+
+    - include_role:
+        name: vault
+      vars:
+        service_mode: server

@@ -4,25 +4,58 @@
 
   vars:
     - repos_enabled: true
+    - force_setup: true
 
-  roles:
-    - role: alive
-    - role: gather-facts
-    - role: check-sudo
-    - role: housekeeping
-    - role: base
-    - role: dnsmasq
-      dnsmasq_supersede: yes
-      dns_servers:
-        - "8.8.8.8"
-        - "8.8.4.4"
-    - role: jq
-    - role: docker
-    - role: pumba
-    - role: consul
-      service_mode: client
-    - role: nomad
-      service_mode: client
-      service_meta: {
-        foo: "bar"
-      }
+  tasks:
+    - include_role:
+        name: alive
+
+    - include_role:
+        name: gather-facts
+
+    - include_role:
+        name: check-sudo
+
+    - include_role:
+        name: housekeeping
+
+    - block:
+      - include_role:
+          name: base
+
+      - include_role:
+          name: dnsmasq
+        vars:
+          dnsmasq_resolv: prepend
+          dns_servers:
+            - "/consul/192.0.2.255#8600"
+
+      - include_role:
+          name: jq
+
+      - include_role:
+          name: td-agent-bit
+
+      - include_role:
+          name: rsyslog
+
+      - include_role:
+          name: setup-completed
+
+      when: not ansible_local.setup_completed|default(false) or force_setup|default(false)
+
+    - include_role:
+        name: docker
+
+    - include_role:
+        name: pumba
+
+    - include_role:
+        name: consul
+      vars:
+        service_mode: client
+
+    - include_role:
+        name: nomad
+      vars:
+        service_mode: client

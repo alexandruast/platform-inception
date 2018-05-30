@@ -69,14 +69,14 @@
   become: true
   when: dhclientConf is changed
 
-- name: "/etc/resolv.conf updated - no dhclient - dnsmasq_supersede"
+- name: "/etc/resolv.conf updated - no dhclient - remove all entries"
   lineinfile:
     dest: /etc/resolv.conf
     regexp: "^nameserver (?!127\\.0\\.0\\.1).*$"
     state: absent
     backup: yes
   become: true
-  when: dhclient_pgrep.rc != 0 and dnsmasq_supersede
+  when: dhclient_pgrep.rc != 0 and dns_servers|length != 0 and dnsmasq_resolv == 'supersede'
 
 - name: "/etc/resolv.conf updated - no dhclient - add 127.0.0.1"
   lineinfile:
@@ -87,5 +87,5 @@
     state: present
     backup: yes
   become: true
-  when: dhclient_pgrep.rc != 0
+  when: dhclient_pgrep.rc != 0 and dns_servers|length != 0 and (dnsmasq_resolv == 'supersede' or dnsmasq_resolv == 'prepend')
 

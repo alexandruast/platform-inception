@@ -6,13 +6,10 @@
       skip: true
   tags: always
 
-- name: "yum - docker repository added"
-  yum_repository:
-    name: docker-ce-stable
-    description: Docker CE Stable
-    baseurl: https://download.docker.com/linux/centos/7/x86_64/stable
-    gpgkey: https://download.docker.com/linux/centos/gpg
-    gpgcheck: yes
+- name: "docker repository added"
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docer-ce.repo
   become: true
   when: ansible_distribution|lower == 'redhat' or ansible_distribution|lower == 'centos'
 

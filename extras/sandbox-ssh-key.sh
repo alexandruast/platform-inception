@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Copy the bundled key to all machines - For Demo/Sandbox purposes only!
-set -eEo pipefail
+set -eEuo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
 SANDBOX_PEM="$(cat <<EOF

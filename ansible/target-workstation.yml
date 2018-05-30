@@ -12,7 +12,7 @@
     - role: user-ssh-key
     - role: base
     - role: dnsmasq
-      dnsmasq_supersede: yes
+      dnsmasq_resolv: supersede
       dns_servers:
         - "/consul/127.0.0.1#8600"
         - "8.8.8.8"
@@ -23,11 +23,8 @@
     - role: pumba
     - role: jq
     - role: consul
-      service_install: false
     - role: nomad
-      service_install: false
     - role: vault
-      service_install: false
     - role: packer
     - role: terraform
     - role: terragrunt

@@ -1,0 +1,27 @@
+job "{{lookup('env','POD_NAME')}}" {
+  datacenters = ["dc1"]
+  type = "service"
+  update {
+    max_parallel = 1
+  }
+  group "{{lookup('env','POD_NAME')}}" {
+    count = {{lookup('env','POD_COUNT')|default(1,true)}}
+    task "{{lookup('env','POD_NAME')}}-{{lookup('env','BUILD_TAG')}}" {
+      driver = "docker"
+      config {
+        image = "{{lookup('env','DOCKER_REGISTRY_ADDRESS')}}/{{lookup('env','DOCKER_REGISTRY_PATH')}}/{{lookup('env','POD_NAME')}}:{{lookup('env','BUILD_TAG')}}"
+        auth {
+          server_address = "{{lookup('env','DOCKER_REGISTRY_ADDRESS')}}"
+          username = "{{lookup('env','REGISTRY_USERNAME')}}"
+          password = "{{lookup('env','REGISTRY_PASSWORD')}}"
+        }
+      }
+      resources {
+        memory = {{lookup('env','POD_MEMORY')|default(100,true)}}
+      }
+      service {
+        name = "{{lookup('env','POD_NAME')}}"
+      }
+    }
+  }
+}

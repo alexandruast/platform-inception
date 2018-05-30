@@ -1,17 +1,23 @@
+export JENKINS_HOME="/usr/local/share/jenkins"
 export JENKINS_PORT=8080
 export JENKINS_JAVA_OPTS="-Xmx800m -Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"
 export JENKINS_ADMIN_USER='admin'
 declare -a ARR_JENKINS_SETUP_SCRIPTS
 ARR_JENKINS_SETUP_SCRIPTS=(
   "common/is-online.groovy"
-  "factory/plugins-install.groovy"
-  "common/useradd-admin.groovy"
-  "common/jobs-delete.groovy"
-  "common/views-delete.groovy"
-  "factory/jobs/factory-job-dsl-import.groovy"
-  "common/security-setup.groovy"
   "common/safe-restart.groovy"
   "common/is-online.groovy"
+  "common/jobs-backup.groovy"
+  "common/jobs-delete.groovy"
+  "common/views-delete.groovy"
+  "factory/plugins-install.groovy"
+  "common/useradd-admin.groovy"
+  "common/security-setup.groovy"
+  "factory/jobs/factory-job-dsl-import.groovy"
+  "common/jobs-restore.groovy"
+  "common/safe-restart.groovy"
+  "common/is-online.groovy"
+  "common/quiet-cancel.groovy"
 )
 export JENKINS_SETUP_SCRIPTS="${ARR_JENKINS_SETUP_SCRIPTS[*]}"
 

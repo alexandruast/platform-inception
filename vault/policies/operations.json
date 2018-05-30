@@ -1,0 +1,10 @@
+{
+  "path": {
+    "secret/operations/*": {
+      "capabilities": ["create", "read", "update", "delete", "list"]
+    },
+    "auth/approle/role/operations/secret-id": {
+      "capabilities": ["read", "update"]
+    }
+  }
+}

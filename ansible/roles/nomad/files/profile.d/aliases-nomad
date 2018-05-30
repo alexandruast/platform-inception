@@ -8,11 +8,11 @@ nomad() {
     jn)
       shift
       service="$1"
-      job=$(curl -s $NOMAD_ADDR/v1/jobs | jq -r --arg service "$service" '[.[] | select(.ID | contains($service)) | .ID'][0])
+      job=$(curl -s $NOMAD_ADDR/v1/jobs | jq -re --arg service "$service" '[.[] | select(.ID | contains($service)) | .ID'][0])
       nodes_json="$(curl -s $NOMAD_ADDR/v1/nodes)"
       echo "Nodes hosting $job"
-      for i in $(curl -s $NOMAD_ADDR/v1/allocations | jq -r --arg job "$job" '.[] | select(.JobID==$job) | [.NodeID,.ID] | join(":")'); do
-        node=$(echo "$nodes_json" | jq -r --arg node "${i%:*}" '.[] | select(.ID | contains($node)) | .Name')
+      for i in $(curl -s $NOMAD_ADDR/v1/allocations | jq -re --arg job "$job" '.[] | select(.JobID==$job) | [.NodeID,.ID] | join(":")'); do
+        node=$(echo "$nodes_json" | jq -re --arg node "${i%:*}" '.[] | select(.ID | contains($node)) | .Name')
         echo -e "$node\t${i#*:}"
       done
       ;;
