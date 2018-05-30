@@ -19,6 +19,13 @@ export REGISTRY_USERNAME
 export REGISTRY_PASSWORD
 export BUILD_TAG
 
+echo "[info] getting profile templates..."
+
+ansible-playbook -i 127.0.0.1, \
+  --connection=local \
+  --module-path=${BUILDERS_ABSOLUTE_DIR} \
+  ${BUILDERS_ABSOLUTE_DIR}/profile-templates.yml
+
 echo "[info] parsing jinja2 templates, if any..."
 
 ansible-playbook -i 127.0.0.1, \
