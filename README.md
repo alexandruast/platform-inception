@@ -43,8 +43,8 @@ Production infrastructure requires consul/vault clusters for factory and prod.
 * docker-enforcer and vulnerability assessment for docker images/files
 
 #### Changelog
-ansible builders for heavy lifting!
-moved all embedded shell scripts out of groovy files  
+ansible builders for heavy lifting!  
+moved all high-complexity embedded shell scripts out of groovy files  
 added go sleep service  
 mask docker files, nomad jobs, docker-compose files, dev selects runtime or place files in build dir to override  
 parsing all jinja2 files in build directories  
