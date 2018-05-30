@@ -1,7 +1,5 @@
 def environments = [
-  'sandbox',
-  'integration',
-  'qa'
+  'sandbox'
 ]
 
 environments.each { environment ->
