@@ -9,7 +9,7 @@
 
 - debug:
     msg:
-      - "{{ consul_data.results|selectattr('json', 'defined') | list }}"
+      - "{{ consul_data.results|selectattr('json', 'defined') | map(attribute='json') | list }}"
 
 - name: "write variables in {{ build_env }}"
   lineinfile:
@@ -18,6 +18,6 @@
     regexp: '^export {{ item.Key|basename|upper }}='
     line:   'export {{ item.Key|basename|upper }}="{{ item.Value|b64decode }}"'
   with_items: 
-    - "{{ consul_data.results|selectattr('json', 'defined') | list }}"
+    - "{{ consul_data.results | selectattr('json', 'defined') | list }}"
   loop_control: 
     label: "{{ item.Key|basename|upper }}"
