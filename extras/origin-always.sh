@@ -30,8 +30,6 @@ for scope in origin prod factory; do
   echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
 done
 
-echo "Afdadsfdsa"
-
 # setting up consul
 export CONSUL_HTTP_ADDR="http://consul.service.consul:8500"
 export VAULT_ADDR="http://vault.service.consul:8200"
