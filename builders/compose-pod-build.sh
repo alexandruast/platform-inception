@@ -20,10 +20,12 @@ export REGISTRY_USERNAME
 export REGISTRY_PASSWORD
 export BUILD_TAG
 
+echo "[info] getting environment config from consul..."
+
 ansible-playbook -i 127.0.0.1, \
   --connection=local \
   --module-path=${BUILDERS_DIR} \
-  ${BUILDERS_DIR}/profile-templates.yml
+  ${BUILDERS_DIR}/profile-templates.yml >/dev/null
 
 echo "[info] parsing jinja2 templates, if any..."
 
