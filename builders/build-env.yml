@@ -3,7 +3,7 @@
 
   roles:
     - role: build-env
-      recurse_urls: >-
+      recurse_from: >-
         
         # Get platform-conf default variables
         - "{{lookup('env','CONSUL_HTTP_ADDR')}}
