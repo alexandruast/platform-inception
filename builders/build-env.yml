@@ -2,6 +2,10 @@
   gather_facts: no
 
   roles:
+    
+    - role: build-env
+      recurse_url: "{{lookup('env','CONSUL_HTTP_ADDR')}}/v1/kv/platform/conf/defaults"
+      
     - role: build-env
       recurse_url: "{{lookup('env','CONSUL_HTTP_ADDR')}}/v1/kv/platform/conf/global"
   

@@ -9,8 +9,6 @@ export BUILDERS_DIR
 
 BUILD_TAG="$(git rev-parse --short HEAD)"
 
-CURRENT_BUILD_TAG="${CURRENT_BUILD_TAG:-"0000000"}"
-
 REGISTRY_CREDENTIALS="$(curl -Ssf -X GET \
   -H "X-Vault-Token:${VAULT_TOKEN}" \
   "${VAULT_ADDR}/v1/secret/operations/docker-registry" | jq -re .data.value)"
@@ -18,14 +16,14 @@ REGISTRY_CREDENTIALS="$(curl -Ssf -X GET \
 REGISTRY_USERNAME="${REGISTRY_CREDENTIALS%:*}"
 REGISTRY_PASSWORD="${REGISTRY_CREDENTIALS#*:}"
 
+export REGISTRY_USERNAME
+export REGISTRY_PASSWORD
+export BUILD_TAG
+
 ansible-playbook -i 127.0.0.1, \
   --connection=local \
   --module-path=${BUILDERS_DIR} \
   ${BUILDERS_DIR}/profile-templates.yml
-
-export REGISTRY_USERNAME
-export REGISTRY_PASSWORD
-export BUILD_TAG
 
 echo "[info] parsing jinja2 templates, if any..."
 

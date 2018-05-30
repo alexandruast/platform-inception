@@ -4,16 +4,6 @@ trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
 echo "[info] getting all information required for the deploy to start..."
 
-CURRENT_BUILD_TAG="${CURRENT_BUILD_TAG:-"0000000"}"
-
-SSH_OPTS=(
-  "-o LogLevel=error"
-  "-o StrictHostKeyChecking=no"
-  "-o UserKnownHostsFile=/dev/null"
-  "-o BatchMode=yes"
-  "-o ExitOnForwardFailure=yes"
-)
-
 trap 'ssh -S "${WORKSPACE}/ssh-control-socket" -O exit ${SSH_DEPLOY_ADDRESS}' EXIT
 
 # Creating an SSH tunnel to the nomad server
@@ -21,7 +11,7 @@ TUNNEL_PORT=$(perl -e 'print int(rand(999)) + 58000')
 
 echo "[info] SSH tunnel to ${SSH_DEPLOY_ADDRESS}:${TUNNEL_PORT} starting..."
 
-ssh ${SSH_OPTS[*]} \
+ssh ${DEPLOY_SSH_OPTS} \
   -f -N -M \
   -S "${WORKSPACE}/ssh-control-socket" \
   -L ${TUNNEL_PORT}:127.0.0.1:4646 \
