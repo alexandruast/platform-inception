@@ -10,7 +10,7 @@ views.each { view, filter ->
     filterBuildQueue()
     filterExecutors()
     jobs {
-      regex("(${filter}-).*")
+      regex(".*(${filter}-).*")
     }
     columns {
       status()

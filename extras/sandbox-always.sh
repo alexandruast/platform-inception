@@ -54,7 +54,7 @@ POD_NAME="sys-py-yaml-to-consul" \
   ./jenkins-query.sh \
   ./common/jobs/build-simple-job.groovy
 
-JENKINS_BUILD_JOB="consul-data-import"
+JENKINS_BUILD_JOB="sandbox-consul-data-import"
 echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
 JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
   ./jenkins-query.sh \
