@@ -28,7 +28,6 @@ Production infrastructure requires consul/vault clusters for factory and prod.
 
 ##### Improvements
 * write groovy logic in job-dsl to retrieve all variables from consul
-* yaml-to-consul to delete only non-declared keys
 * fluentd to listen on udp socket
 * authenticate consul with vault for write operations
 * hide sensitive info from console output
@@ -43,6 +42,7 @@ Production infrastructure requires consul/vault clusters for factory and prod.
 * docker-enforcer and vulnerability assessment for docker images/files
 
 #### Changelog
+yaml-to-consul to delete only non-declared keys  
 ansible builders for heavy lifting!  
 moved all high-complexity embedded shell scripts out of groovy files  
 added go sleep service  
