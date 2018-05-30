@@ -1,6 +1,6 @@
 - name: "read data from consul"
   uri:
-    url:    "{{ item| }}?recurse=true"
+    url:    "{{ item }}?recurse=true"
     method: GET
   failed_when: consul_data.status not in [200,404]
   with_items:
