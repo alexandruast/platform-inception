@@ -1,11 +1,15 @@
 - name: "read data from consul"
   uri:
-    url:    "{{ item }}?recurse=true"
+    url:    "{{ item| }}?recurse=true"
     method: GET
   failed_when: consul_data.status not in [200,404]
   with_items:
     - "{{ recurse_from }}"
   register: consul_data
+
+- debug:
+  - msg:
+    - {{ consul_data }}
 
 - name: "write variables in {{ build_env }}"
   lineinfile:
