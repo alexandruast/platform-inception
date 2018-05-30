@@ -1,35 +1,33 @@
 - hosts: all
   gather_facts: no
 
-# Get platform-conf default variables
-# Get platform-conf global variables
-# Get platform-conf environment global variables
-# Get platform-conf environment pod variables
-# Get platform-data environment pod variables
-
   roles:
     - role: build-env
       recurse_from:
+        # Get platform-conf default variables
+        - "{{lookup('env','CONSUL_HTTP_ADDR')}}\
+          /v1/kv/platform/conf/defaults"
 
-        - > "{{lookup('env','CONSUL_HTTP_ADDR')}}
-            /v1/kv/platform/conf/defaults"
+        # Get platform-conf global variables
+        - "{{lookup('env','CONSUL_HTTP_ADDR')}}\
+          /v1/kv/platform/conf/global"
 
-        - > "{{lookup('env','CONSUL_HTTP_ADDR')}}
-            /v1/kv/platform/conf/global"
+        # Get platform-conf environment global variables
+        - "{{lookup('env','CONSUL_HTTP_ADDR')}}\
+          /v1/kv/platform/conf\
+          /{{lookup('env','PLATFORM_ENVIRONMENT')}}\
+          /global"
 
-        - > "{{lookup('env','CONSUL_HTTP_ADDR')}}
-            /v1/kv/platform/conf
-            /{{lookup('env','PLATFORM_ENVIRONMENT')}}
-            /global"
+        # Get platform-conf environment pod variables
+        - "{{lookup('env','CONSUL_HTTP_ADDR')}}\
+          /v1/kv/platform/conf\
+          /{{lookup('env','PLATFORM_ENVIRONMENT')}}\
+          /{{lookup('env','POD_CATEGORY')}}\
+          /{{lookup('env','POD_NAME')}}"
 
-        - > "{{lookup('env','CONSUL_HTTP_ADDR')}}
-            /v1/kv/platform/conf
-            /{{lookup('env','PLATFORM_ENVIRONMENT')}}
-            /{{lookup('env','POD_CATEGORY')}}
-            /{{lookup('env','POD_NAME')}}"
-
-        - > "{{lookup('env','CONSUL_HTTP_ADDR')}}
-            /v1/kv/platform/data
-            /{{lookup('env','PLATFORM_ENVIRONMENT')}}
-            /{{lookup('env','POD_CATEGORY')}}
-            /{{lookup('env','POD_NAME')}}"
+        # Get platform-data environment pod variables
+        - "{{lookup('env','CONSUL_HTTP_ADDR')}}\
+          /v1/kv/platform/data\
+          /{{lookup('env','PLATFORM_ENVIRONMENT')}}\
+          /{{lookup('env','POD_CATEGORY')}}\
+          /{{lookup('env','POD_NAME')}}"
