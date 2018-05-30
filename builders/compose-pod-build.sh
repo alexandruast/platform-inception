@@ -2,6 +2,8 @@
 set -eEuo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
+echo "[info] getting all information required for the build to start..."
+
 BUILDERS_DIR="$(cd "$(dirname $0)" && pwd)"
 export BUILDERS_DIR
 
@@ -23,12 +25,17 @@ ansible-playbook -i 127.0.0.1, \
   --module-path=${BUILDERS_DIR} \
   ${BUILDERS_DIR}/profile-templates.yml
 
+echo "[info] parsing jinja2 templates, if any..."
+
 ansible-playbook -i 127.0.0.1, \
   --connection=local \
   --module-path=${BUILDERS_DIR} \
   ${BUILDERS_DIR}/parse-templates.yml
 
+COMPOSE_FILE="${WORKSPACE}/${CHECKOUT_DIR}/docker-compose.yml"
 NOMAD_FILE="${WORKSPACE}/${CHECKOUT_DIR}/nomad-job.hcl"
+
+echo "[info] validating nomad job file..."
 
 nomad validate \
   "${NOMAD_FILE}"
@@ -47,12 +54,18 @@ docker login "${DOCKER_REGISTRY_ADDRESS}" \
   --username="${REGISTRY_USERNAME}" \
   --password-stdin <<< ${REGISTRY_PASSWORD} >/dev/null
 
+echo "[info] building docker images..."
+
 docker-compose \
+  -f "${COMPOSE_FILE}" \
   --project-name "${POD_NAME}-${BUILD_TAG}" \
   --no-ansi \
   build --no-cache
 
+echo "[info] pushing docker images..."
+
 docker-compose \
+  -f "${COMPOSE_FILE}" \
   --project-name "${POD_NAME}-${BUILD_TAG}" \
   --no-ansi \
   push
