@@ -4,16 +4,28 @@ trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
 echo "[info] getting all information required for the deploy to start..."
 
+SSH_OPTS=(
+  "-o LogLevel=error"
+  "-o StrictHostKeyChecking=no"
+  "-o UserKnownHostsFile=/dev/null"
+  "-o BatchMode=yes"
+  "-o ExitOnForwardFailure=yes"
+)
+
 trap 'ssh -S "${WORKSPACE}/ssh-control-socket" -O exit ${SSH_DEPLOY_ADDRESS}' EXIT
+
+# Creating an SSH tunnel to the nomad server
+TUNNEL_PORT=$(perl -e 'print int(rand(999)) + 58000')
 
 echo "[info] SSH tunnel to ${SSH_DEPLOY_ADDRESS}:${TUNNEL_PORT} starting..."
 
-ssh ${DEPLOY_SSH_OPTS} \
+ssh ${SSH_OPTS[*]} \
   -f -N -M \
   -S "${WORKSPACE}/ssh-control-socket" \
   -L ${TUNNEL_PORT}:127.0.0.1:4646 \
   ${SSH_DEPLOY_ADDRESS}
 
+NOMAD_FILE="${WORKSPACE}/${CHECKOUT_DIR}/nomad-job.json"
 NOMAD_ADDR=http://127.0.0.1:${TUNNEL_PORT}
 
 echo "[info] getting information about currently running deployment for this pod..."
@@ -22,7 +34,7 @@ echo "[info] getting information about currently running deployment for this pod
 if curl -Ssf ${NOMAD_ADDR}/v1/job/${POD_NAME} >/dev/null; then
   # Try job planning, so we can catch any issues before actually deploying stuff
   JOB_PLAN_DATA="$(curl -Ssf -X POST \
-    -d "@${WORKSPACE}/${CHECKOUT_DIR}/nomad-job.json" \
+    -d "@${NOMAD_FILE}" \
     ${NOMAD_ADDR}/v1/job/${POD_NAME}/plan)"
   # To go further with the deploy, the FailedTGAllocs field must be null
   FAILED_ALLOCS="$(echo "${JOB_PLAN_DATA}" \
