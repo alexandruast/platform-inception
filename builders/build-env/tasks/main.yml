@@ -9,7 +9,7 @@
 
 - debug:
     msg:
-      - "{{ consul_data.results|selectattr('json', 'defined') | map(attribute='json') | list }}"
+      - "{{ consul_data.results|selectattr('json', 'defined') | map(attribute='json') | join(',') }}"
 
 - name: "write variables in {{ build_env }}"
   lineinfile:
