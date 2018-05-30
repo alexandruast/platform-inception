@@ -57,7 +57,7 @@ node {
         string(credentialsId: 'JENKINS_VAULT_ROLE_ID', variable: 'VAULT_ROLE_ID'),
     ]) {
       sh '''#!/usr/bin/env bash
-        set -veE
+        set -eEuo pipefail
         source "${WORKSPACE}/.build-env"
         "${BUILDERS_RELATIVE_DIR}/${BUILDERS_CHECKOUT_DIR}/compose-pod-build.sh"
       '''
@@ -70,7 +70,7 @@ node {
           string(credentialsId: 'JENKINS_VAULT_ROLE_ID', variable: 'VAULT_ROLE_ID'),
       ]) {
         sh '''#!/usr/bin/env bash
-          set -eE
+          set -eEuo pipefail
           source "${WORKSPACE}/.build-env"
           "${BUILDERS_RELATIVE_DIR}/${BUILDERS_CHECKOUT_DIR}/compose-pod-deploy.sh"
         '''
