@@ -20,7 +20,7 @@ export REGISTRY_USERNAME
 export REGISTRY_PASSWORD
 export BUILD_TAG
 
-echo "[info] getting environment config from consul..."
+echo "[info] getting profile templates..."
 
 ansible-playbook -i 127.0.0.1, \
   --connection=local \
@@ -32,7 +32,7 @@ echo "[info] parsing jinja2 templates, if any..."
 ansible-playbook -i 127.0.0.1, \
   --connection=local \
   --module-path=${BUILDERS_DIR} \
-  ${BUILDERS_DIR}/parse-templates.yml
+  ${BUILDERS_DIR}/parse-templates.yml >/dev/null
 
 COMPOSE_FILE="${WORKSPACE}/${CHECKOUT_DIR}/docker-compose.yml"
 NOMAD_FILE="${WORKSPACE}/${CHECKOUT_DIR}/nomad-job.hcl"
