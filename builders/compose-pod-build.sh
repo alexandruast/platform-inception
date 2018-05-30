@@ -25,14 +25,14 @@ echo "[info] getting profile templates..."
 ansible-playbook -i 127.0.0.1, \
   --connection=local \
   --module-path=${BUILDERS_DIR} \
-  ${BUILDERS_DIR}/profile-templates.yml >/dev/null
+  ${BUILDERS_DIR}/profile-templates.yml
 
 echo "[info] parsing jinja2 templates, if any..."
 
 ansible-playbook -i 127.0.0.1, \
   --connection=local \
   --module-path=${BUILDERS_DIR} \
-  ${BUILDERS_DIR}/parse-templates.yml >/dev/null
+  ${BUILDERS_DIR}/parse-templates.yml
 
 COMPOSE_FILE="${WORKSPACE}/${CHECKOUT_DIR}/docker-compose.yml"
 NOMAD_FILE="${WORKSPACE}/${CHECKOUT_DIR}/nomad-job.hcl"
