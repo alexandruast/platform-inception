@@ -1,7 +1,7 @@
 def views = [
-  'system':   'system',
-  'target':   'ansible',
-  'metadata': 'vault|consul'
+  'system':   '(^system-|.*-system-).*',
+  'target':   '(^ansible-|.*-ansible-).*',
+  'metadata': '(^vault-|.*-vault-|^consul-|.*-consul-).*'
 ]
 
 views.each { view, filter ->
@@ -10,7 +10,7 @@ views.each { view, filter ->
     filterBuildQueue()
     filterExecutors()
     jobs {
-      regex("(^${filter}-|.*-${filter}-).*")
+      regex("${filter}")
     }
     columns {
       status()

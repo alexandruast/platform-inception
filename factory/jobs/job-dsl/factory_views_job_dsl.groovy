@@ -1,7 +1,7 @@
 def views = [
-  'env-sandbox'     : 'sandbox',
-  'env-integration' : 'integration',
-  'env-qa'          : 'qa'
+  'env-sandbox'     : '(^sandbox-|.*-sandbox-).*',
+  'env-integration' : '(^integration-|.*-integration-).*',
+  'env-qa'          : '(^qa-|.*-qa-).*'
 ]
 
 views.each { view, filter ->
@@ -10,7 +10,7 @@ views.each { view, filter ->
     filterBuildQueue()
     filterExecutors()
     jobs {
-      regex("(^${filter}-|.*-${filter}-).*")
+      regex("${filter}")
     }
     columns {
       status()
