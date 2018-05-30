@@ -56,7 +56,7 @@ node {
         string(credentialsId: 'JENKINS_VAULT_TOKEN', variable: 'VAULT_TOKEN'),
         string(credentialsId: 'JENKINS_VAULT_ROLE_ID', variable: 'VAULT_ROLE_ID'),
     ]) {
-      sh '''
+      sh '''#!/usr/bin/env bash
         source "${WORKSPACE}/.build-env"
         "${BUILDERS_RELATIVE_DIR}/${BUILDERS_CHECKOUT_DIR}/compose-pod-build.sh"
       '''
@@ -68,7 +68,7 @@ node {
           string(credentialsId: 'JENKINS_VAULT_TOKEN', variable: 'VAULT_TOKEN'),
           string(credentialsId: 'JENKINS_VAULT_ROLE_ID', variable: 'VAULT_ROLE_ID'),
       ]) {
-        sh '''
+        sh '''#!/usr/bin/env bash
           source "${WORKSPACE}/.build-env"
           "${BUILDERS_RELATIVE_DIR}/${BUILDERS_CHECKOUT_DIR}/compose-pod-deploy.sh"
         '''
