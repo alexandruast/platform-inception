@@ -6,7 +6,7 @@ import javaposse.jobdsl.plugin.*
 job_name = 'system-factory-job-seed'
 job_description = "Dynamically created by jenkins-setup\nAny changes to this item will be overwritten without notice."
 git_repository = 'https://github.com/alexandruast/platform-inception'
-git_branch = '*/devel'
+git_branch = '*/master'
 set_targets = [
   "factory/jobs/job-dsl/**/*.groovy",
   "common/jobs/job-dsl/group_all/**/*.groovy",
