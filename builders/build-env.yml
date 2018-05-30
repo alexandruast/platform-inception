@@ -9,7 +9,7 @@
 
   roles:
     - role: build-env
-      recurse_from: >-
+      recurse_from: >4
 
         - "{{lookup('env','CONSUL_HTTP_ADDR')}}
           /v1/kv/platform/conf/defaults"
