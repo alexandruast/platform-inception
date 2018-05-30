@@ -2,14 +2,14 @@
   gather_facts: no
 
   roles:
-    - role: profile-templates
+    - role: copy-profile-template
       target_file:    "docker-compose.yml"
       target_profile: "{{lookup('env','COMPOSE_PROFILE')|default('default',true)}}"
   
-    - role: profile-templates
+    - role: copy-profile-template
       target_file:    "Dockerfile"
       target_profile: "{{lookup('env','BUILD_PROFILE')|default('default',true)}}"
 
-    - role: profile-templates
+    - role: copy-profile-template
       target_file:    "nomad-job.hcl"
       target_profile: "{{lookup('env','DEPLOY_PROFILE')|default('default',true)}}"

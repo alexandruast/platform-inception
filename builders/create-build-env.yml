@@ -2,7 +2,7 @@
   gather_facts: no
 
   roles:
-    - role: build-env
+    - role: consul-to-env
       recurse_from:
         # Get platform-conf default variables
         - "{{lookup('env','CONSUL_HTTP_ADDR')}}\
