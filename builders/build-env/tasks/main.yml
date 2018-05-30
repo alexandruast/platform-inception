@@ -1,9 +1,11 @@
-- name: "get {{ recurse_url }}"
+- name: "read data from consul"
   uri:
-    url:    "{{ recurse_url }}?recurse=true"
+    url:    "{{ item }}?recurse=true"
     method: GET
-  register: consul_data
   failed_when: consul_data.status not in [200,404]
+  with_items:
+    - "{{ recurse_from }}"
+  register: consul_data
 
 - name: "write variables in {{ build_env }}"
   lineinfile:
@@ -12,6 +14,6 @@
     regexp: '^export {{ item.Key|basename|upper }}='
     line:   'export {{ item.Key|basename|upper }}="{{ item.Value|b64decode }}"'
   with_items: 
-    - "{{ consul_data.json|default([]) }}"
+    - "{{ consul_data.items.json|default([]) }}"
   loop_control: 
     label: "{{ item.Key|basename|upper }}"
