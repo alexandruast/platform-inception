@@ -14,4 +14,4 @@
   with_items: 
     - "{{ consul_data.results | selectattr('json', 'defined') | sum(attribute='json', start=[]) }}"
   loop_control: 
-    label: 'export {{ item.Key|basename|upper }}="{{ item.Value|b64decode }}"'
+    label: '{{ item.Key|basename|upper }} = {{ item.Value|b64decode }}'
