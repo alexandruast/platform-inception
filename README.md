@@ -2,17 +2,18 @@
 
 #### TLDR
 ```
-vagrant up
+vagrant up sandbox
 ```
 
-#### Minimum system requirements
+#### System requirements
 * Vagrant - latest release
-* 8GB RAM
+* Full platform - 16GB RAM
+* Sandbox environment - 8GB RAM
 
-The first run will take approx. 30 minutes on 7th gen core i5  
+The first run will take approx. 45 minutes on 7th gen core i5  
 Subsequent runs will take much less:
-* vagrant provision: 5 minutes
-* vagrant up: 30 seconds
+* vagrant provision: 10 minutes
+* vagrant up: 2 minutes
 
 #### Description and Purpose - this is work in progress
 This code brings up three Jenkins instances: Origin, Factory and Prod.  
@@ -22,7 +23,6 @@ Because it has root access to Origin-Prod, it should be an air-gapped, single pu
 Factory-Jenkins creates and manages all non-prod environments, where things get produced (Factory).  
 Prod-Jenkins creates and manages all prod environments, where things get deployed to public (Prod).  
 Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory-Jenkins.  
-Production infrastructure requires consul/vault clusters for factory and prod.
 
 #### ToDo
 
@@ -112,17 +112,4 @@ selectable java jre between openjdk and oracle
 force_setup set to true if the ansible dir changed, even if previously set to false  
 local consul in dev mode as ephemeral key value store in jenkins  
 accelerated provisioning by using setup_completed facts  
-
-#### Misc
-```
-ANSIBLE_JUMPHOST=jumper@bastion.example.com \
-ANSIBLE_TARGET=user@10.241.2.10 \
-./apl-wrapper.sh ansible/debug.yml
-
-ANSIBLE_TARGET=vagrant@192.168.169.181,vagrant@192.168.169.182 \
-ANSIBLE_EXTRAVARS="{'start_services':['consul','nomad']}" \
-./apl-wrapper.sh ansible/os-update.yml
-docker build --tag platformdemo/images:fluentd-devel-20180320 --force-rm --pull --no-cache ./
-docker run --rm -it -d -p 24224:24224 -p 5140:5140 platformdemo/images:fluentd-devel-20180320
-```
 
