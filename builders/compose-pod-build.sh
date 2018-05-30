@@ -4,8 +4,7 @@ trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
 echo "[info] getting all information required for the build to start..."
 
-BUILDERS_DIR="$(cd "$(dirname $0)" && pwd)"
-export BUILDERS_DIR
+BUILDERS_ABSOLUTE_DIR="$(cd "$(dirname $0)" && pwd)"
 
 BUILD_TAG="$(git rev-parse --short HEAD)"
 
@@ -20,19 +19,12 @@ export REGISTRY_USERNAME
 export REGISTRY_PASSWORD
 export BUILD_TAG
 
-echo "[info] getting profile templates..."
-
-ansible-playbook -i 127.0.0.1, \
-  --connection=local \
-  --module-path=${BUILDERS_DIR} \
-  ${BUILDERS_DIR}/profile-templates.yml
-
 echo "[info] parsing jinja2 templates, if any..."
 
 ansible-playbook -i 127.0.0.1, \
   --connection=local \
-  --module-path=${BUILDERS_DIR} \
-  ${BUILDERS_DIR}/parse-templates.yml
+  --module-path=${BUILDERS_ABSOLUTE_DIR} \
+  ${BUILDERS_ABSOLUTE_DIR}/parse-templates.yml
 
 COMPOSE_FILE="${WORKSPACE}/${CHECKOUT_DIR}/docker-compose.yml"
 NOMAD_FILE="${WORKSPACE}/${CHECKOUT_DIR}/nomad-job.hcl"
