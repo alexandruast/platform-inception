@@ -6,9 +6,6 @@ echo "[info] getting all information required for the deploy to start..."
 
 trap 'ssh -S "${WORKSPACE}/ssh-control-socket" -O exit ${SSH_DEPLOY_ADDRESS}' EXIT
 
-# Creating an SSH tunnel to the nomad server
-TUNNEL_PORT=$(perl -e 'print int(rand(999)) + 58000')
-
 echo "[info] SSH tunnel to ${SSH_DEPLOY_ADDRESS}:${TUNNEL_PORT} starting..."
 
 ssh ${DEPLOY_SSH_OPTS} \

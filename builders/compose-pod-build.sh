@@ -7,8 +7,6 @@ echo "[info] getting all information required for the build to start..."
 BUILDERS_DIR="$(cd "$(dirname $0)" && pwd)"
 export BUILDERS_DIR
 
-BUILD_TAG="$(git rev-parse --short HEAD)"
-
 REGISTRY_CREDENTIALS="$(curl -Ssf -X GET \
   -H "X-Vault-Token:${VAULT_TOKEN}" \
   "${VAULT_ADDR}/v1/secret/operations/docker-registry" | jq -re .data.value)"
