@@ -8,8 +8,8 @@
   register: consul_data
 
 - debug:
-  - msg:
-    - "{{ consul_data }}"
+    msg:
+      - "{{ consul_data }}"
 
 - name: "write variables in {{ build_env }}"
   lineinfile:
