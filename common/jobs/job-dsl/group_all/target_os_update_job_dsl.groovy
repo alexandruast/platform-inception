@@ -11,7 +11,7 @@ pipelineJob("ansible-target-os-update") {
       scm {
         git {
           remote { url(repo) }
-          branches('devel')
+          branches('master')
           scriptPath("common/jobs/scm/target-os-update-pipeline.groovy")
           extensions {
             cleanBeforeCheckout()

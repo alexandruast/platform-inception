@@ -12,7 +12,7 @@ pipelineJob("vault-secret-update") {
       scm {
         git {
           remote { url(repo) }
-          branches('devel')
+          branches('master')
           scriptPath("common/jobs/scm/vault-secret-update-pipeline.groovy")
           extensions {
             cleanBeforeCheckout()

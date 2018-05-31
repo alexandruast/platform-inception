@@ -23,7 +23,7 @@ services.each { service, scopes ->
           scm {
             git {
               remote { url(repo) }
-              branches('devel')
+              branches('master')
               scriptPath("common/jobs/scm/target-provision-pipeline.groovy")
               extensions {
                 cleanBeforeCheckout()

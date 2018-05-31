@@ -17,7 +17,7 @@ scopes.each { scope ->
         scm {
           git {
             remote { url(repo) }
-            branches('devel')
+            branches('master')
             scriptPath("origin/jobs/scm/jenkins-provision-pipeline.groovy")
             extensions {
               cleanBeforeCheckout()

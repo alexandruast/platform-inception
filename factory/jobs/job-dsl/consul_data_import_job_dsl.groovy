@@ -15,7 +15,7 @@ environments.each { environment ->
         scm {
           git {
             remote { url(repo) }
-            branches('devel')
+            branches('master')
             scriptPath("common/jobs/scm/consul-data-import-pipeline.groovy")
             extensions {
               cleanBeforeCheckout()

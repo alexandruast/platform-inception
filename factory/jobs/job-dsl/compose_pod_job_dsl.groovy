@@ -46,7 +46,7 @@ environments.each { environment, categories ->
             scm {
               git {
                 remote { url(repo) }
-                branches('devel')
+                branches('master')
                 scriptPath("common/jobs/scm/compose-pod-pipeline.groovy")
                 extensions {
                   cleanBeforeCheckout()

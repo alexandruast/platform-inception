@@ -8,7 +8,7 @@ pipelineJob("system-cron-daily-maintenance") {
       scm {
         git {
           remote { url(repo) }
-          branches('devel')
+          branches('master')
           scriptPath("common/jobs/scm/system-cron-daily-maintenance-pipeline.groovy")
           extensions {
             cleanBeforeCheckout()

@@ -8,7 +8,7 @@ pipelineJob("vault-jenkins-token-renew") {
       scm {
         git {
           remote { url(repo) }
-          branches('devel')
+          branches('master')
           scriptPath("common/jobs/scm/vault-jenkins-token-renew-pipeline.groovy")
           extensions {
             cleanBeforeCheckout()
