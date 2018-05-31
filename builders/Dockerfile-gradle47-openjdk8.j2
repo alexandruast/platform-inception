@@ -4,8 +4,8 @@ WORKDIR /home/gradle/{{lookup('env','POD_NAME')}}
 RUN gradle build
 
 FROM openjdk:8u171-jre-slim
-RUN useradd --no-create-home --no-log-init --system java
-USER java
+RUN useradd --no-create-home --no-log-init --system app
+USER app
 COPY --from=BUILDER /home/gradle/{{lookup('env','POD_NAME')}}/build/libs/*.jar /
 WORKDIR /
 CMD ["/bin/sh", "-c", "java -jar *.jar"]

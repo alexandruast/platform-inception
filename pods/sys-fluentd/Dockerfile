@@ -19,7 +19,7 @@ RUN gem install fluent-plugin-concat \
 
 COPY fluent.conf /fluentd/etc/
 
-RUN useradd --no-create-home --no-log-init --system fluentd \
+RUN useradd --no-create-home --no-log-init fluentd \
 && chown -R fluentd:fluentd /fluentd
 
 USER fluentd
