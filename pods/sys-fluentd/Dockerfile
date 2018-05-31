@@ -4,8 +4,8 @@ ENV DEBIAN_FRONTEND noninteractive
 
 ARG LNAV_VERSION=v0.8.3b
 
-RUN apt-get update -qq \
-&& apt-get install -qq --no-install-recommends curl unzip ca-certificates
+RUN apt-get -qq update \
+&& apt-get -qq install --no-install-recommends curl unzip ca-certificates
 
 RUN curl -LSs https://github.com/tstack/lnav/releases/download/${LNAV_VERSION}/lnav-${LNAV_VERSION}-linux-64bit.zip -o /fluentd/lnav-linux-64bit.zip \
 && unzip /fluentd/lnav-linux-64bit.zip -d /usr/local/bin
