@@ -14,5 +14,6 @@ RUN curl -LSs https://github.com/fabiolb/fabio/releases/download/v${FABIO_VERSIO
 RUN useradd --no-create-home --no-log-init --system fabio
 
 USER fabio
+
 CMD ["fabio"]
 

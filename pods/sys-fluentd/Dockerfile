@@ -1,5 +1,7 @@
 FROM fluent/fluentd:v1.2-debian
 
+ENV DEBIAN_FRONTEND noninteractive
+
 RUN apt-get update -qq \
 && apt-get install -qq --no-install-recommends curl unzip ca-certificates
 
@@ -16,6 +18,11 @@ RUN gem install fluent-plugin-concat \
 && gem sources --clear-all
 
 COPY fluent.conf /fluentd/etc/
+
+RUN useradd --no-create-home --no-log-init --system fluentd \
+&& chown -R fluentd:fluentd /fluentd
+
+USER fluentd
 
 ENTRYPOINT []
 
