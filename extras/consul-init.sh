@@ -2,22 +2,21 @@
 set -eEuo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
-# recursively delete consul data
-curl -Ssf -X DELETE ${CONSUL_HTTP_ADDR}/v1/kv/?recurse >/dev/null
-sleep 1
-echo "[info] kv data purged from consul"
-
 # storing minimal data for bootstraping - in production, two separate instances
 # will be used - factory and prod, with manual initial repo configuration
 
-# bootstrap platform config
+# global platform config
+curl -Ssf -X PUT \
+  -d "${VAULT_ADDR}" \
+  "${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/vault_addr" >/dev/null
+
 curl -Ssf -X PUT \
   -d "https://github.com/alexandruast/platform-conf" \
-  "${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/bootstrap/scm_url" >/dev/null
+  "${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/conf_scm_url" >/dev/null
 
 curl -Ssf -X PUT \
   -d "*/master" \
-  "${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/bootstrap/scm_branch" >/dev/null
+  "${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/conf_scm_branch" >/dev/null
 
 # defaults platform config
 curl -Ssf -X PUT \
@@ -25,10 +24,6 @@ curl -Ssf -X PUT \
   "${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/defaults/current_build_tag" >/dev/null
 
 # sandbox env global config
-curl -Ssf -X PUT \
-  -d "${VAULT_ADDR}" \
-  "${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/sandbox/global/vault_addr" >/dev/null
-
 curl -Ssf -X PUT \
   -d "docker.io" \
   "${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/sandbox/global/docker_registry_address" >/dev/null

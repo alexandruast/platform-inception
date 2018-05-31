@@ -7,13 +7,13 @@ vagrant up sandbox
 
 #### System requirements
 * Vagrant - latest release
-* Full platform - 16GB RAM
-* Sandbox environment - 8GB RAM
+* 12GB RAM to run full platform: `vagrant up`
+* 6GB RAM to run sandbox environment: `vagrant up sandbox`
 
 The first run will take approx. 45 minutes on 7th gen core i5  
 Subsequent runs will take much less:
-* vagrant provision: 10 minutes
-* vagrant up: 2 minutes
+* vagrant provision: 15 minutes
+* vagrant up: 5 minutes
 
 #### Description and Purpose - this is work in progress
 This code brings up three Jenkins instances: Origin, Factory and Prod.  
@@ -112,4 +112,3 @@ selectable java jre between openjdk and oracle
 force_setup set to true if the ansible dir changed, even if previously set to false  
 local consul in dev mode as ephemeral key value store in jenkins  
 accelerated provisioning by using setup_completed facts  
-
