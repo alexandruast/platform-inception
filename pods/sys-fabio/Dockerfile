@@ -2,8 +2,8 @@ FROM debian:jessie-slim
 
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN apt-get -qq update \
-&& apt-get -qq install --no-install-recommends curl ca-certificates
+RUN apt-get update -qq \
+&& apt-get install -qq --no-install-recommends curl ca-certificates
 
 ARG FABIO_VERSION=1.5.9
 ARG GO_VERSION=1.10.2
