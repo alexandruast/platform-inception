@@ -24,6 +24,8 @@ RUN useradd --no-create-home --no-log-init --system fluentd \
 
 USER fluentd
 
+WORKDIR /fluentd
+
 ENTRYPOINT []
 
 CMD ["fluentd", "-v", "-c", "/fluentd/etc/fluent.conf"]
