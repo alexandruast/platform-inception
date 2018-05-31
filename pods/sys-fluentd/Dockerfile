@@ -19,6 +19,8 @@ COPY fluent.conf /fluentd/etc/
 
 ENTRYPOINT []
 
+RUN useradd --no-create-home --no-log-init --system fluent
+
 USER fluent
 
 CMD ["fluentd", "-v", "-c", "/fluentd/etc/fluent.conf"]
