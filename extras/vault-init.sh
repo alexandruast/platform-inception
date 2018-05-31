@@ -162,7 +162,7 @@ vault_reset() {
     ./jenkins-query.sh common/credential-update.groovy
 }
 
-VAULT_ADDR="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/sandbox/global/vault_addr?raw)"
+VAULT_ADDR="$(curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/global/vault_addr?raw)"
 
 vault_reset
 
