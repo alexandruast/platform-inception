@@ -6,6 +6,8 @@ WORKDIR /build/{{lookup('env','POD_NAME')}}
 RUN mvn --batch-mode -Dmaven.test.failure.ignore clean package
 
 FROM openjdk:8u171-jre-slim
+RUN useradd --no-create-home --no-log-init --system java
+USER java
 COPY --from=BUILDER /build/{{lookup('env','POD_NAME')}}/target/*.jar /
 WORKDIR /
 USER nobody

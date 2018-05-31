@@ -17,10 +17,8 @@ RUN gem install fluent-plugin-concat \
 
 COPY fluent.conf /fluentd/etc/
 
-RUN chown -R nobody:nogroup /fluentd
-
 ENTRYPOINT []
 
-USER nobody
+USER fluent
 
 CMD ["fluentd", "-v", "-c", "/fluentd/etc/fluent.conf"]
