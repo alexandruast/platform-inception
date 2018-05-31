@@ -2,8 +2,8 @@ FROM fluent/fluentd:v1.2-debian
 
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN apt-get -qq update \
-&& apt-get -qq install --no-install-recommends curl unzip ca-certificates
+RUN apt-get update >/dev/null \
+&& apt-get install --no-install-recommends curl unzip ca-certificates >/dev/null
 
 ARG LNAV_VERSION=v0.8.3b
 
