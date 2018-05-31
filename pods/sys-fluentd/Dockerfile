@@ -19,13 +19,6 @@ RUN gem install fluent-plugin-concat \
 
 COPY fluent.conf /fluentd/etc/
 
-RUN useradd --no-create-home --no-log-init fluentd \
-&& chown -R fluentd:fluentd /fluentd
-
-USER fluentd
-
 WORKDIR /fluentd
-
-ENTRYPOINT []
 
 CMD ["fluentd", "-v", "-c", "/fluentd/etc/fluent.conf"]
