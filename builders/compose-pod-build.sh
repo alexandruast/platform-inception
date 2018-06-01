@@ -61,7 +61,7 @@ docker-compose \
   -f "${COMPOSE_FILE}" \
   --project-name "${POD_NAME}-${BUILD_TAG}" \
   --no-color \
-  build --no-cache
+  build
 
 echo "[info] pushing docker images..."
 
