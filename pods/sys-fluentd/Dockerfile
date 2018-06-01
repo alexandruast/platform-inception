@@ -8,7 +8,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update >/dev/null \
 && apt-get install -y --no-install-recommends curl unzip ca-certificates >/dev/null \
-&& curl -LSs https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-arm64 -o /usr/local/bin/gosu \
+&& curl -LSs https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64 -o /usr/local/bin/gosu \
 && chmod +x /usr/local/bin/gosu \
 && curl -LSs https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-amd64 -o /usr/local/bin/tini \
 && chmod +x /usr/local/bin/tini \
