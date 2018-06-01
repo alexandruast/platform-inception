@@ -60,7 +60,7 @@ echo "[info] building docker images..."
 docker-compose \
   -f "${COMPOSE_FILE}" \
   --project-name "${POD_NAME}-${BUILD_TAG}" \
-  --no-color \
+  --no-ansi \
   build
 
 echo "[info] pushing docker images..."
@@ -68,7 +68,7 @@ echo "[info] pushing docker images..."
 docker-compose \
   -f "${COMPOSE_FILE}" \
   --project-name "${POD_NAME}-${BUILD_TAG}" \
-  --no-color \
+  --no-ansi \
   push
 
 curl -Ssf -X PUT \
