@@ -12,7 +12,8 @@ RUN apt-get update >/dev/null \
 && chmod +x /usr/local/bin/gosu \
 && curl -LSs https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-amd64 -o /usr/local/bin/tini \
 && chmod +x /usr/local/bin/tini \
-&& tini gosu nobody true
+&& gosu nobody true \
+&& tini --version
 
 RUN curl -LSs https://github.com/tstack/lnav/releases/download/${LNAV_VERSION}/lnav-${LNAV_VERSION}-linux-64bit.zip -o /fluentd/lnav-linux-64bit.zip \
 && unzip /fluentd/lnav-linux-64bit.zip -d /usr/local/bin
