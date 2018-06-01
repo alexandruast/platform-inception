@@ -42,6 +42,7 @@ Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory
 * docker-enforcer and vulnerability assessment for docker images/files
 
 #### Changelog
+lnav added to fluentd container to have a minimal log inspect ability  
 yaml-to-consul to delete only non-declared keys  
 ansible builders for heavy lifting!  
 moved all high-complexity embedded shell scripts out of groovy files  
