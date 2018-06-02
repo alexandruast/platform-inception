@@ -1,9 +1,14 @@
 - hosts: all
   gather_facts: no
-  serial: "{{serial_value|default(1)}}"
+  serial: "100%"
 
   roles:
     - role: gather-facts
+    
     - role: consul
       vars:
-        service_mode: dev
+        service_mode: server
+    
+    - role: vault
+      vars:
+        service_mode: server

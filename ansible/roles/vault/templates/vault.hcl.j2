@@ -1,6 +1,10 @@
 storage "consul" {
   address = "127.0.0.1:8500"
-  path = "vault"
+  scheme  = "http"
+  path    = "vault"
+{% if consul_acl_master_token is defined %}
+  token   = "{{ consul_acl_master_token }}"
+{% endif %}
 }
 
 listener "tcp" {

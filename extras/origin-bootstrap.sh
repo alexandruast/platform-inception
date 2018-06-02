@@ -10,7 +10,7 @@ ci_factory_json=$3
 ci_prod_json=$4
 server_nodes_json=$5
 compute_nodes_json=$6
-consul_acl_master_token="$(uuidgen)"
+consul_acl_master_token="0d5e7431-651f-4ce1-a97f-e1257cc047de"
 
 SSH_CONTROL_SOCKET="/tmp/ssh-control-socket-$(uuidgen)"
 trap 'sudo ssh -S "${SSH_CONTROL_SOCKET}" -O exit vagrant@${!ip_addr_var:-192.0.2.255}' EXIT

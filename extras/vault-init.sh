@@ -11,26 +11,27 @@ VAULT_SERVERS=( ${VAULT_SERVERS} )
 vault_reset() {
   curl -Ssf -X DELETE ${CONSUL_HTTP_ADDR}/v1/kv/vault/?recurse >/dev/null
   # sleep is required here, delete is not instant
-  sleep 1
+  sleep 1.25
   echo "[info] vault data purged from consul"
   
   vault_init="$(curl -Ssf -X PUT \
     -d "{\"secret_shares\":1,\"secret_threshold\":1}" \
     ${VAULT_SERVERS[0]}/v1/sys/init)"
-  sleep 1
+  sleep 1.25
   echo "[info] vault initialized"
   
   VAULT_ROOT_TOKEN="$(echo ${vault_init} | jq -re .root_token)"
   VAULT_UNSEAL_KEY="$(echo ${vault_init} | jq -re .keys[0])"
   
   # unseal all servers
-  for server in "${VAULT_SERVERS[@]}"; do
+  for server in ${VAULT_SERVERS[*]}; do
     curl -Ssf -X PUT \
       -d "{\"key\":\"${VAULT_UNSEAL_KEY}\"}" \
       "${server}/v1/sys/unseal" >/dev/null
   done
+  
   # sleep is required here, unseal is not instant
-  sleep 0.25
+  sleep 1.25
   echo "[info] vault servers unsealed"
   
   # enable syslog backend
@@ -49,7 +50,7 @@ vault_reset() {
   
   # importing policies
   for policy_name in admin provisioner operations jenkins; do
-    policy_string=$(cat vault/policies/${policy_name}.json | jq -c . | sed 's/"/\\\"/g')
+    policy_string=$(cat policies/vault/${policy_name}.json | jq -c . | sed 's/"/\\\"/g')
     curl -Ssf -X PUT \
       -H "X-Vault-Token:${VAULT_ROOT_TOKEN}" \
       -d "{\"policy\":\"${policy_string}\"}" \

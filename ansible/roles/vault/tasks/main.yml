@@ -78,7 +78,9 @@
     template:
       src: "{{service_name}}.hcl.j2"
       dest: "{{service_conf_dir}}/service.hcl"
-      mode: 0644
+      owner:  "{{service_user}}"
+      group:  "{{service_group}}"
+      mode: 0600
     become: true
     register: service_config
 

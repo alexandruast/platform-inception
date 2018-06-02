@@ -4,7 +4,7 @@ trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
 ci_admin_pass=$1
 sandbox_ip=$2
-consul_acl_master_token="$(uuidgen)"
+consul_acl_master_token="0d5e7431-651f-4ce1-a97f-e1257cc047de"
 
 install_pip() {
   curl -LSs "https://bootstrap.pypa.io/get-pip.py" | sudo python
