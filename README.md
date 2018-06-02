@@ -26,9 +26,11 @@ Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory
 
 #### ToDo
 
+##### Fixes
+
+
 ##### Improvements
 * write groovy logic in job-dsl to retrieve all variables from consul
-* fluentd to listen on udp socket
 * authenticate consul with vault for write operations
 * hide sensitive info from console output
 * store archives/backups
@@ -42,6 +44,8 @@ Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory
 * docker-enforcer and vulnerability assessment for docker images/files
 
 #### Changelog
+td-agent-bit to listen on udp socket  
+lnav ansible role  
 lnav added to fluentd container to have a minimal log inspect ability  
 yaml-to-consul to delete only non-declared keys  
 ansible builders for heavy lifting!  

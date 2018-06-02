@@ -3,6 +3,15 @@
 # This server is also the Origin-Jenkins
 set -eEuo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
+
+ci_admin_pass=$1
+ci_origin_json=$2
+ci_factory_json=$3
+ci_prod_json=$4
+server_nodes_json=$5
+compute_nodes_json=$6
+consul_acl_master_token="$(uuidgen)"
+
 SSH_CONTROL_SOCKET="/tmp/ssh-control-socket-$(uuidgen)"
 trap 'sudo ssh -S "${SSH_CONTROL_SOCKET}" -O exit vagrant@${!ip_addr_var:-192.0.2.255}' EXIT
 
@@ -57,7 +66,7 @@ nomad_server_deploy() {
     ANSIBLE_TARGET="$(echo ${server_nodes_json} | jq -re .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')" \
     ANSIBLE_SERVICE='nomad' \
     ANSIBLE_SCOPE='server' \
-    ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'bootstrap_enabled':true,'serial_value':'100%','ansible_user':'vagrant','dnsmasq_resolv':'supersede','dns_servers':['/consul/127.0.0.1#8600','8.8.8.8','8.8.4.4'],'service_bind_ip':'{{ansible_host}}'}" \
+    ANSIBLE_EXTRAVARS="{'consul_acl_master_token':'${consul_acl_master_token}','force_setup':${force_setup},'bootstrap_enabled':true,'serial_value':'100%','ansible_user':'vagrant','dnsmasq_resolv':'supersede','dns_servers':['/consul/127.0.0.1#8600','8.8.8.8','8.8.4.4'],'service_bind_ip':'{{ansible_host}}'}" \
     ./jenkins-query.sh \
     ./common/jobs/build-ansible-target-provision-job.groovy
 }
@@ -139,13 +148,6 @@ overwrite_factory_prod_jenkins_keypair() {
     ssh-keygen -y -f "$HOME/.ssh/id_rsa" | ssh ${SSH_OPTS} ${!ip_addr_var} sudo tee /home/jenkins/.ssh/id_rsa.pub >/dev/null
   done
 }
-
-ci_admin_pass=$1
-ci_origin_json=$2
-ci_factory_json=$3
-ci_prod_json=$4
-server_nodes_json=$5
-compute_nodes_json=$6
 
 sudo yum -q -y install python libselinux-python
 

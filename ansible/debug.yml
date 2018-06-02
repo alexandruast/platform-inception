@@ -4,4 +4,6 @@
 
   roles:
     - role: gather-facts
-    - role: debug
+    - role: consul
+      vars:
+        service_mode: dev

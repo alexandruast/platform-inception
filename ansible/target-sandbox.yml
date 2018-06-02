@@ -86,7 +86,10 @@
 
     - include_role:
         name: terragrunt
-
+    
+    - include_role:
+        name: lnav
+    
     - include_role:
         name: java8-jre
       vars:

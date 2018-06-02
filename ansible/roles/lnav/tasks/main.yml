@@ -1,0 +1,23 @@
+- name: "service archive downloaded"
+  get_url:
+    url:  "https://github.com/tstack/{{service_name}}/releases/download/{{service_version}}/{{service_name}}-{{service_version}}-linux-64bit.zip"
+    dest: "{{artifacts_dir}}/{{service_name}}-{{service_version}}-linux-64bit.zip"
+    force: no
+  register: service_archive
+  become: true
+
+- name: "service binary check"
+  stat:
+    path: "/usr/local/bin/{{service_name}}"
+  register: service_binary_check
+  changed_when: false
+
+- name: "service binaries installed"
+  unarchive:
+    src:  "{{artifacts_dir}}/{{service_name}}-{{service_version}}-linux-64bit.zip"
+    dest: /usr/local/bin/
+    mode: +x
+    remote_src: yes
+  become: true
+  when: service_archive is changed
+    or not service_binary_check.stat.exists
