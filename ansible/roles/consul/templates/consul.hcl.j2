@@ -1,23 +1,31 @@
 datacenter = "dc1"
 client_addr = "0.0.0.0"
 {% if service_bind_ip is defined %}
-{% if service_bind_ip %}
 bind_addr= "{{service_bind_ip}}"
-{% endif %}
 {% else %}
 bind_addr= "{%raw%}{{ GetPrivateIP }}{%endraw%}"
 {% endif %}
 log_level = "DEBUG"
 data_dir = "{{service_data_dir}}"
+
 disable_update_check = true
 rejoin_after_leave = true
 leave_on_terminate = true
+
 {% if service_mode == 'server' %}
 bootstrap_expect = 2
 server = true
 ui = true
+
 {% elif service_mode == 'client' %}
 retry_join = [
   "consul.service.consul"
 ]
+{% endif %}
+
+{% if consul_acl_master_token is defined %}
+acl_datacenter = "dc1"
+acl_default_policy = "allow"
+acl_down_policy = "allow"
+acl_master_token = "{{ consul_acl_master_token }}"
 {% endif %}

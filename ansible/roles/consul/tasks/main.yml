@@ -69,19 +69,11 @@
     template:
       src: "{{service_name}}.hcl.j2"
       dest: "{{service_conf_dir}}/service.hcl"
-      mode: 0644
-    become: true
-    register: service_config
-  
-  - name: "acl config file updated"
-    template:
-      src: "master.json.j2"
-      dest: "{{service_conf_dir}}/master.json"
       mode: 0600
       owner:  "{{service_user}}"
       group:  "{{service_group}}"
     become: true
-    register: service_acl
+    register: service_config
 
   - name: "service enabled"
     systemd:
@@ -105,8 +97,7 @@
     register: service_restarted
     when: (systemd_config is changed
       or service_binary is changed
-      or service_config is changed
-      or service_acl is changed)
+      or service_config is changed)
       and not service_started is changed
 
   # Pause to wait for service to start
