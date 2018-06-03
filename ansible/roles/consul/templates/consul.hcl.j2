@@ -23,9 +23,3 @@ retry_join = [
 ]
 {% endif %}
 
-{% if consul_acl_master_token is defined %}
-acl_datacenter = "dc1"
-acl_default_policy = "allow"
-acl_down_policy = "allow"
-acl_master_token = "{{ consul_acl_master_token }}"
-{% endif %}

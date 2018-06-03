@@ -1,0 +1,12 @@
+{
+  "node": {
+    "": {
+      "policy": "write"
+    }
+  },
+  "service": {
+    "": {
+      "policy": "read"
+    }
+  }
+}

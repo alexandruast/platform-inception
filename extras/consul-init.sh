@@ -2,8 +2,8 @@
 set -eEuo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
-# storing minimal data for bootstraping - in production, two separate instances
-# will be used - factory and prod, with manual initial repo configuration
+# storing minimal data for bootstraping - in a live system, two separate
+# clusters will be used - factory and prod
 
 # global platform config
 curl -Ssf -X PUT \
