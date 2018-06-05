@@ -32,12 +32,8 @@ Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory
 * store archives/backups
 
 ##### Features
-* platform/conf to have a structure to permit multi-tenancy
-* streamlined CI tool to trigger jobs per tenant
 * streamlined health, logging, metrics and monitoring dashboard
-* artifact repository
 * build publish plugin - run build on prod-jenkins
-* docker-enforcer and vulnerability assessment for docker images/files
 
 #### Changelog
 decision to not implement consul/vault lockdown at this time, security needs per customer are very different  
