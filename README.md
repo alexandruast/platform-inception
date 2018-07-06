@@ -24,16 +24,28 @@ Factory-Jenkins creates and manages all non-prod environments, where things get 
 Prod-Jenkins creates and manages all prod environments, where things get deployed to public (Prod).  
 Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory-Jenkins.  
 
-#### ToDo
+##### Done
+* All environments are logically identical, starting with the developer's machine up to production
+* 100% infrastructure as code, Jenkins included
+* Automatic service onboarding - just fill in the source control repository, Jenkins does the rest - your service is ready for serving requests in Fabio
+* Very safe deploy mechanism with automatic rollback support
+* Every variable is stored in YAML files in source control
+* Instantly run a full stack local platform with Vagrant, identical with live platform, same code that runs in production
+* Instantly run a sandbox environment with Vagrant
+* Nomad job files to mimic Kubernetes pods, for easy migration in the future if needed
+* Infrastructure automation from Jenkins - software updates, provisioning, periodic tasks
+* Jenkins is not a critical service anymore (can be reprovisioned within minutes)
+* CentOS, Amazon Linux, RHEL - all supported also in Vagrant
 
-##### Improvements
+#### ToDo
+* service autoscaling by business metrics with external witness, with infrastructure autoscaling support
+* streamlined health, logging, metrics and monitoring dashboard
+* request id map and breakdown by service and processing time
+* chaos monkey
+* build publish plugin - run build on prod-jenkins
 * write groovy logic in job-dsl to retrieve all variables from consul
 * hide sensitive info from console output
 * store archives/backups
-
-##### Features
-* streamlined health, logging, metrics and monitoring dashboard
-* build publish plugin - run build on prod-jenkins
 
 #### Changelog
 decision to not implement consul/vault lockdown at this time, security needs per customer are very different  
