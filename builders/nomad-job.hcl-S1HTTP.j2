@@ -40,9 +40,9 @@ job "{{lookup('env','POD_NAME')}}" {
         }
       }
       env {
-      {% for item in lookup('env','SERVICE_ENV')|from_json() %}
-      {{item['key']}} = "{{item['value']}}"
-      {% endfor %}
+        {% for item in lookup('env','SERVICE_ENV')|from_json() %}
+        {{item['key']}} = "{{item['value']}}"
+        {% endfor %}
       }
       resources {
         memory = {{lookup('env','POD_MEMORY')|default(500,true)}}
