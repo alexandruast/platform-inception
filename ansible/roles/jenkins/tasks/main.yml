@@ -1,6 +1,6 @@
 - name: "service binaries downloaded and installed"
   get_url:
-    url:  "http://mirrors.jenkins.io/war/{{service_version}}/jenkins.war"
+    url:  "http://mirrors.jenkins.io/war-stable/{{service_version}}/jenkins.war"
     dest: "{{artifacts_dir}}/{{service_name}}-{{service_version}}.war"
     force: no
   register: service_archive
