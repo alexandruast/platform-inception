@@ -41,7 +41,7 @@ job "{{lookup('env','POD_NAME')}}" {
       }
       env {
       {% for item in lookup('env','SERVICE_ENV').split(',') %}
-      "{{item.split('=')[0]}} = {{item.split('=')[1]}}"
+      {{item.split('=')[0]}} = "{{item.split('=')[1]}}"
       {% endfor %}
       }
       resources {
