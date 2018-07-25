@@ -40,8 +40,8 @@ job "{{lookup('env','POD_NAME')}}" {
         }
       }
       env {
-      {% for item in lookup('env','SERVICE_ENV').split(',') %}
-      {{item.split('=')[0]}} = "{{item.split('=')[1]}}"
+      {% for item in lookup('env','SERVICE_ENV')|safe.items() %}
+      {{item.key}} = "{{item.value}}"
       {% endfor %}
       }
       resources {
