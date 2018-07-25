@@ -20,8 +20,8 @@ job "{{lookup('env','POD_NAME')}}" {
     task "{{lookup('env','POD_NAME')}}-{{lookup('env','BUILD_TAG')}}" {
       driver = "docker"
       args = [
-        {% for item in lookup('env','SERVICE_ARGS')|default('',true)|split(',') %}
-        "{{item}}"
+        {% for item in lookup('env','SERVICE_ARGS')|default('[]',true)|from_json() %}
+        "{{item['value']}}"
         {% endfor %}
       ]
       config {
