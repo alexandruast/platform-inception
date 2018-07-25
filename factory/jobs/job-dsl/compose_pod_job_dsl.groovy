@@ -5,8 +5,10 @@ def environments = [
     services: [
       "sys-fluentd",
       "sys-fabio",
+      "sys-sonar7",
       "be-java-echo",
-      "be-go-demo"
+      "be-go-demo",
+      
     ],
     images: [
       "sys-py-yaml-to-consul"
