@@ -48,9 +48,9 @@ job "{{lookup('env','POD_NAME')}}" {
       }
       service {
         tags = [
-          "urlprefix-/{{lookup('env','POD_NAME')}} strip=/{{lookup('env','POD_NAME')}}"
+          "urlprefix-/{{lookup('env','SERVICE_NAME')|default(lookup('env','POD_NAME'),true)}} strip=/{{lookup('env','SERVICE_NAME')|default(lookup('env','POD_NAME'),true)}}"
         ]
-        name = "{{lookup('env','POD_NAME')}}"
+        name = "{{lookup('env','SERVICE_NAME')|default(lookup('env','POD_NAME'),true)}}"
         port = "http"
         check {
           type = "http"

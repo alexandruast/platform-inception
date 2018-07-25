@@ -20,7 +20,7 @@ job "{{lookup('env','POD_NAME')}}" {
         memory = {{lookup('env','POD_MEMORY')|default(100,true)}}
       }
       service {
-        name = "{{lookup('env','POD_NAME')}}"
+        name = "{{lookup('env','SERVICE_NAME')|default(lookup('env','POD_NAME'),true)}}"
       }
     }
   }
