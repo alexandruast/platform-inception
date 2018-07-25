@@ -84,7 +84,7 @@ while :; do
       exit 0
     ;;
 
-    failed)
+    failed|cancelled)
       exit 1
   esac
 done
