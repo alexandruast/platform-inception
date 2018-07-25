@@ -19,6 +19,11 @@ job "{{lookup('env','POD_NAME')}}" {
     }
     task "{{lookup('env','POD_NAME')}}-{{lookup('env','BUILD_TAG')}}" {
       driver = "docker"
+      args = [
+        {% for item in lookup('env','SERVICE_ARGS')|default('',true)|split(',') %}
+        "{{item}}"
+        {% endfor %}
+      ]
       config {
         image = "{{lookup('env','DOCKER_REGISTRY_ADDRESS')}}/{{lookup('env','DOCKER_REGISTRY_PATH')}}/{{lookup('env','POD_NAME')}}:{{lookup('env','BUILD_TAG')}}"
         auth {
