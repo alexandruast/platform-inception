@@ -40,7 +40,7 @@ job "{{lookup('env','POD_NAME')}}" {
         }
       }
       env {
-      {% for item in lookup('env','SERVICE_ENV')|tojson() %}
+      {% for item in lookup('env','SERVICE_ENV')|from_json() %}
       test = "{{item}}"
       {% endfor %}
       }
