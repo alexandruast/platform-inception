@@ -40,8 +40,8 @@ job "{{lookup('env','POD_NAME')}}" {
         }
       }
       env {
-      {% for item in lookup('env','SERVICE_ENV').iteritems() %}
-      {{item.key}} = "{{item.value}}"
+      {% for item in lookup('env','SERVICE_ENV') %}
+      FUBAR = "{{item}}"
       {% endfor %}
       }
       resources {
