@@ -12,7 +12,7 @@ job "{{lookup('env','POD_NAME')}}" {
       config {
         image = "{{lookup('env','DOCKER_REGISTRY_ADDRESS')}}/{{lookup('env','DOCKER_REGISTRY_PATH')}}/{{lookup('env','POD_NAME')}}:{{lookup('env','BUILD_TAG')}}"
         args = [
-          {% for item in lookup('env','SERVICE_ARGS')|default('[]',true)|from_json() %}
+          {% for item in lookup('env','POD_ARGS')|default('[]',true)|from_json() %}
           "{{item['value']}}",
           {% endfor %}
         ]
@@ -26,7 +26,7 @@ job "{{lookup('env','POD_NAME')}}" {
         ]
       }
       env {
-        {% for item in lookup('env','SERVICE_ENV')|default('[]',true)|from_json() %}
+        {% for item in lookup('env','POD_ENV')|default('[]',true)|from_json() %}
         {{item['key']}} = "{{item['value']}}"
         {% endfor %}
       }
