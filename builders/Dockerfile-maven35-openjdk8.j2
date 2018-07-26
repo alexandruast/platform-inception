@@ -5,7 +5,7 @@ RUN mkdir -p /build/{{lookup('env','POD_NAME')}} \
 COPY . /build/{{lookup('env','POD_NAME')}}
 WORKDIR /build/{{lookup('env','POD_NAME')}}
 RUN mvn --batch-mode -Dmaven.test.failure.ignore clean package \
-mvn sonar:sonar -Dsonar.host.url=http://sonar.service.consul:9999/sonar -Dsonar.login=565ebc8a20e0797ae42c48bd03d6941abae7e7e7
+&& mvn sonar:sonar -Dsonar.host.url=http://sonar.service.consul:9999/sonar -Dsonar.login=565ebc8a20e0797ae42c48bd03d6941abae7e7e7
 
 FROM openjdk:8u171-jre-slim
 RUN useradd --no-create-home --no-log-init --system app
