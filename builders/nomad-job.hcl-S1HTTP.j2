@@ -20,7 +20,9 @@ job "{{lookup('env','POD_NAME')}}" {
     task "{{lookup('env','POD_NAME')}}-{{lookup('env','BUILD_TAG')}}" {
       driver = "docker"
       args = [
-        {{lookup('env','SERVICE_ARGS')|default('""',true)}}
+        {% for item in lookup('env','SERVICE_ENV')|default('[]',true)|from_json() %}
+        "{{item['value']}}",
+        {% endfor %}
       ]
       config {
         image = "{{lookup('env','DOCKER_REGISTRY_ADDRESS')}}/{{lookup('env','DOCKER_REGISTRY_PATH')}}/{{lookup('env','POD_NAME')}}:{{lookup('env','BUILD_TAG')}}"
