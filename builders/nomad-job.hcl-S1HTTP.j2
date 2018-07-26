@@ -59,9 +59,13 @@ job "{{lookup('env','POD_NAME')}}" {
       }
       service {
         tags = [
+          {% if lookup('env','POD_TAGS')|default('[]',true) == '[]' %}
+          "urlprefix-/{{lookup('env','SERVICE_NAME')|default(lookup('env','POD_NAME'),true)}} strip=/{{lookup('env','SERVICE_NAME')|default(lookup('env','POD_NAME'),true)}}"
+          {% else %}
           {% for item in lookup('env','POD_TAGS')|default('[]',true)|from_json() %}
           "{{item['value']}}",
           {% endfor %}
+          {% endif %}
         ]
         name = "{{lookup('env','SERVICE_NAME')|default(lookup('env','POD_NAME'),true)}}"
         port = "http"

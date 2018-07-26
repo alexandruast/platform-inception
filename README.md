@@ -48,6 +48,7 @@ Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory
 * store archives/backups
 
 #### Changelog
+added tags support in pods, from yaml
 lnav removed, as it adds nothing of value for a tail/grep power user  
 added command line arguments support in pods, from yaml  
 added environment variables support in pods, from yaml  
