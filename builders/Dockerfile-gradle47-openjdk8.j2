@@ -1,11 +1,6 @@
 FROM gradle:4.7-jdk8 as BUILDER
-USER root
-RUN echo "nameserver {{lookup('env','JENKINS_IP_ADDR')}}" > /etc/resolv.conf \
-&& cat /etc/resolv.conf
-USER gradle
 COPY --chown=gradle:gradle . /home/gradle/{{lookup('env','POD_NAME')}}
 WORKDIR /home/gradle/{{lookup('env','POD_NAME')}}
-RUN cat /etc/resolv.conf \
 && gradle build \
 && gradle sonarqube -Dsonar.host.url=http://sonar.service.consul:9999/sonar -Dsonar.login=cf02f4f665ec2c9aced87ad7fb14b2997685a7d5
 

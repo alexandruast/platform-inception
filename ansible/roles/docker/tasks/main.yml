@@ -43,6 +43,13 @@
   with_fileglob: "{{role_path}}/files/profile.d/*"
   tags: env
 
+- name: "daemon config updated"
+  template:
+    src: "daemon.json.j2"
+    dest: "/etc/docker/daemon.json"
+    mode: 0644
+  become: true
+
 - name: "service enabled"
   systemd:
     name: docker

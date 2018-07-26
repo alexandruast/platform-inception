@@ -1,6 +1,5 @@
 FROM maven:3.5-jdk-8-slim as BUILDER
-RUN useradd --no-create-home --no-log-init --system app \
-&& echo nameserver {{lookup('env','JENKINS_IP_ADDR')}} > /etc/resolv.conf
+RUN useradd --no-create-home --no-log-init --system app
 USER app
 RUN mkdir -p /build/{{lookup('env','POD_NAME')}} \
 COPY . /build/{{lookup('env','POD_NAME')}}
