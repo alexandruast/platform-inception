@@ -2,14 +2,8 @@ FROM fluent/fluentd:v1.2-debian
 
 ENV DEBIAN_FRONTEND noninteractive
 
-ARG LNAV_VERSION=v0.8.3b
-
 RUN apt-get -qq update \
 && apt-get -qq install --no-install-recommends curl unzip ca-certificates
-
-RUN curl -LSs https://github.com/tstack/lnav/releases/download/${LNAV_VERSION}/lnav-${LNAV_VERSION}-linux-64bit.zip -o /tmp/lnav-linux-64bit.zip \
-&& unzip /tmp/lnav-linux-64bit.zip -d /usr/local/bin \
-&& rm -f /tmp/lnav-linux-64bit.zip
 
 RUN gem install fluent-plugin-concat \
 && gem install fluent-plugin-grok-parser \

@@ -88,9 +88,6 @@
         name: terragrunt
     
     - include_role:
-        name: lnav
-    
-    - include_role:
         name: java8-jre
       vars:
         java_provider: openjdk
