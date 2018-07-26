@@ -1,12 +1,12 @@
 #jinja2: lstrip_blocks: "True"
 {
   "dns": [
-  {% if service_bind_ip is defined %}
-  "{{service_bind_ip}}",
-  {% else %}
-  "{{ansible_eth0.ipv4.address}}",
-  {% endif %}
-  "8.8.8.8",
-  "8.8.4.4"
+    {% if service_bind_ip is defined %}
+    "{{service_bind_ip}}",
+    {% else %}
+    "{{ansible_eth0.ipv4.address}}",
+    {% endif %}
+    "8.8.8.8",
+    "8.8.4.4"
   ]
 }
