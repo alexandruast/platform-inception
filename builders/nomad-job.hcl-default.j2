@@ -1,3 +1,4 @@
+#jinja2: lstrip_blocks: "True"
 job "{{lookup('env','POD_NAME')}}" {
   datacenters = ["dc1"]
   type = "service"
@@ -10,11 +11,24 @@ job "{{lookup('env','POD_NAME')}}" {
       driver = "docker"
       config {
         image = "{{lookup('env','DOCKER_REGISTRY_ADDRESS')}}/{{lookup('env','DOCKER_REGISTRY_PATH')}}/{{lookup('env','POD_NAME')}}:{{lookup('env','BUILD_TAG')}}"
+        args = [
+          {% for item in lookup('env','SERVICE_ARGS')|default('[]',true)|from_json() %}
+          "{{item['value']}}",
+          {% endfor %}
+        ]
         auth {
           server_address = "{{lookup('env','DOCKER_REGISTRY_ADDRESS')}}"
           username = "{{lookup('env','REGISTRY_USERNAME')}}"
           password = "{{lookup('env','REGISTRY_PASSWORD')}}"
         }
+        dns_servers = [
+          "${attr.unique.network.ip-address}"
+        ]
+      }
+      env {
+        {% for item in lookup('env','SERVICE_ENV')|default('[]',true)|from_json() %}
+        {{item['key']}} = "{{item['value']}}"
+        {% endfor %}
       }
       resources {
         memory = {{lookup('env','POD_MEMORY')|default(100,true)}}
