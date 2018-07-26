@@ -3,4 +3,4 @@ services:
   {{lookup('env','POD_NAME')}}:
     image: {{lookup('env','DOCKER_REGISTRY_ADDRESS')}}/{{lookup('env','DOCKER_REGISTRY_PATH')}}/{{lookup('env','POD_NAME')}}:{{lookup('env','BUILD_TAG')}}
     build: ./
-    network_mode: host
+    dns: {{lookup('env','JENKINS_IP_ADDR')}}
