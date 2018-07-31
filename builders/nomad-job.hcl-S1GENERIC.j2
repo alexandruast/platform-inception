@@ -54,7 +54,7 @@ job "{{lookup('env','POD_NAME')}}" {
         memory = {{lookup('env','POD_MEMORY')|default(500,true)}}
         network {
           mbits = 100
-          port "tcp" {}
+          port "service" {}
         }
       }
       service {
