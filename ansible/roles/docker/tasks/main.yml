@@ -43,6 +43,13 @@
   with_fileglob: "{{role_path}}/files/profile.d/*"
   tags: env
 
+- name: "/etc/docker dir created"
+  file:
+    path: /etc/docker
+    state: directory
+    mode: 0755
+  become: true
+
 - name: "daemon config updated"
   template:
     src: "daemon.json.j2"

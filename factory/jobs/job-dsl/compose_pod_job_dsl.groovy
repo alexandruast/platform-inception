@@ -7,10 +7,14 @@ def environments = [
       "sys-fabio",
       "be-java-echo",
       "be-go-demo",
+      "sys-sonar7",
+      "sys-influxdb",
+      "sys-grafana"
       
     ],
     images: [
-      "sys-py-yaml-to-consul"
+      "sys-py-yaml-to-consul",
+      "sys-py-sonar-to-influxdb"
     ]
   ],
 
