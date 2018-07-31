@@ -32,7 +32,7 @@ job "{{lookup('env','POD_NAME')}}" {
           password = "{{lookup('env','REGISTRY_PASSWORD')}}"
         }
         port_map {
-          http = {{lookup('env','POD_LISTEN')|default(8080,true)}}
+          service = {{lookup('env','POD_LISTEN')|default(8080,true)}}
         }
         dns_servers = [
           "${attr.unique.network.ip-address}"
@@ -68,7 +68,7 @@ job "{{lookup('env','POD_NAME')}}" {
           {% endif %}
         ]
         name = "{{lookup('env','SERVICE_NAME')|default(lookup('env','POD_NAME'),true)}}"
-        port = "tcp"
+        port = "service"
         check {
           type = "tcp"
           interval = "10s"
