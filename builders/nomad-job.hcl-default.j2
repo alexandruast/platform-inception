@@ -1,6 +1,6 @@
 #jinja2: lstrip_blocks: "True"
 job "{{lookup('env','POD_NAME')}}" {
-  datacenters = ["dc1"]
+  datacenters = {{lookup('env','POD_DATACENTERS')|default('["dc1"]',true)}}
   type = "service"
   update {
     max_parallel = 1
@@ -32,6 +32,7 @@ job "{{lookup('env','POD_NAME')}}" {
       }
       resources {
         memory = {{lookup('env','POD_MEMORY')|default(100,true)}}
+        mbits = {{lookup('env','POD_MBITS')|default(100,true)}}
       }
       service {
         name = "{{lookup('env','SERVICE_NAME')|default(lookup('env','POD_NAME'),true)}}"

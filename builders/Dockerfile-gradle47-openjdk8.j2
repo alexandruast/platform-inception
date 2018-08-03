@@ -1,8 +1,7 @@
 FROM gradle:4.7-jdk8 as BUILDER
 COPY --chown=gradle:gradle . /home/gradle/{{lookup('env','POD_NAME')}}
 WORKDIR /home/gradle/{{lookup('env','POD_NAME')}}
-RUN gradle build \
-&& gradle sonarqube -Dsonar.host.url=http://sonar.service.consul:9999/sonar -Dsonar.login=21b1b921bb73022cfefe9686edc66f959a7b57d4
+RUN gradle build
 
 FROM openjdk:8u171-jre-slim
 RUN useradd --no-create-home --no-log-init --system app

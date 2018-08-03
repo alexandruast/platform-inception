@@ -1,8 +1,8 @@
 - name: "hostname present in /etc/hosts"
   lineinfile:
     dest: /etc/hosts
-    regexp: "^{{ansible_default_ipv4.address}}"
-    line: "{{ansible_default_ipv4.address}} {{ansible_fqdn}} {{ansible_hostname}}"
+    regexp: "^{{service_bind_ip|default(ansible_default_ipv4.address)}}"
+    line: "{{service_bind_ip|default(ansible_default_ipv4.address)}} {{ansible_fqdn}} {{ansible_hostname}}"
     state: present
     backup: yes
   become: true

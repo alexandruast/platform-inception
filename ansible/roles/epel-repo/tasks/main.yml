@@ -2,7 +2,7 @@
   - name: "stat {{artifacts_dir}}/{{epel_release_installer}}"
     stat: path="{{artifacts_dir}}/{{epel_release_installer}}"
     become: true
-    register: epel_release_isntaller_check
+    register: epel_release_installer_check
 
   - name: "{{epel_release_installer_url}} package downloaded"
     get_url:

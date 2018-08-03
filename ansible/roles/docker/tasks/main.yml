@@ -6,28 +6,39 @@
       skip: true
   tags: always
 
-- name: "docker repository added"
-  get_url:
-    url: https://download.docker.com/linux/centos/docker-ce.repo
-    dest: /etc/yum.repos.d/docer-ce.repo
-  become: true
-  when: ansible_distribution|lower == 'redhat' or ansible_distribution|lower == 'centos'
+- block:
+  - name: "docker repository added"
+    get_url:
+      url: https://download.docker.com/linux/centos/docker-ce.repo
+      dest: /etc/yum.repos.d/docer-ce.repo
+    become: true
+    when: ansible_distribution|lower == 'redhat' or ansible_distribution|lower == 'centos'
 
-- name: "docker packages installed"
-  package:
+  - name: "docker packages installed"
+    package:
+      name: "{{item}}"
+      state: present
+    become: true
+    with_items:
+      - "{{docker_packages}}"
+  
+  when: not skip_install|default(false)
+
+- name: "docker groups present"
+  group:
     name: "{{item}}"
-    state: present
-  become: true
   with_items:
-    - "{{docker_packages}}"
+    - docker
+    - dockerroot
+  become: true
 
-- name: "{{ansible_user_id}} appended to docker group"
+- name: "{{ansible_user_id}} appended to docker groups"
   user:
     name: "{{ansible_user_id}}"
-    groups: docker
+    groups: docker, dockerroot
     append: yes
-  become: true
   register: docker_group
+  become: true
 
 - name: "net.ipv4.ip_forward is enabled"
   sysctl:

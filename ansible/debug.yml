@@ -4,7 +4,4 @@
 
   roles:
     - role: gather-facts
-    
-    - role: consul
-      vars:
-        service_mode: server
+    - role: workstation

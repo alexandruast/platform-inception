@@ -11,6 +11,7 @@
     - role: housekeeping
     - role: user-ssh-key
     - role: base
+    - role: hostname
     - role: dnsmasq
       dnsmasq_resolv: supersede
       dns_servers:
@@ -18,7 +19,6 @@
         - "8.8.8.8"
         - "8.8.4.4"
     - role: ansible
-    - role: docker
     - role: docker-compose
     - role: pumba
     - role: jq
@@ -29,3 +29,6 @@
     - role: terraform
     - role: terragrunt
     - role: workstation
+    - role: kubernetes
+    - role: docker
+      skip_install: true

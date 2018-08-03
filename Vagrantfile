@@ -8,7 +8,7 @@ required_plugins = []
 
 ci_admin_pass = "welcome1"
 
-box = "bento/centos-7.4"
+box = "bento/centos-7.5"
 # box = "moonphase/amazonlinux2"
 # box = "xianlin/rhel-7"
 
@@ -75,6 +75,14 @@ sandbox = {
   :ip => "192.168.169.170",
   :box => box,
   :memory => 6000,
+  :cpus => 2
+}
+
+workstation = {
+  :hostname => "workstation",
+  :ip => "192.168.169.254",
+  :box => box,
+  :memory => 4000,
   :cpus => 2
 }
 
@@ -283,6 +291,35 @@ Vagrant.configure(2) do |config|
         s.args = [
           ci_admin_pass,
           sandbox[:ip]
+        ]
+      end
+      node.trigger.before :destroy do |trigger|
+        trigger.on_error = :continue
+        begin
+          trigger.run_remote = { inline: "if which subscription-manager; then sudo subscription-manager unregister; fi" } if box.include? "rhel"
+        rescue
+          puts "If something went wrong, please remove the vm manually from https://access.redhat.com/management/subscriptions"
+        end
+      end
+    end
+  end
+  if ARGV[1] == "workstation" or ARGV[0] == "destroy" or ARGV[0] == "halt" 
+    config.vm.define "workstation" do |node|
+      node.vm.box = workstation[:box]
+      node.vm.hostname = workstation[:hostname]
+      node.vm.provider "virtualbox" do |vb|
+          vb.linked_clone = true
+          vb.memory = workstation[:memory]
+          vb.cpus = workstation[:cpus]
+      end
+      node.vm.network "private_network", ip: workstation[:ip]
+      node.vm.provision "shell", path: "./extras/sandbox-ssh-key.sh", privileged: false
+      node.vm.provision "shell", inline: bootstrap, privileged: false
+      node.vm.provision "shell" do |s|
+        s.path = "./extras/workstation-bootstrap.sh"
+        s.privileged = false
+        s.args = [
+          workstation[:ip]
         ]
       end
       node.trigger.before :destroy do |trigger|

@@ -33,9 +33,9 @@ Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory
 * Instantly run a full stack local platform with Vagrant, identical with live platform, same code that runs in production
 * Instantly run a sandbox environment with Vagrant
 * Nomad job files to mimic Kubernetes pods, for easy migration in the future if needed
-* Infrastructure automation from Jenkins - software updates, provisioning, periodic tasks
+* Infrastructure automation using Jenkins jobs - software updates, provisioning, periodic tasks
 * Jenkins is not a critical service anymore (can be reprovisioned within minutes)
-* CentOS, Amazon Linux, RHEL - all supported also in Vagrant
+* CentOS7, Amazon Linux 7, RHEL 7 - all supported also in Vagrant
 
 #### ToDo
 * service autoscaling by business metrics with external witness, with infrastructure autoscaling support
@@ -48,7 +48,9 @@ Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory
 * store archives/backups
 
 #### Changelog
-added tags support in pods, from yaml
+support for multi-container pods is out of the box, using custom job/compose files  
+Vagrant workstation support  
+added tags support in pods, from yaml  
 lnav removed, as it adds nothing of value for a tail/grep power user  
 added command line arguments support in pods, from yaml  
 added environment variables support in pods, from yaml  
@@ -127,3 +129,31 @@ selectable java jre between openjdk and oracle
 force_setup set to true if the ansible dir changed, even if previously set to false  
 local consul in dev mode as ephemeral key value store in jenkins  
 accelerated provisioning by using setup_completed facts  
+
+#### Misc Stuff
+For code coverage via Sonar, use the following in build.gradle:
+```
+plugins {
+    id 'jacoco'
+    id "org.sonarqube" version "2.6"
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled false
+    }
+}
+
+check.dependsOn jacocoTestReport
+```
+then, use this command at build time:
+```
+gradle sonarqube -Dsonar.host.url=http://sonar.service.consul:9999/sonar -Dsonar.login=21b1b921bb73022cfefe9686edc66f959a7b57d4
+```
+
+To run a specific ansible playbook on workstation, use:
+```
+cd /vagrant && ANSIBLE_TARGET="127.0.0.1" ANSIBLE_EXTRAVARS="{'service_bind_ip':'192.168.169.254','service_network_interface':'enp0s8'}" ./apl-wrapper.sh ansible/debug.yml
+```
+

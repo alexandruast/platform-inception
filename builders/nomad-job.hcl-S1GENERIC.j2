@@ -1,21 +1,21 @@
 #jinja2: lstrip_blocks: "True"
 job "{{lookup('env','POD_NAME')}}" {
-  datacenters = ["dc1"]
+  datacenters = {{lookup('env','POD_DATACENTERS')|default('["dc1"]',true)}}
   type = "service"
   update {
-    max_parallel = 1
+    max_parallel = {{lookup('env','POD_UPDATE_MAX_PARALLEL')|default(1,true)}}
     health_check     = "checks"
-    healthy_deadline = "300s"
+    healthy_deadline = "{{lookup('env','POD_UPDATE_HEALTHY_DEADLINE')|default('300s',true)}}"
     auto_revert      = true
-    stagger          = "10s"
+    stagger          = "{{lookup('env','POD_UPDATE_STAGGER')|default('10s',true)}}"
   }
   group "{{lookup('env','POD_NAME')}}" {
     count = {{lookup('env','POD_COUNT')|default(1,true)}}
     restart {
-      attempts = 3
-      delay    = "60s"
-      interval = "15m"
-      mode     = "delay"
+      attempts = {{lookup('env','POD_RESTART_ATTEMPTS')|default(3,true)}}
+      delay    = "{{lookup('env','POD_RESTART_DELAY')|default('60s',true)}}"
+      interval = "{{lookup('env','POD_RESTART_INTERVAL')|default('15m',true)}}"
+      mode     = "{{lookup('env','POD_RESTART_MODE')|default('delay',true)}}"
     }
     task "{{lookup('env','POD_NAME')}}-{{lookup('env','BUILD_TAG')}}" {
       driver = "docker"
@@ -40,7 +40,7 @@ job "{{lookup('env','POD_NAME')}}" {
         logging {
           type = "fluentd"
           config {
-            fluentd-address = "fluentd.service.consul:24224"
+            fluentd-address = "{{lookup('env','FLUENTD_ADDRESS')|default('fluentd.service.consul:24224',true)}}"
             tag = "docker.{{lookup('env','POD_NAME')}}.{{lookup('env','POD_NAME')}}-{{lookup('env','BUILD_TAG')}}.${attr.unique.hostname}.{%raw%}{{.ID}}{%endraw%}"
           }
         }
@@ -53,7 +53,7 @@ job "{{lookup('env','POD_NAME')}}" {
       resources {
         memory = {{lookup('env','POD_MEMORY')|default(500,true)}}
         network {
-          mbits = 100
+          mbits = {{lookup('env','POD_MBITS')|default(100,true)}}
           port "service" {}
         }
       }
@@ -70,13 +70,14 @@ job "{{lookup('env','POD_NAME')}}" {
         name = "{{lookup('env','SERVICE_NAME')|default(lookup('env','POD_NAME'),true)}}"
         port = "service"
         check {
-          type = "tcp"
-          interval = "10s"
-          timeout  = "4s"
+          type = "{{lookup('env','POD_HC_PROTO')|default('tcp',true)}}"
+          path = "{{lookup('env','POD_HC_PATH')|default('/health',true)}}"
+          interval = "{{lookup('env','POD_HC_INTERVAL')|default('10s',true)}}"
+          timeout  = "{{lookup('env','POD_HC_TIMEOUT')|default('4s',true)}}"
           check_restart {
-            limit = 4
-            grace = "90s"
-            ignore_warnings = false
+            limit = {{lookup('env','POD_HC_LIMIT')|default(4,true)}}
+            grace = "{{lookup('env','POD_HC_TIMEOUT')|default('90s',true)}}"
+            ignore_warnings = {{lookup('env','POD_HC_IGNORE_WARNINGS')|default('false',true)}}
           }
         }
       }

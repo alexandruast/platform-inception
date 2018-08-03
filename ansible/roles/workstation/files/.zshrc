@@ -61,6 +61,7 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 plugins=(
   gitextras
   history
+  kubectl
   last-working-dir
   z
 )

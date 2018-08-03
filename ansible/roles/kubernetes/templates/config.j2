@@ -1,0 +1,6 @@
+ETCD_NAME=default
+{% if service_bind_ip is defined %}
+KUBE_MASTER="--master=http://{{service_bind_ip}}:8080"
+{% else %}
+KUBE_MASTER="--master=http://{{ansible_default_ipv4.address}}:8080"
+{% endif %}
