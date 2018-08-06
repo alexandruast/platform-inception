@@ -57,12 +57,3 @@
   become: true
   tags: env
 
-- name: "sysctl values set"
-  sysctl:
-    name: "{{item.name}}"
-    value: "{{item.value}}"
-    sysctl_set: yes
-    reload: yes
-  become: true
-  with_items:
-    - "{{sysctl_entries}}"

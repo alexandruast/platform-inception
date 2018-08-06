@@ -29,13 +29,12 @@
     name: "{{item}}"
   with_items:
     - docker
-    - dockerroot
   become: true
 
 - name: "{{ansible_user_id}} appended to docker groups"
   user:
     name: "{{ansible_user_id}}"
-    groups: docker, dockerroot
+    groups: docker
     append: yes
   register: docker_group
   become: true
