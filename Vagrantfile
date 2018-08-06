@@ -86,6 +86,30 @@ workstation = {
   :cpus => 2
 }
 
+extra_nodes = [  
+  {
+    :hostname => "node-1",
+    :ip => "192.168.169.251",
+    :box => box,
+    :memory => 2000,
+    :cpus => 2
+  },
+  {
+    :hostname => "node-2",
+    :ip => "192.168.169.252",
+    :box => box,
+    :memory => 2000,
+    :cpus => 2
+  },
+  {
+    :hostname => "node-3",
+    :ip => "192.168.169.253",
+    :box => box,
+    :memory => 2000,
+    :cpus => 2
+  }
+]
+
 missing_plugins = required_plugins.reject { |p| Vagrant.has_plugin?(p) }
 unless missing_plugins.empty?
   system "vagrant plugin install #{missing_plugins.join(' ')}"
@@ -328,6 +352,37 @@ Vagrant.configure(2) do |config|
           trigger.run_remote = { inline: "if which subscription-manager; then sudo subscription-manager unregister; fi" } if box.include? "rhel"
         rescue
           puts "If something went wrong, please remove the vm manually from https://access.redhat.com/management/subscriptions"
+        end
+      end
+    end
+  end
+  if ARGV[1].match(/^node-/) or ARGV[0] == "destroy" or ARGV[0] == "halt" 
+    extra_nodes.each do |machine|
+      config.vm.define machine[:hostname] do |node|
+        node.vm.box = machine[:box]
+        node.vm.hostname = machine[:hostname]
+        node.vm.provider "virtualbox" do |vb|
+          vb.linked_clone = true
+          vb.memory = machine[:memory]
+          vb.cpus = machine[:cpus]
+        end  
+        node.vm.network "private_network", ip: machine[:ip]
+        node.vm.provision "shell", path: "./extras/sandbox-ssh-key.sh", privileged: false
+        node.vm.provision "shell", inline: bootstrap, privileged: false
+        node.vm.provision "shell" do |s|
+          s.path = "./extras/workstation-bootstrap.sh"
+          s.privileged = false
+          s.args = [
+            machine[:ip]
+          ]
+        end
+        node.trigger.before :destroy do |trigger|
+          trigger.on_error = :continue
+          begin
+            trigger.run_remote = { inline: "if which subscription-manager; then sudo subscription-manager unregister; fi" } if box.include? "rhel"
+          rescue
+            puts "If something went wrong, please remove the vm manually from https://access.redhat.com/management/subscriptions"
+          end
         end
       end
     end
