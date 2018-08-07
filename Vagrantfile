@@ -98,14 +98,14 @@ extra_nodes = [
     :hostname => "node-2",
     :ip => "192.168.169.252",
     :box => box,
-    :memory => 2000,
+    :memory => 4000,
     :cpus => 2
   },
   {
     :hostname => "node-3",
     :ip => "192.168.169.253",
     :box => box,
-    :memory => 2000,
+    :memory => 4000,
     :cpus => 2
   }
 ]
@@ -289,7 +289,7 @@ Vagrant.configure(2) do |config|
       end
     end
   end
-  if ARGV[1] == "sandbox" or ARGV[0] == "destroy" or ARGV[0] == "halt" 
+  if ARGV[0] == "destroy" or ARGV[0] == "halt" or (ARGV.length > 1 and ARGV[1] == "sandbox")
     config.vm.define "sandbox" do |node|
       node.vm.box = sandbox[:box]
       node.vm.hostname = sandbox[:hostname]
@@ -327,7 +327,7 @@ Vagrant.configure(2) do |config|
       end
     end
   end
-  if ARGV[1] == "workstation" or ARGV[0] == "destroy" or ARGV[0] == "halt" 
+  if ARGV[0] == "destroy" or ARGV[0] == "halt" or (ARGV.length > 1 and ARGV[1] == "workstation")
     config.vm.define "workstation" do |node|
       node.vm.box = workstation[:box]
       node.vm.hostname = workstation[:hostname]
@@ -356,7 +356,7 @@ Vagrant.configure(2) do |config|
       end
     end
   end
-  if ARGV[1].match(/^node-/) or ARGV[0] == "destroy" or ARGV[0] == "halt" 
+  if ARGV[0] == "destroy" or ARGV[0] == "halt" or (ARGV.length > 1 and ARGV[1].match(/^node-/))
     extra_nodes.each do |machine|
       config.vm.define machine[:hostname] do |node|
         node.vm.box = machine[:box]
