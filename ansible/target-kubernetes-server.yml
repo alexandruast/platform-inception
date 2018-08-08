@@ -1,0 +1,40 @@
+- hosts: all
+  gather_facts: no
+  serial: "{{serial_value|default(1)}}"
+
+  vars:
+    - repos_enabled: true
+    - force_setup: true
+
+  tasks:
+    - include_role:
+        name: alive
+
+    - include_role:
+        name: gather-facts
+
+    - include_role:
+        name: check-sudo
+
+    - include_role:
+        name: housekeeping
+
+    - block:
+      - include_role:
+          name: base
+
+      - include_role:
+          name: jq
+
+      - include_role:
+          name: rsyslog
+
+      - include_role:
+          name: setup-completed
+
+      when: not ansible_local.setup_completed|default(false) or force_setup|default(false)
+
+    - include_role:
+        name: kubernetes
+      vars:
+        service_mode: server

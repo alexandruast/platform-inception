@@ -86,26 +86,29 @@ workstation = {
   :cpus => 2
 }
 
-extra_nodes = [  
+kube_servers = [  
   {
-    :hostname => "node-1",
-    :ip => "192.168.169.251",
+    :hostname => "kube-master1",
+    :ip => "192.168.169.201",
     :box => box,
     :memory => 2000,
     :cpus => 2
-  },
+  }
+]
+
+kube_nodes = [
   {
-    :hostname => "node-2",
-    :ip => "192.168.169.252",
+    :hostname => "kube-node1",
+    :ip => "192.168.169.211",
     :box => box,
-    :memory => 4000,
+    :memory => 3000,
     :cpus => 2
   },
   {
-    :hostname => "node-3",
-    :ip => "192.168.169.253",
+    :hostname => "kube-node2",
+    :ip => "192.168.169.212",
     :box => box,
-    :memory => 4000,
+    :memory => 3000,
     :cpus => 2
   }
 ]

@@ -34,15 +34,6 @@
     gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
   become: true
 
-# - name: "kubernetes.repo key imported"
-#   rpm_key:
-#     key: "{{item}}"
-#     state: present
-#   with_items:
-#     - "https://packages.cloud.google.com/yum/doc/yum-key.gpg"
-#     - "https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg"
-#   become: true
-
 - name: "required packages present"
   yum:
     name: "{{item}}"
@@ -54,15 +45,10 @@
     - kubectl
   become: true
 
-- name: "kubelet enabled"
-  systemd:
-    name: kubelet
-    enabled: yes
-  become: true
-
-- name: "kubelet started"
+- name: "kubelet enabled and started"
   systemd:
     name: kubelet
     state: started
-  register: kubelet_started
+    enabled: yes
   become: true
+
