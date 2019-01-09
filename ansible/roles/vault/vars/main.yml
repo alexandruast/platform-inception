@@ -1,5 +1,5 @@
 service_name:     vault
-service_version:  0.9.5
+service_version:  1.0.1
 service_user:     "{{service_name}}"
 service_group:    "{{service_name}}"
 service_data_dir: "/usr/local/share/{{service_name}}"

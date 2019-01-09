@@ -120,7 +120,7 @@ join_cluster_members() {
 }
 
 install_jq() {
-  sudo curl -LSs https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -o /usr/local/bin/jq \
+  sudo curl -LSs https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -o /usr/local/bin/jq \
   && sudo chmod +x /usr/local/bin/jq
 }
 
@@ -129,7 +129,7 @@ install_pip() {
 }
 
 install_ansible() {
-  sudo pip install ansible==2.5.2
+  sudo pip install ansible==2.7.5
 }
 
 # Overwrites Origin-Jenkins ssh key pair, created by Ansible in previous steps
