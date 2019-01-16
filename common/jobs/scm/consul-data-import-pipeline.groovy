@@ -25,6 +25,7 @@ node {
       -v "$(pwd)/config:/config" \
       -v "$(pwd)/import:/import" \
       --net=host \
+      --dns=127.0.0.1 \
       ${DOCKER_REGISTRY_ADDRESS}/$DOCKER_REGISTRY_PATH/sys-py-yaml-to-consul:${TAG_VERSION}
     '''
   }
