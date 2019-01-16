@@ -54,7 +54,7 @@ job "{{lookup('env','POD_NAME')}}" {
         name = "fluentd"
         port = "service"
         check {
-          type = "tcp"
+          type = "udp"
           interval = "10s"
           timeout  = "4s"
           check_restart {
