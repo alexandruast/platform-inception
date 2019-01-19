@@ -26,6 +26,6 @@ which jq >/dev/null || install_jq
 cd /vagrant/
 
 ANSIBLE_TARGET="127.0.0.1" \
-  ANSIBLE_EXTRAVARS="{'service_bind_ip':'${workstation_ip}','service_network_interface':'enp0s8'}" \
+  ANSIBLE_EXTRAVARS="{'service_bind_ip':'${workstation_ip}','service_network_interface':'enp0s8','docker_host':'tcp://0.0.0.0:2375'}" \
   ./apl-wrapper.sh ansible/target-workstation.yml
 

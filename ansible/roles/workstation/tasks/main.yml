@@ -14,15 +14,19 @@
 
 - name: "system pips installed and upgraded"
   pip:
-    name: ["{{workstation_system_pips}}"]
+    name: "{{item}}"
     extra_args: --upgrade
   become: true
+  with_items:
+    - "{{workstation_system_pips}}"
   tags: pip
 
 - name: "user pips installed and upgraded"
   pip:
-    name: ["{{workstation_user_pips}}"]
+    name: "{{item}}"
     extra_args: --upgrade --user
+  with_items:
+    - "{{workstation_user_pips}}"
   tags: pip
 
 - name: "git repos are in place"
