@@ -8,5 +8,10 @@
     {% endif %}
     "8.8.8.8",
     "8.8.4.4"
+  ],
+  "hosts": [
+    {% if docker_host is defined %}
+    "{{docker_host}}"
+    {% endif %}
   ]
 }
