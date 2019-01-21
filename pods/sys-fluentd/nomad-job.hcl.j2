@@ -1,7 +1,7 @@
 #jinja2: lstrip_blocks: "True"
 job "{{lookup('env','POD_NAME')}}" {
   datacenters = ["dc1"]
-  type = "system"
+  type = "service"
   constraint {
     operator  = "distinct_hosts"
     value     = "true"
