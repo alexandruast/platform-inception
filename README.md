@@ -32,7 +32,6 @@ Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory
 * Every variable is stored in YAML files in source control
 * Instantly run a full stack local platform with Vagrant, identical with live platform, same code that runs in production
 * Instantly run a sandbox environment with Vagrant
-* Nomad job files to mimic Kubernetes pods, for easy migration in the future if needed
 * Infrastructure automation using Jenkins jobs - software updates, provisioning, periodic tasks
 * Jenkins is not a critical service anymore (can be reprovisioned within minutes)
 * CentOS7, Amazon Linux 7, RHEL 7 - all supported also in Vagrant
@@ -48,12 +47,12 @@ Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory
 * store archives/backups
 
 #### Changelog
-support for multi-container pods is out of the box, using custom job/compose files  
+support for multi-container services is out of the box, using custom job/compose files  
 Vagrant workstation support  
-added tags support in pods, from yaml  
+added tags support in services, from yaml  
 lnav removed, as it adds nothing of value for a tail/grep power user  
-added command line arguments support in pods, from yaml  
-added environment variables support in pods, from yaml  
+added command line arguments support in services, from yaml  
+added environment variables support in services, from yaml  
 decision to not implement consul/vault lockdown at this time, security needs per customer are very different  
 td-agent-bit to listen on udp socket  
 lnav ansible role  
@@ -85,13 +84,13 @@ refactored vagrant always run scripts / vault-init
 sandbox mode added to vagrantfile - use one vm for sandbox environment  
 jenkins jobs for vault token renew and secret update  
 vault-init overhaul to better describe the approle flow  
-basic_compose_pod can now deploy any basic docker-compose based pod, on any git url and branch  
-removed "if->else" for pod builds, because it induced too much complexity  
+basic_compose_service can now deploy any basic docker-compose based service, on any git url and branch  
+removed "if->else" for service builds, because it induced too much complexity  
 replaced ansible-playbook for jinja2 templating with ad-hoc command  
-replaced POD_VERSION with BUILD_TAG to better reflect what we're doing  
-pods will build only if the git commit id changed, also changed the version string to be the short commit id  
+replaced SERVICE_VERSION with BUILD_TAG to better reflect what we're doing  
+services will build only if the git commit id changed, also changed the version string to be the short commit id  
 created system cron daily maintenance jenkins job  - runs docker prune commands  
-added fluentd pod for collecting logs  
+added fluentd service for collecting logs  
 refactored job-dsl job names and views  
 added nomad service in dev mode to factory/prod jenkins to be able to properly validate jobs  
 decision to have int/qa/prod environments, qa for performance testing  

@@ -6,9 +6,9 @@ node {
     ]) {
       // get project files
       // ToDo: Retrieve this with native API interaction
-      scm_url = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/${POD_CATEGORY}/${POD_NAME}/scm_url?raw").trim()
-      scm_branch = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/${POD_CATEGORY}/${POD_NAME}/scm_branch?raw").trim()
-      checkout_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/${POD_CATEGORY}/${POD_NAME}/checkout_dir?raw").trim()
+      scm_url = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/${SERVICE_CATEGORY}/${SERVICE_NAME}/scm_url?raw").trim()
+      scm_branch = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/${SERVICE_CATEGORY}/${SERVICE_NAME}/scm_branch?raw").trim()
+      checkout_dir = sh(returnStdout: true, script: "curl -Ssf ${CONSUL_HTTP_ADDR}/v1/kv/platform/conf/${PLATFORM_ENVIRONMENT}/${SERVICE_CATEGORY}/${SERVICE_NAME}/checkout_dir?raw").trim()
       if (checkout_dir == ".") {
         checkout_info = checkout([$class: 'GitSCM',
           branches: [[name: scm_branch]],
@@ -48,7 +48,7 @@ node {
         submoduleCfg: [],
         userRemoteConfigs: [[url: builders_scm_url]]]
       )
-      sh("${builders_relative_dir}/${builders_checkout_dir}/compose-pod-build-env.sh")
+      sh("${builders_relative_dir}/${builders_checkout_dir}/compose-service-build-env.sh")
     }
   }
   stage('build') {
@@ -59,11 +59,11 @@ node {
       sh '''#!/usr/bin/env bash
         set -eEuo pipefail
         source "${WORKSPACE}/.build-env"
-        "${BUILDERS_RELATIVE_DIR}/${BUILDERS_CHECKOUT_DIR}/compose-pod-build.sh"
+        "${BUILDERS_RELATIVE_DIR}/${BUILDERS_CHECKOUT_DIR}/compose-service-build.sh"
       '''
     }
   }
-  if ( POD_CATEGORY == "services" ) {
+  if ( SERVICE_CATEGORY == "services" ) {
     stage('deploy') {
       withCredentials([
           string(credentialsId: 'JENKINS_VAULT_TOKEN', variable: 'VAULT_TOKEN'),
@@ -72,7 +72,7 @@ node {
         sh '''#!/usr/bin/env bash
           set -eEuo pipefail
           source "${WORKSPACE}/.build-env"
-          "${BUILDERS_RELATIVE_DIR}/${BUILDERS_CHECKOUT_DIR}/compose-pod-deploy.sh"
+          "${BUILDERS_RELATIVE_DIR}/${BUILDERS_CHECKOUT_DIR}/compose-service-deploy.sh"
         '''
       }
     }

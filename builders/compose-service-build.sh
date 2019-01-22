@@ -49,7 +49,7 @@ if [[ "${BUILD_TAG}" == "${CURRENT_BUILD_TAG}" ]]; then
   exit 0
 fi
 
-trap 'docker-compose -f "${COMPOSE_FILE}" --project-name "${POD_NAME}-${BUILD_TAG}" down -v --rmi all --remove-orphans' EXIT
+trap 'docker-compose -f "${COMPOSE_FILE}" --project-name "${SERVICE_NAME}-${BUILD_TAG}" down -v --rmi all --remove-orphans' EXIT
 
 docker login "${DOCKER_REGISTRY_ADDRESS}" \
   --username="${REGISTRY_USERNAME}" \
@@ -59,7 +59,7 @@ echo "[info] building docker images..."
 
 docker-compose \
   -f "${COMPOSE_FILE}" \
-  --project-name "${POD_NAME}-${BUILD_TAG}" \
+  --project-name "${SERVICE_NAME}-${BUILD_TAG}" \
   --no-ansi \
   build --no-cache
 
@@ -67,11 +67,11 @@ echo "[info] pushing docker images..."
 
 docker-compose \
   -f "${COMPOSE_FILE}" \
-  --project-name "${POD_NAME}-${BUILD_TAG}" \
+  --project-name "${SERVICE_NAME}-${BUILD_TAG}" \
   --no-ansi \
   push
 
 curl -Ssf -X PUT \
   -d "${BUILD_TAG}" \
-  ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${POD_CATEGORY}/${POD_NAME}/current_build_tag >/dev/null
+  ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${SERVICE_CATEGORY}/${SERVICE_NAME}/current_build_tag >/dev/null
 

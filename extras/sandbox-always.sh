@@ -50,7 +50,7 @@ JENKINS_BUILD_JOB="sandbox-sys-py-yaml-to-consul-images-build"
 echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
 JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
 PLATFORM_ENVIRONMENT="sandbox" \
-POD_NAME="sys-py-yaml-to-consul" \
+SERVICE_NAME="sys-py-yaml-to-consul" \
   ./jenkins-query.sh \
   ./common/jobs/build-simple-job.groovy
 
@@ -64,7 +64,7 @@ JENKINS_BUILD_JOB="sandbox-sys-fluentd-services-deploy"
 echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
 JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
 PLATFORM_ENVIRONMENT="sandbox" \
-POD_NAME="fluentd" \
+SERVICE_NAME="fluentd" \
   ./jenkins-query.sh \
   ./common/jobs/build-simple-job.groovy
 
@@ -72,7 +72,7 @@ JENKINS_BUILD_JOB="sandbox-sys-fabio-services-deploy"
 echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
 JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
 PLATFORM_ENVIRONMENT="sandbox" \
-POD_NAME="fabio" \
+SERVICE_NAME="fabio" \
   ./jenkins-query.sh \
   ./common/jobs/build-simple-job.groovy
 

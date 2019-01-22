@@ -18,16 +18,16 @@
           /{{lookup('env','PLATFORM_ENVIRONMENT')}}\
           /global"
 
-        # Get platform-conf environment pod variables
+        # Get platform-conf environment service variables
         - "{{lookup('env','CONSUL_HTTP_ADDR')}}\
           /v1/kv/platform/conf\
           /{{lookup('env','PLATFORM_ENVIRONMENT')}}\
-          /{{lookup('env','POD_CATEGORY')}}\
-          /{{lookup('env','POD_NAME')}}"
+          /{{lookup('env','SERVICE_CATEGORY')}}\
+          /{{lookup('env','SERVICE_NAME')}}"
 
-        # Get platform-data environment pod variables
+        # Get platform-data environment service variables
         - "{{lookup('env','CONSUL_HTTP_ADDR')}}\
           /v1/kv/platform/data\
           /{{lookup('env','PLATFORM_ENVIRONMENT')}}\
-          /{{lookup('env','POD_CATEGORY')}}\
-          /{{lookup('env','POD_NAME')}}"
+          /{{lookup('env','SERVICE_CATEGORY')}}\
+          /{{lookup('env','SERVICE_NAME')}}"

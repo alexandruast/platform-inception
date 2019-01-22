@@ -1,28 +1,28 @@
 #jinja2: lstrip_blocks: "True"
-job "{{lookup('env','POD_NAME')}}" {
-  datacenters = {{lookup('env','POD_DATACENTERS')|default('["dc1"]',true)}}
+job "{{lookup('env','SERVICE_NAME')}}" {
+  datacenters = {{lookup('env','SERVICE_DATACENTERS')|default('["dc1"]',true)}}
   type = "service"
   update {
-    max_parallel = {{lookup('env','POD_UPDATE_MAX_PARALLEL')|default(1,true)}}
+    max_parallel = {{lookup('env','SERVICE_UPDATE_MAX_PARALLEL')|default(1,true)}}
     health_check     = "checks"
-    healthy_deadline = "{{lookup('env','POD_UPDATE_HEALTHY_DEADLINE')|default('300s',true)}}"
+    healthy_deadline = "{{lookup('env','SERVICE_UPDATE_HEALTHY_DEADLINE')|default('300s',true)}}"
     auto_revert      = true
-    stagger          = "{{lookup('env','POD_UPDATE_STAGGER')|default('10s',true)}}"
+    stagger          = "{{lookup('env','SERVICE_UPDATE_STAGGER')|default('10s',true)}}"
   }
-  group "{{lookup('env','POD_NAME')}}" {
-    count = {{lookup('env','POD_COUNT')|default(1,true)}}
+  group "{{lookup('env','SERVICE_NAME')}}" {
+    count = {{lookup('env','SERVICE_COUNT')|default(1,true)}}
     restart {
-      attempts = {{lookup('env','POD_RESTART_ATTEMPTS')|default(3,true)}}
-      delay    = "{{lookup('env','POD_RESTART_DELAY')|default('60s',true)}}"
-      interval = "{{lookup('env','POD_RESTART_INTERVAL')|default('15m',true)}}"
-      mode     = "{{lookup('env','POD_RESTART_MODE')|default('delay',true)}}"
+      attempts = {{lookup('env','SERVICE_RESTART_ATTEMPTS')|default(3,true)}}
+      delay    = "{{lookup('env','SERVICE_RESTART_DELAY')|default('60s',true)}}"
+      interval = "{{lookup('env','SERVICE_RESTART_INTERVAL')|default('15m',true)}}"
+      mode     = "{{lookup('env','SERVICE_RESTART_MODE')|default('delay',true)}}"
     }
-    task "{{lookup('env','POD_NAME')}}-{{lookup('env','BUILD_TAG')}}" {
+    task "{{lookup('env','SERVICE_NAME')}}-{{lookup('env','BUILD_TAG')}}" {
       driver = "docker"
       config {
-        image = "{{lookup('env','DOCKER_REGISTRY_ADDRESS')}}/{{lookup('env','DOCKER_REGISTRY_PATH')}}/{{lookup('env','POD_NAME')}}:{{lookup('env','BUILD_TAG')}}"
+        image = "{{lookup('env','DOCKER_REGISTRY_ADDRESS')}}/{{lookup('env','DOCKER_REGISTRY_PATH')}}/{{lookup('env','SERVICE_NAME')}}:{{lookup('env','BUILD_TAG')}}"
         args = [
-          {% for item in lookup('env','POD_ARGS')|default('[]',true)|from_json() %}
+          {% for item in lookup('env','SERVICE_ARGS')|default('[]',true)|from_json() %}
           "{{item['value']}}",
           {% endfor %}
         ]
@@ -32,7 +32,7 @@ job "{{lookup('env','POD_NAME')}}" {
           password = "{{lookup('env','REGISTRY_PASSWORD')}}"
         }
         port_map {
-          service = {{lookup('env','POD_LISTEN')|default(8080,true)}}
+          service = {{lookup('env','SERVICE_LISTEN')|default(8080,true)}}
         }
         dns_servers = [
           "${attr.unique.network.ip-address}"
@@ -41,43 +41,43 @@ job "{{lookup('env','POD_NAME')}}" {
           type = "fluentd"
           config {
             fluentd-address = "{{lookup('env','FLUENTD_ADDRESS')|default('fluentd.service.consul:24224',true)}}"
-            tag = "docker.{{lookup('env','POD_NAME')}}.{{lookup('env','POD_NAME')}}-{{lookup('env','BUILD_TAG')}}.${attr.unique.hostname}.{%raw%}{{.ID}}{%endraw%}"
+            tag = "docker.{{lookup('env','SERVICE_NAME')}}.{{lookup('env','SERVICE_NAME')}}-{{lookup('env','BUILD_TAG')}}.${attr.unique.hostname}.{%raw%}{{.ID}}{%endraw%}"
           }
         }
       }
       env {
-        {% for item in lookup('env','POD_ENV')|default('[]',true)|from_json() %}
+        {% for item in lookup('env','SERVICE_ENV')|default('[]',true)|from_json() %}
         {{item['key']}} = "{{item['value']}}"
         {% endfor %}
       }
       resources {
-        memory = {{lookup('env','POD_MEMORY')|default(500,true)}}
+        memory = {{lookup('env','SERVICE_MEMORY')|default(500,true)}}
         network {
-          mbits = {{lookup('env','POD_MBITS')|default(100,true)}}
+          mbits = {{lookup('env','SERVICE_MBITS')|default(100,true)}}
           port "service" {}
         }
       }
       service {
         tags = [
-          {% if lookup('env','POD_TAGS')|default('[]',true) == '[]' %}
-          "urlprefix-/{{lookup('env','SERVICE_NAME')|default(lookup('env','POD_NAME'),true)}} strip=/{{lookup('env','SERVICE_NAME')|default(lookup('env','POD_NAME'),true)}}"
+          {% if lookup('env','SERVICE_TAGS')|default('[]',true) == '[]' %}
+          "urlprefix-/{{lookup('env','SERVICE_NAME')|default(lookup('env','SERVICE_NAME'),true)}} strip=/{{lookup('env','SERVICE_NAME')|default(lookup('env','SERVICE_NAME'),true)}}"
           {% else %}
-          {% for item in lookup('env','POD_TAGS')|default('[]',true)|from_json() %}
+          {% for item in lookup('env','SERVICE_TAGS')|default('[]',true)|from_json() %}
           "{{item['value']}}",
           {% endfor %}
           {% endif %}
         ]
-        name = "{{lookup('env','SERVICE_NAME')|default(lookup('env','POD_NAME'),true)}}"
+        name = "{{lookup('env','SERVICE_NAME')|default(lookup('env','SERVICE_NAME'),true)}}"
         port = "service"
         check {
-          type = "{{lookup('env','POD_HC_PROTO')|default('tcp',true)}}"
-          path = "{{lookup('env','POD_HC_PATH')|default('/health',true)}}"
-          interval = "{{lookup('env','POD_HC_INTERVAL')|default('10s',true)}}"
-          timeout  = "{{lookup('env','POD_HC_TIMEOUT')|default('4s',true)}}"
+          type = "{{lookup('env','SERVICE_HC_PROTO')|default('tcp',true)}}"
+          path = "{{lookup('env','SERVICE_HC_PATH')|default('/health',true)}}"
+          interval = "{{lookup('env','SERVICE_HC_INTERVAL')|default('10s',true)}}"
+          timeout  = "{{lookup('env','SERVICE_HC_TIMEOUT')|default('4s',true)}}"
           check_restart {
-            limit = {{lookup('env','POD_HC_LIMIT')|default(4,true)}}
-            grace = "{{lookup('env','POD_HC_TIMEOUT')|default('90s',true)}}"
-            ignore_warnings = {{lookup('env','POD_HC_IGNORE_WARNINGS')|default('false',true)}}
+            limit = {{lookup('env','SERVICE_HC_LIMIT')|default(4,true)}}
+            grace = "{{lookup('env','SERVICE_HC_TIMEOUT')|default('90s',true)}}"
+            ignore_warnings = {{lookup('env','SERVICE_HC_IGNORE_WARNINGS')|default('false',true)}}
           }
         }
       }

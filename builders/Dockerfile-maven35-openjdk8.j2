@@ -1,14 +1,14 @@
 FROM maven:3.5-jdk-8-slim as BUILDER
 RUN useradd --no-create-home --no-log-init --system app
 USER app
-RUN mkdir -p /build/{{lookup('env','POD_NAME')}} \
-COPY . /build/{{lookup('env','POD_NAME')}}
-WORKDIR /build/{{lookup('env','POD_NAME')}}
+RUN mkdir -p /build/{{lookup('env','SERVICE_NAME')}} \
+COPY . /build/{{lookup('env','SERVICE_NAME')}}
+WORKDIR /build/{{lookup('env','SERVICE_NAME')}}
 RUN mvn --batch-mode -Dmaven.test.failure.ignore clean package
 
 FROM openjdk:8u171-jre-slim
 RUN useradd --no-create-home --no-log-init --system app
 USER app
-COPY --from=BUILDER /build/{{lookup('env','POD_NAME')}}/target/*.jar /
+COPY --from=BUILDER /build/{{lookup('env','SERVICE_NAME')}}/target/*.jar /
 WORKDIR /
 CMD ["/bin/sh", "-c", "java -jar *.jar"]

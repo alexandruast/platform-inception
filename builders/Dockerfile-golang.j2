@@ -1,8 +1,8 @@
 FROM golang:alpine as BUILDER
-WORKDIR /go/src/{{lookup('env','POD_NAME')}}
+WORKDIR /go/src/{{lookup('env','SERVICE_NAME')}}
 COPY . .
 RUN go build ./
 
 FROM scratch
-COPY --from=BUILDER /go/src/{{lookup('env','POD_NAME')}}/{{lookup('env','POD_NAME')}} /usr/local/bin/{{lookup('env','POD_NAME')}}
-CMD ["/usr/local/bin/{{lookup('env','POD_NAME')}}"]
+COPY --from=BUILDER /go/src/{{lookup('env','SERVICE_NAME')}}/{{lookup('env','SERVICE_NAME')}} /usr/local/bin/{{lookup('env','SERVICE_NAME')}}
+CMD ["/usr/local/bin/{{lookup('env','SERVICE_NAME')}}"]

@@ -30,21 +30,21 @@ def environments = [
 ]
 
 environments.each { environment, categories ->
-  categories.each { category, pods ->
+  categories.each { category, services ->
     if (category == 'services') {
       jobSuffix='deploy'
     } else {
       jobSuffix='build'
     }
-    pods.each { pod ->
-      pipelineJob("${environment}-${pod}-${category}-${jobSuffix}") {
+    services.each { service ->
+      pipelineJob("${environment}-${service}-${category}-${jobSuffix}") {
         description("Dynamically generated with job-dsl by ${JOB_NAME}\nAny changes to this item will be overwritten without notice.")
         def repo = 'https://github.com/alexandruast/platform-inception'
         keepDependencies(false)
         environmentVariables {
           env('PLATFORM_ENVIRONMENT', "${environment}")
-          env('POD_NAME', "${pod}")
-          env('POD_CATEGORY', "${category}")
+          env('SERVICE_NAME', "${service}")
+          env('SERVICE_CATEGORY', "${category}")
         }
         definition {
           cpsScm {
@@ -52,7 +52,7 @@ environments.each { environment, categories ->
               git {
                 remote { url(repo) }
                 branches('devel')
-                scriptPath("common/jobs/scm/compose-pod-pipeline.groovy")
+                scriptPath("common/jobs/scm/compose-service-pipeline.groovy")
                 extensions {
                   cleanBeforeCheckout()
                 }

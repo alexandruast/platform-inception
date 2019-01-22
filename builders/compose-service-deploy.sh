@@ -28,14 +28,14 @@ ssh ${SSH_OPTS[*]} \
 NOMAD_FILE="${WORKSPACE}/${CHECKOUT_DIR}/nomad-job.json"
 NOMAD_ADDR=http://127.0.0.1:${TUNNEL_PORT}
 
-echo "[info] getting information about currently running deployment for this pod..."
+echo "[info] getting information about currently running deployment for this service..."
 
-# Is there a previous deployment for this pod?
-if curl -Ssf ${NOMAD_ADDR}/v1/job/${POD_NAME} >/dev/null; then
+# Is there a previous deployment for this service?
+if curl -Ssf ${NOMAD_ADDR}/v1/job/${SERVICE_NAME} >/dev/null; then
   # Try job planning, so we can catch any issues before actually deploying stuff
   JOB_PLAN_DATA="$(curl -Ssf -X POST \
     -d "@${NOMAD_FILE}" \
-    ${NOMAD_ADDR}/v1/job/${POD_NAME}/plan)"
+    ${NOMAD_ADDR}/v1/job/${SERVICE_NAME}/plan)"
   # To go further with the deploy, the FailedTGAllocs field must be null
   FAILED_ALLOCS="$(echo "${JOB_PLAN_DATA}" \
     | grep 'FailedTGAllocs' \
@@ -80,7 +80,7 @@ while :; do
     successful)
       curl -Ssf -X PUT \
         -d "${CURRENT_BUILD_TAG}" \
-        ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${POD_CATEGORY}/${POD_NAME}/current_deploy_tag >/dev/null
+        ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${SERVICE_CATEGORY}/${SERVICE_NAME}/current_deploy_tag >/dev/null
       exit 0
     ;;
 

@@ -9,7 +9,7 @@
   - stat:
       path: "{{ item }}"
     with_items:
-      - "{{ playbook_dir }}/{{ target_file }}-{{ lookup('env','POD_NAME') }}.j2"
+      - "{{ playbook_dir }}/{{ target_file }}-{{ lookup('env','SERVICE_NAME') }}.j2"
       - "{{ playbook_dir }}/{{ target_file }}-{{ target_profile }}.j2"
     register: builders_check
 
