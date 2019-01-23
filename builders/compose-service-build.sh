@@ -19,7 +19,7 @@ export REGISTRY_USERNAME
 export REGISTRY_PASSWORD
 export BUILD_TAG
 
-if [ -n "${VAULT_SECRETS}" ]; then
+if [ -n "${VAULT_SECRETS:-}" ]; then
   for secret_key in $(echo "${VAULT_SECRETS}" | jq -re .[] | tr '\n' ',' | sed -e 's/,$/\n/'); do
     secret_value="$(curl -Ssf -X GET \
       -H "X-Vault-Token:${VAULT_TOKEN}" \
