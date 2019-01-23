@@ -2,10 +2,11 @@
 set -eEuo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
-# I am exposing a personal docker.io account here for demo purposes,
+# I am exposing a personal docker.io/loggly accounts here for demo purposes,
 # saving your time and making the process more streamlined.
 # PLEASE DO NOT ABUSE!
 REGISTRY_CREDENTIALS='platformdemo:63hu8y1L7X3BBel8'
+LOGGLY_CUSTOMER_TOKEN='fac82da1-9362-4ef3-a0e0-8869dee4a94a'
 VAULT_SERVERS=( ${VAULT_SERVERS} )
 
 vault_reset() {
@@ -152,6 +153,11 @@ vault_reset() {
     -H "X-Vault-Token:${OPERATIONS_VAULT_TOKEN}" \
     -d "{\"value\":\"${REGISTRY_CREDENTIALS}\"}" \
     "${VAULT_ADDR}/v1/secret/operations/docker-registry"
+  
+  curl -Ssf -X PUT \
+    -H "X-Vault-Token:${OPERATIONS_VAULT_TOKEN}" \
+    -d "{\"value\":\"${LOGGLY_CUSTOMER_TOKEN}\"}" \
+    "${VAULT_ADDR}/v1/secret/operations/loggly-customer-token"
 
   JENKINS_CREDENTIAL_ID="JENKINS_VAULT_TOKEN" \
     JENKINS_CREDENTIAL_DESCRIPTION="Vault Token" \

@@ -7,12 +7,17 @@
   tags: always
 
 - block:
-  - name: "docker repository added"
+  - name: "docker repository added - rhel/centos"
     get_url:
       url: https://download.docker.com/linux/centos/docker-ce.repo
       dest: /etc/yum.repos.d/docer-ce.repo
     become: true
     when: ansible_distribution|lower == 'redhat' or ansible_distribution|lower == 'centos'
+  
+  - name: "docker repository added - amazon"
+    shell: "amazon-linux-extras enable docker"
+    become: true
+    when: ansible_distribution|lower == 'amazon'
 
   - name: "docker packages installed"
     package:

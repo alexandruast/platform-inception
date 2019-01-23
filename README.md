@@ -5,6 +5,14 @@
 vagrant up sandbox
 ```
 
+WARNING - Vagrant images might get old/obsolete, OS updating and ethernet devices name changes is not in the scope of this platform. Update boxes manually if there are errors related to installed packages or network adapter naming:
+```
+vagrant ssh sandbox
+sudo yum update
+CRTL+D(exit ssh session)
+vagrant reload sandbox --provision
+```
+
 #### System requirements
 * Vagrant - latest release
 * 12GB RAM to run full platform: `vagrant up`

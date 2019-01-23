@@ -41,7 +41,7 @@ job "{{lookup('env','SERVICE_NAME')}}" {
           type = "fluentd"
           config {
             fluentd-address = "{{lookup('env','FLUENTD_ADDRESS')|default('fluentd.service.consul:24224',true)}}"
-            tag = "docker.{{lookup('env','SERVICE_NAME')}}.{{lookup('env','SERVICE_NAME')}}-{{lookup('env','BUILD_TAG')}}.${attr.unique.hostname}.{%raw%}{{.ID}}{%endraw%}"
+            tag = "docker.{{lookup('env','PLATFORM_ENVIRONMENT')}}.{{lookup('env','SERVICE_NAME')}}.{{lookup('env','BUILD_TAG')}}.${attr.unique.hostname}.{%raw%}{{.ID}}{%endraw%}"
           }
         }
       }

@@ -10,6 +10,7 @@ ci_factory_json=$3
 ci_prod_json=$4
 server_nodes_json=$5
 compute_nodes_json=$6
+service_network_interface=$7
 
 SSH_CONTROL_SOCKET="/tmp/ssh-control-socket-$(uuidgen)"
 trap 'sudo ssh -S "${SSH_CONTROL_SOCKET}" -O exit vagrant@${!ip_addr_var:-192.0.2.255}' EXIT
@@ -95,7 +96,7 @@ nomad_compute_deploy() {
     ANSIBLE_SERVICE='nomad' \
     ANSIBLE_SCOPE='compute' \
     ANSIBLE_TARGET="$(echo ${compute_nodes_json} | jq -re .[].ip | tr '\n' ',' | sed -e 's/,$/\n/')" \
-    ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'serial_value':'100%','ansible_user':'vagrant','dnsmasq_resolv':'supersede','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'service_bind_ip':'{{ansible_host}}','service_network_interface':'enp0s8'}" \
+    ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'serial_value':'100%','ansible_user':'vagrant','dnsmasq_resolv':'supersede','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4'],'service_bind_ip':'{{ansible_host}}','service_network_interface':'${service_network_interface}'}" \
     ./jenkins-query.sh \
     ./common/jobs/build-ansible-target-provision-job.groovy
 }

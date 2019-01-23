@@ -8,6 +8,12 @@ required_plugins = []
 
 ci_admin_pass = "welcome1"
 
+# Network interface to use for services:
+# amazon linux 2 - eth1
+# centos/rhel7 - enp0s8
+service_network_interface = "enp0s8"
+# service_network_interface = "eth1"
+
 box = "bento/centos-7.4"
 # box = "moonphase/amazonlinux2"
 # box = "xianlin/rhel-7"
@@ -242,7 +248,8 @@ Vagrant.configure(2) do |config|
         ci_factory.to_json.to_s,
         ci_prod.to_json.to_s,
         nomad_servers.to_json.to_s,
-        compute_nodes.to_json.to_s
+        compute_nodes.to_json.to_s,
+        service_network_interface
       ]
     end
     node.vm.provision "shell", run: "always" do |s|
@@ -282,7 +289,8 @@ Vagrant.configure(2) do |config|
         s.privileged = false
         s.args = [
           ci_admin_pass,
-          sandbox[:ip]
+          sandbox[:ip],
+          service_network_interface
         ]
       end
       node.vm.provision "shell", run: "always" do |s|
@@ -319,7 +327,8 @@ Vagrant.configure(2) do |config|
         s.path = "./extras/workstation-bootstrap.sh"
         s.privileged = false
         s.args = [
-          workstation[:ip]
+          workstation[:ip],
+          service_network_interface
         ]
       end
       node.trigger.before :destroy do |trigger|

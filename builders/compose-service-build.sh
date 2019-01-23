@@ -19,6 +19,15 @@ export REGISTRY_USERNAME
 export REGISTRY_PASSWORD
 export BUILD_TAG
 
+if [ -n "${VAULT_SECRETS}" ]; then
+  for secret_key in $(echo "${VAULT_SECRETS}" | jq -re .[] | tr '\n' ',' | sed -e 's/,$/\n/'); do
+    secret_value="$(curl -Ssf -X GET \
+      -H "X-Vault-Token:${VAULT_TOKEN}" \
+      "${VAULT_ADDR}/v1/secret/operations/${secret_key}" | jq -re .data.value)"
+    export ${!secret_key}="${secret_value}"
+  done
+fi
+
 echo "[info] copying profile templates..."
 
 ansible-playbook -i 127.0.0.1, \
