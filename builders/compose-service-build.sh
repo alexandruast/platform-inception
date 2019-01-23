@@ -35,8 +35,6 @@ ansible-playbook -i 127.0.0.1, \
 
 echo "[info] parsing jinja2 templates, if any..."
 
-echo ${LOGGLY_CUSTOMER_TOKEN}
-
 ansible-playbook -i 127.0.0.1, \
   --connection=local \
   --module-path=${BUILDERS_ABSOLUTE_DIR} \
