@@ -19,7 +19,9 @@ export REGISTRY_USERNAME
 export REGISTRY_PASSWORD
 export BUILD_TAG
 
+echo "${VAULT_SECRETS:-}" | jq -re .[] | tr '\n' ' ' | sed -e 's/ $/ /'
 for secret_key in $(echo "${VAULT_SECRETS:-}" | jq -re .[] | tr '\n' ' ' | sed -e 's/ $/ /'); do
+  echo $secret_value
   secret_value="$(curl -Ssf -X GET \
     -H "X-Vault-Token:${VAULT_TOKEN}" \
     "${VAULT_ADDR}/v1/secret/operations/${secret_key}" | jq -re .data.value)"
