@@ -10,7 +10,7 @@ BUILD_TAG="$(git rev-parse --short HEAD)"
 
 REGISTRY_CREDENTIALS="$(curl -Ssf -X GET \
   -H "X-Vault-Token:${VAULT_TOKEN}" \
-  "${VAULT_ADDR}/v1/secret/operations/docker-registry" | jq -re .data.value)"
+  "${VAULT_ADDR}/v1/secret/operations/docker_registry" | jq -re .data.value)"
 
 REGISTRY_USERNAME="${REGISTRY_CREDENTIALS%:*}"
 REGISTRY_PASSWORD="${REGISTRY_CREDENTIALS#*:}"
@@ -20,10 +20,6 @@ export REGISTRY_PASSWORD
 export BUILD_TAG
 
 for secret_key in $(echo "${VAULT_SECRETS:-}" | jq -re .[] | tr '\n' ' ' | sed -e 's/ $/ /'); do
-  echo "curl -Ssf -X GET \
-    -H "X-Vault-Token:${VAULT_TOKEN}" \
-    "${VAULT_ADDR}/v1/secret/operations/${secret_key}" | jq -re .data.value"
-  
   secret_value="$(curl -Ssf -X GET \
     -H "X-Vault-Token:${VAULT_TOKEN}" \
     "${VAULT_ADDR}/v1/secret/operations/${secret_key}" | jq -re .data.value)"

@@ -152,12 +152,12 @@ vault_reset() {
   curl -Ssf -X PUT \
     -H "X-Vault-Token:${OPERATIONS_VAULT_TOKEN}" \
     -d "{\"value\":\"${REGISTRY_CREDENTIALS}\"}" \
-    "${VAULT_ADDR}/v1/secret/operations/docker-registry"
+    "${VAULT_ADDR}/v1/secret/operations/docker_registry"
   
   curl -Ssf -X PUT \
     -H "X-Vault-Token:${OPERATIONS_VAULT_TOKEN}" \
     -d "{\"value\":\"${LOGGLY_CUSTOMER_TOKEN}\"}" \
-    "${VAULT_ADDR}/v1/secret/operations/loggly-customer-token"
+    "${VAULT_ADDR}/v1/secret/operations/loggly_customer_token"
 
   JENKINS_CREDENTIAL_ID="JENKINS_VAULT_TOKEN" \
     JENKINS_CREDENTIAL_DESCRIPTION="Vault Token" \
