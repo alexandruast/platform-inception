@@ -55,6 +55,8 @@ Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory
 * store archives/backups
 
 #### Changelog
+logging via loggly.com  
+arbitrary vault secrets for services in platform-conf  
 support for multi-container services is out of the box, using custom job/compose files  
 Vagrant workstation support  
 added tags support in services, from yaml  
