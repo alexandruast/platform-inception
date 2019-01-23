@@ -23,23 +23,6 @@
 	@label @NORMAL
 </match>
 
-<label @NORMAL>
-	<filter docker.**>
-		@type parser
-		key_name log
-		<parse>
-			@type multiline_grok
-				<grok>
-     			pattern %{TIMESTAMP_ISO8601:time}\s*\[(?<thread>[A-Za-z0-9-]+)\]\s*%{LOGLEVEL:log_level}\s*\[%{BASE16NUM:correlation_id}\]?\s*%{GREEDYDATA:message}
-    		</grok>
-    		<grok>
-      		# Catch all
-      		pattern %{GREEDYDATA:message}
-    		</grok>
-			multiline_start_regexp /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3}/
-		</parse>
-	</filter>
-
 	<match *.**>
 		@type copy
 
@@ -60,7 +43,7 @@
 		<store>
 		#	Your specific remote logging directives here
 		@type loggly
-    loggly_url https://logs-01.loggly.com/inputs/{{LOGGLY_CUSTOMER_TOKEN}}/tag/fluentd
+    loggly_url https://logs-01.loggly.com/inputs/{{lookup('env','LOGGLY_CUSTOMER_TOKEN')}}/tag/fluentd
 		</store>
 	</match>
 
