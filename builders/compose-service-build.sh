@@ -24,6 +24,7 @@ if [ -n "${VAULT_SECRETS:-}" ]; then
     secret_value="$(curl -Ssf -X GET \
       -H "X-Vault-Token:${VAULT_TOKEN}" \
       "${VAULT_ADDR}/v1/secret/operations/${secret_key}" | jq -re .data.value)"
+    echo export ${!secret_key}="${secret_value}"
     export ${!secret_key}="${secret_value}"
   done
 fi
