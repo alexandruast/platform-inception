@@ -23,7 +23,7 @@ for secret_key in $(echo "${VAULT_SECRETS:-}" | jq -re .[] | tr '\n' ' ' | sed -
   secret_value="$(curl -Ssf -X GET \
     -H "X-Vault-Token:${VAULT_TOKEN}" \
     "${VAULT_ADDR}/v1/secret/operations/${secret_key}" | jq -re .data.value)"
-  export ${!secret_key}="${secret_value}"
+  export ${secret_key}="${secret_value}"
 done
 
 echo "[info] copying profile templates..."
