@@ -144,7 +144,7 @@ Cannot be bothered with it, use them as a service:
 (because having a proper cluster, configured with HA and DR is a huge operational and cost overhead)
 * log indexing and searching
 * monitoring
-* storage (no file system storage in 2019, get used to object storage and stateless applications, read 12factor.org)
+* storage (no file system storage in 2019, get used to object storage and stateless applications, read 12factor.net)
 * databases
 
 For code coverage via Sonar, use the following in build.gradle:
