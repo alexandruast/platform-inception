@@ -137,7 +137,8 @@ accelerated provisioning by using setup_completed facts
 
 #### Misc Stuff
 Don't do it:
-* autoscaling - a well designed platform does not need to autoscale based on load, but keep a baseline and proactively scale based on usage patterns. A single distributed attack, with an autoscaling enabled customer on a common cloud provider, will add thousands of dollars to the monthly bill.
+* autoscaling - a well designed platform does not need to autoscale based on load, but keep a baseline and proactively scale based on usage patterns. A single distributed attack, with an autoscaling enabled customer on a common cloud provider, will add thousands of dollars to the monthly bill.  
+
 Cannot be bothered with it, use them as a service:  
 (because having a proper cluster, configured with HA and DR is a huge operational and cost overhead)
 * log indexing and searching
