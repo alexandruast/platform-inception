@@ -11,9 +11,9 @@ ansible-playbook -i 127.0.0.1, \
 
 source "${WORKSPACE}/.build-env"
 
-echo "[info] populating secrets from vault..."
 if [[ -f "${WORKSPACE}/.build-secrets" ]]; then shred -u "${WORKSPACE}/.build-secrets"; fi
 for secret_key in $(echo "${VAULT_SECRETS:-}" | jq -re .[] | tr '\n' ' ' | sed -e 's/ $/ /'); do
+  echo "[info] retrieving secret ${secret_key^^} from vault..."
   secret_value="$(curl -Ssf -X GET \
     -H "X-Vault-Token:${VAULT_TOKEN}" \
     "${VAULT_ADDR}/v1/secret/operations/${secret_key}" | jq -re .data.value)"
