@@ -56,7 +56,7 @@ Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory
 
 #### Changelog
 logging via loggly.com  
-arbitrary vault secrets for services in platform-conf  
+secrets for services stored in platform-conf and accessible via environmental variables  
 support for multi-container services is out of the box, using custom job/compose files  
 Vagrant workstation support  
 added tags support in services, from yaml  
@@ -140,6 +140,13 @@ local consul in dev mode as ephemeral key value store in jenkins
 accelerated provisioning by using setup_completed facts  
 
 #### Misc Stuff
+Cannot be bothered with it, use them as a service:  
+(because having a proper cluster, configured with HA and DR is a huge operational and cost overhead)
+* log indexing and searching
+* monitoring
+* storage (no file system storage in 2019, get used to object storage and stateless applications, read 12factor.org)
+* databases
+
 For code coverage via Sonar, use the following in build.gradle:
 ```
 plugins {
