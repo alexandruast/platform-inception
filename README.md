@@ -45,10 +45,6 @@ Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory
 * CentOS7, Amazon Linux 7, RHEL 7 - all supported also in Vagrant
 
 #### ToDo
-* service autoscaling by business metrics with external witness, with infrastructure autoscaling support
-* streamlined health, logging, metrics and monitoring dashboard
-* request id map and breakdown by service and processing time
-* chaos monkey
 * build publish plugin - run build on prod-jenkins
 * write groovy logic in job-dsl to retrieve all variables from consul
 * hide sensitive info from console output
@@ -140,12 +136,14 @@ local consul in dev mode as ephemeral key value store in jenkins
 accelerated provisioning by using setup_completed facts  
 
 #### Misc Stuff
+Don't do it:
+* autoscaling - a well designed platform does not need to autoscale based on load, but keep a baseline and proactively scale based on usage patterns. A single distributed attack, with an autoscaling enabled customer on a common cloud provider, will add thousands of dollars to the monthly bill.
 Cannot be bothered with it, use them as a service:  
 (because having a proper cluster, configured with HA and DR is a huge operational and cost overhead)
 * log indexing and searching
 * monitoring
-* storage (no file system storage in 2019, get used to object storage and stateless applications, read http://12factor.net)
-* databases
+* persistence layer (no file system storage in 2019, get used to object storage and stateless applications, read http://12factor.net) - this includes databases, queue services, CDN, content acceleration, mailing etc...
+* security/DDoS - cloudflare.com
 
 For code coverage via Sonar, use the following in build.gradle:
 ```
