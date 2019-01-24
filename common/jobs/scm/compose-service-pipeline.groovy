@@ -58,9 +58,9 @@ node {
     ]) {
       sh '''#!/usr/bin/env bash
         set -eEuo pipefail
-        source "${WORKSPACE}/.build-env"
         source "${WORKSPACE}/.build-secrets"
         shred -u "${WORKSPACE}/.build-secrets"
+        source "${WORKSPACE}/.build-env"
         "${BUILDERS_RELATIVE_DIR}/${BUILDERS_CHECKOUT_DIR}/compose-service-build.sh"
       '''
     }
