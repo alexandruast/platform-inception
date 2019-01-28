@@ -34,6 +34,9 @@ setup_sandbox() {
     ./apl-wrapper.sh ansible/target-sandbox.yml
   ./jenkins-setup.sh
   echo "factory-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
+  JENKINS_ENV_VAR_NAME="PLATFORM_SCOPE" \
+    JENKINS_ENV_VAR_VALUE="${PLATFORM_SCOPE}" \
+    ./jenkins-query.sh common/env-update.groovy
   JENKINS_BUILD_JOB="system-factory-job-seed"
   echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
   JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
