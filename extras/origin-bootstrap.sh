@@ -28,11 +28,11 @@ export JENKINS_ADDR="http://${origin_jenkins_ip}:${JENKINS_PORT}"
 ANSIBLE_TARGET="127.0.0.1" \
   ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'dnsmasq_resolv':'supersede','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4']}" \
   ./apl-wrapper.sh ansible/target-${scope}-jenkins.yml
-./jenkins-setup.sh
-echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
 JENKINS_ENV_VAR_NAME="PLATFORM_SCOPE" \
   JENKINS_ENV_VAR_VALUE="${PLATFORM_SCOPE}" \
   ./jenkins-query.sh common/env-update.groovy
+./jenkins-setup.sh
+echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
 JENKINS_BUILD_JOB="system-${scope}-job-seed"
 echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
 JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
@@ -47,9 +47,6 @@ deploy_factory_prod_jenkins() {
     source "${scope}/.scope"
     export JENKINS_ADMIN_PASS="${ci_admin_pass}"
     export JENKINS_ADDR="http://${origin_jenkins_ip}:${JENKINS_PORT}"
-    JENKINS_ENV_VAR_NAME="PLATFORM_SCOPE" \
-      JENKINS_ENV_VAR_VALUE="${PLATFORM_SCOPE}" \
-      ./jenkins-query.sh common/env-update.groovy
     JENKINS_BUILD_JOB="jenkins-${scope}-provision"
     echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
     JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \

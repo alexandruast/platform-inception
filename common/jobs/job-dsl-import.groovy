@@ -3,12 +3,14 @@ import hudson.plugins.git.GitSCM
 import hudson.plugins.git.BranchSpec
 import javaposse.jobdsl.plugin.*
 
-job_name = "system-${env.PLATFORM_SCOPE}-job-seed"
+def platform_scope = Jenkins.instance.ParameterValue("PLATFORM_SCOPE")
+
+job_name = "system-${platform_scope}-job-seed"
 job_description = "Dynamically created by jenkins-setup\nAny changes to this item will be overwritten without notice."
 git_repository = 'https://github.com/alexandruast/platform-inception'
 git_branch = '*/devel'
 set_targets = [
-  "${env.PLATFORM_SCOPE}/jobs/job-dsl/**/*.groovy",
+  "${platform_scope}/jobs/job-dsl/**/*.groovy",
   "common/jobs/job-dsl/group_all/**/*.groovy",
   "common/jobs/job-dsl/group_clusters/**/*.groovy"
 ].join('\n')
