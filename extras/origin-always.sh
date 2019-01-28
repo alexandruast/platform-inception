@@ -44,6 +44,10 @@ JENKINS_ENV_VAR_NAME="JENKINS_IP_ADDR" \
   JENKINS_ENV_VAR_VALUE="${!ip_addr_var}" \
   ./jenkins-query.sh common/env-update.groovy
 
+JENKINS_ENV_VAR_NAME="PLATFORM_SCOPE" \
+  JENKINS_ENV_VAR_VALUE="${PLATFORM_SCOPE}" \
+  ./jenkins-query.sh common/env-update.groovy
+
 # setting up vault, tokens stored on last initialized jenkins server
 declare -a ARR_VAULT_SERVERS=(
   "http://${server1_ip}:8200"
