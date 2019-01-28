@@ -11,5 +11,5 @@ service_data_dir:  "{{lookup('env','JENKINS_HOME')}}"
 service_env: {
   JENKINS_HOME:    "{{service_data_dir}}"
 }
-service_exec:      "/usr/bin/java"
+service_exec:      "PLATFORM_SCOPE={{lookup('env','PLATFORM_SCOPE')|default('none', true)}} /usr/bin/java"
 service_args:      "{{jenkins_java_opts}} -jar {{jenkins_war}} --httpPort={{jenkins_port}}"
