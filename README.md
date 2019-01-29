@@ -142,7 +142,7 @@ Don't do it:
 Cannot be bothered with it, use them as a service:  
 (because having a proper cluster, configured with HA and DR is a huge operational and cost overhead)
 * log indexing and searching
-* monitoring
+* monitoring, and monitoring the monitoring
 * persistence layer (no file system storage in 2019, get used to object storage and stateless applications, read http://12factor.net) - this includes databases, queue services, CDN, content acceleration, mailing etc...
 * security/DDoS - cloudflare.com
 
