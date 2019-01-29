@@ -1,4 +1,3 @@
-export PLATFORM_SCOPE="factory"
 export JENKINS_HOME="/usr/local/share/jenkins"
 export JENKINS_PORT=8080
 export JENKINS_JAVA_OPTS="-Xmx800m -Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"
