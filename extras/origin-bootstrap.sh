@@ -50,8 +50,9 @@ deploy_factory_prod_jenkins() {
     JENKINS_BUILD_JOB="jenkins-${scope}-provision"
     echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
     JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
+      TARGET_JENKINS_ADMIN_PASS=${JENKINS_ADMIN_PASS} \
       ANSIBLE_TARGET="vagrant@${!ip_addr_var}" \
-      JENKINS_SCOPE="${scope}" \
+      TARGET_JENKINS_SCOPE="${scope}" \
       ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'dnsmasq_resolv':'supersede','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4']}" \
       ./jenkins-query.sh \
       ./common/jobs/build-jenkins-provision-job.groovy
