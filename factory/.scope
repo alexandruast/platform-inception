@@ -3,6 +3,20 @@ export JENKINS_HOME="/usr/local/share/jenkins"
 export JENKINS_PORT=8080
 export JENKINS_JAVA_OPTS="-Xmx800m -Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"
 export JENKINS_ADMIN_USER='admin'
+
+export JENKINS_PLUGINS='[ \
+  "build-timeout", \
+  "credentials", \
+  "envinject", \
+  "git", \
+  "job-dsl", \
+  "mask-passwords", \
+  "matrix-auth", \
+  "rebuild", \
+  "workflow-aggregator", \
+  "ws-cleanup" \
+]'
+
 declare -a ARR_JENKINS_SETUP_SCRIPTS
 ARR_JENKINS_SETUP_SCRIPTS=(
   "common/is-online.groovy"
@@ -11,7 +25,7 @@ ARR_JENKINS_SETUP_SCRIPTS=(
   "common/jobs-backup.groovy"
   "common/jobs-delete.groovy"
   "common/views-delete.groovy"
-  "${PLATFORM_SCOPE}/plugins-install.groovy"
+  "common/plugins-install.groovy"
   "common/useradd-admin.groovy"
   "common/security-setup.groovy"
   "common/jobs/job-dsl-import.groovy"

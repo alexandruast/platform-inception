@@ -2,8 +2,19 @@ import jenkins.model.Jenkins
 import hudson.plugins.git.GitSCM
 import hudson.plugins.git.BranchSpec
 import javaposse.jobdsl.plugin.*
+import hudson.slaves.EnvironmentVariablesNodeProperty
 
-def platform_scope = Jenkins.instance.ParameterValue("PLATFORM_SCOPE")
+jenkins = Jenkins.instance
+
+globalNodeProperties = jenkins.getGlobalNodeProperties()
+envVarsNodePropertyList = globalNodeProperties.getAll(EnvironmentVariablesNodeProperty.class)
+envVars = envVarsNodePropertyList.get(0).getEnvVars();
+
+envVars.each{
+  if (it.key == "PLATFORM_SCOPE") {
+    platform_scope = it.value
+  }
+}
 
 job_name = "system-${platform_scope}-job-seed"
 job_description = "Dynamically created by jenkins-setup\nAny changes to this item will be overwritten without notice."
@@ -14,8 +25,6 @@ set_targets = [
   "common/jobs/job-dsl/group_all/**/*.groovy",
   "common/jobs/job-dsl/group_clusters/**/*.groovy"
 ].join('\n')
-
-jenkins = Jenkins.instance
 
 // Delete existing job if exists
 jenkins.getItems().each {

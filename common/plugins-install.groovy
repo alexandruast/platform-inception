@@ -5,18 +5,7 @@ instance = Jenkins.instance
 pm = instance.pluginManager
 uc = instance.updateCenter
 
-Set<String> installPlugins = [
-  "build-timeout",
-  "credentials",
-  "envinject",
-  "git",
-  "job-dsl",
-  "mask-passwords",
-  "matrix-auth",
-  "rebuild",
-  "workflow-aggregator",
-  "ws-cleanup"
-]
+Set<String> installPlugins = {{JENKINS_PLUGINS}}
 
 def activatePlugin(plugin) {
   if (! plugin.isEnabled()) {
