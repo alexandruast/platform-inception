@@ -1,9 +1,9 @@
 def instance = Hudson.instance
 def job = instance.getItem("{{JENKINS_BUILD_JOB}}")
 def params = [
-  new PasswordParameterValue("TARGET_JENKINS_ADMIN_PASS", "{{JENKINS_ADMIN_PASS}}"),
+  new PasswordParameterValue("TARGET_JENKINS_ADMIN_PASS", "{{TARGET_JENKINS_ADMIN_PASS}}"),
   new StringParameterValue("ANSIBLE_TARGET", "{{ANSIBLE_TARGET}}"),
-  new StringParameterValue("TARGET_JENKINS_SCOPE", "{{JENKINS_SCOPE}}"),
+  new StringParameterValue("TARGET_JENKINS_SCOPE", "{{TARGET_JENKINS_SCOPE}}"),
   new StringParameterValue("ANSIBLE_EXTRAVARS", "{{ANSIBLE_EXTRAVARS}}")
 ]
 def futureTask = job.scheduleBuild2(0, new ParametersAction(params))
