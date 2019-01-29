@@ -80,6 +80,6 @@ node {
     }
   }
   stage('cleanup') {
-    sh('shred -u "${WORKSPACE}/.build-secrets"')
+    sh('if [[ -f "${WORKSPACE}/.build-secrets" ]]; then shred -u "${WORKSPACE}/.build-secrets"; fi')
   }
 }
