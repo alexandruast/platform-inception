@@ -29,7 +29,7 @@ ANSIBLE_TARGET="127.0.0.1" \
   ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'dnsmasq_resolv':'supersede','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4']}" \
   ./apl-wrapper.sh ansible/target-${scope}-jenkins.yml
 JENKINS_ENV_VAR_NAME="PLATFORM_SCOPE" \
-  JENKINS_ENV_VAR_VALUE="${PLATFORM_SCOPE}" \
+  JENKINS_ENV_VAR_VALUE="${scope}" \
   ./jenkins-query.sh common/env-update.groovy
 ./jenkins-setup.sh
 echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
@@ -51,7 +51,7 @@ deploy_factory_prod_jenkins() {
     echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
     JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
       ANSIBLE_TARGET="vagrant@${!ip_addr_var}" \
-      JENKINS_SCOPE="${scope}" \
+      PLATFORM_SCOPE="${scope}" \
       ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'dnsmasq_resolv':'supersede','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4']}" \
       ./jenkins-query.sh \
       ./common/jobs/build-jenkins-provision-job.groovy

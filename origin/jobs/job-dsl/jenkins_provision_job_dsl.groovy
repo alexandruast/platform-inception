@@ -9,7 +9,7 @@ scopes.each { scope ->
     parameters {
       nonStoredPasswordParam('JENKINS_ADMIN_PASS', "Password for ${scope} Jenkins admin user")
       stringParam('ANSIBLE_TARGET', "192.0.2.255", "Target to use")
-      choiceParam('JENKINS_SCOPE', ["$scope"], "Running in scope")
+      choiceParam('PLATFORM_SCOPE', ["$scope"], "Running in scope")
       stringParam('ANSIBLE_EXTRAVARS', "{'ansible_user':'ec2-user'}", "Optional: JSON format single line, single quoutes")
     }
     definition {

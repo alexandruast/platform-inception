@@ -26,18 +26,19 @@ overwrite_factory_keypair() {
 }
 
 setup_sandbox() {
-  source "factory/.scope"
+  scope='factory'
+  source "${scope}/.scope"
   export JENKINS_ADMIN_PASS="${ci_admin_pass}"
   export JENKINS_ADDR="http://${sandbox_ip}:${JENKINS_PORT}"
   ANSIBLE_TARGET="127.0.0.1" \
     ANSIBLE_EXTRAVARS="{'dnsmasq_resolv':'supersede','service_bind_ip':'${sandbox_ip}','service_network_interface':'${service_network_interface}','dns_servers':['/consul/127.0.0.1#8600','8.8.8.8','8.8.4.4']}" \
     ./apl-wrapper.sh ansible/target-sandbox.yml
   JENKINS_ENV_VAR_NAME="PLATFORM_SCOPE" \
-    JENKINS_ENV_VAR_VALUE="${PLATFORM_SCOPE}" \
+    JENKINS_ENV_VAR_VALUE="${scope}" \
     ./jenkins-query.sh common/env-update.groovy
   ./jenkins-setup.sh
-  echo "factory-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
-  JENKINS_BUILD_JOB="system-factory-job-seed"
+  echo "${scope}-jenkins is online: ${JENKINS_ADDR} ${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASS}"
+  JENKINS_BUILD_JOB="system-${scope}-job-seed"
   echo "waiting for ${JENKINS_BUILD_JOB} job to complete..."
   JENKINS_BUILD_JOB=${JENKINS_BUILD_JOB} \
     ./jenkins-query.sh \
