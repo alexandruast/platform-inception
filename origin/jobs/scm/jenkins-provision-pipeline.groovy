@@ -21,7 +21,7 @@ node {
         tunnel_port=$(perl -e 'print int(rand(999)) + 58000')
         ssh ${SSH_OPTS} -f -N -M -S ssh-control-socket -L ${tunnel_port}:127.0.0.1:${JENKINS_PORT} ${ANSIBLE_TARGET}
         export JENKINS_ADDR=http://127.0.0.1:${tunnel_port}
-        JENKINS_ENV_VAR_NAME="PLATFORM_SCOPE" \
+        JENKINS_ENV_VAR_NAME="JENKINS_SCOPE" \
           JENKINS_ENV_VAR_VALUE="${JENKINS_SCOPE}" \
           ./jenkins-query.sh common/env-update.groovy
         ./jenkins-setup.sh

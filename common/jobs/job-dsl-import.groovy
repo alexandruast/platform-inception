@@ -11,7 +11,7 @@ envVarsNodePropertyList = globalNodeProperties.getAll(EnvironmentVariablesNodePr
 envVars = envVarsNodePropertyList.get(0).getEnvVars();
 
 envVars.each{
-  if (it.key == "PLATFORM_SCOPE") {
+  if (it.key == "JENKINS_SCOPE") {
     platform_scope = it.value
   }
 }

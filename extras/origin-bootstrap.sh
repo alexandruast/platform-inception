@@ -28,7 +28,7 @@ export JENKINS_ADDR="http://${origin_jenkins_ip}:${JENKINS_PORT}"
 ANSIBLE_TARGET="127.0.0.1" \
   ANSIBLE_EXTRAVARS="{'force_setup':${force_setup},'dnsmasq_resolv':'supersede','dns_servers':['/consul/${server1_ip}','/consul/${server2_ip}','8.8.8.8','8.8.4.4']}" \
   ./apl-wrapper.sh ansible/target-${scope}-jenkins.yml
-JENKINS_ENV_VAR_NAME="PLATFORM_SCOPE" \
+JENKINS_ENV_VAR_NAME="JENKINS_SCOPE" \
   JENKINS_ENV_VAR_VALUE="${scope}" \
   ./jenkins-query.sh common/env-update.groovy
 ./jenkins-setup.sh
