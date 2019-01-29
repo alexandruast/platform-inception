@@ -17,7 +17,7 @@ node {
         SSH_OPTS='-o LogLevel=error -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes -o ExitOnForwardFailure=yes'
         ssh ${SSH_OPTS} ${ANSIBLE_TARGET} "sudo yum -q -y install python libselinux-python"
         source ./${TARGET_JENKINS_SCOPE}/.scope
-        ./apl-wrapper.sh ansible/target-${JENKINS_SCOPE}-jenkins.yml
+        ./apl-wrapper.sh ansible/target-${TARGET_JENKINS_SCOPE}-jenkins.yml
         tunnel_port=$(perl -e 'print int(rand(999)) + 58000')
         ssh ${SSH_OPTS} -f -N -M -S ssh-control-socket -L ${tunnel_port}:127.0.0.1:${JENKINS_PORT} ${ANSIBLE_TARGET}
         export JENKINS_ADDR=http://127.0.0.1:${tunnel_port}
@@ -26,7 +26,7 @@ node {
           JENKINS_ENV_VAR_VALUE="${TARGET_JENKINS_SCOPE}" \
           ./jenkins-query.sh common/env-update.groovy
         ./jenkins-setup.sh
-        JENKINS_BUILD_JOB=system-${JENKINS_SCOPE}-job-seed JENKINS_ADDR=http://127.0.0.1:${tunnel_port} ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
+        JENKINS_BUILD_JOB=system-${TARGET_JENKINS_SCOPE}-job-seed JENKINS_ADDR=http://127.0.0.1:${tunnel_port} ./jenkins-query.sh ./common/jobs/build-simple-job.groovy
       '''
     }
     stage('cleanup') {
