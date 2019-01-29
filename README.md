@@ -46,11 +46,11 @@ Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory
 
 #### ToDo
 * build publish plugin - run build on prod-jenkins
-* write groovy logic in job-dsl to retrieve all variables from consul
 * hide sensitive info from console output
 * store archives/backups
 
 #### Changelog
+refactored scope files  
 logging via loggly.com  
 secrets for services stored in platform-conf and accessible via environmental variables  
 support for multi-container services is out of the box, using custom job/compose files  
