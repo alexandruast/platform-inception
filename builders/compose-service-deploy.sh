@@ -85,7 +85,6 @@ while :; do
           ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${SERVICE_CATEGORY}/${SERVICE_NAME}/current_deploy_tag >/dev/null
         exit 0
       ;;
-
       dead)
         exit 1
     esac
@@ -102,7 +101,6 @@ while :; do
           ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${SERVICE_CATEGORY}/${SERVICE_NAME}/current_deploy_tag >/dev/null
         exit 0
       ;;
-
       failed|cancelled)
         exit 1
     esac
