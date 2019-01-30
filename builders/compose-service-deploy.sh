@@ -78,24 +78,36 @@ while :; do
       ${NOMAD_ADDR}/v1/jobs?prefix=${SERVICE_NAME} | jq -re ".[] | select(.ModifyIndex==${JOB_MODIFY_INDEX})")"
     JOB_STATUS="$(echo "${JOB_DATA}"| jq -re .Status)"
     echo "[info] job status: ${JOB_STATUS:-unknown}"
-  fi
-  
-  
-  
-  echo "[info] deployment status: ${DEPLOYMENT_STATUS}"
-  
-  case "${DEPLOYMENT_STATUS}" in
-    successful)
-      curl -Ssf -X PUT \
-        -d "${CURRENT_BUILD_TAG}" \
-        ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${SERVICE_CATEGORY}/${SERVICE_NAME}/current_deploy_tag >/dev/null
-      exit 0
-    ;;
+    case "${JOB_STATUS}" in
+      running)
+        curl -Ssf -X PUT \
+          -d "${CURRENT_BUILD_TAG}" \
+          ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${SERVICE_CATEGORY}/${SERVICE_NAME}/current_deploy_tag >/dev/null
+        exit 0
+      ;;
 
-    failed|cancelled)
-      exit 1
-  esac
+      dead)
+        exit 1
+    esac
+  else
+    DEPLOYMENT_STATUS="$(curl -Ssf \
+      ${NOMAD_ADDR}/v1/deployment/${DEPLOYMENT_ID} \
+      | jq -re .Status)"
+    echo "[info] deployment status: ${DEPLOYMENT_STATUS}"
+
+    case "${DEPLOYMENT_STATUS}" in
+      successful)
+        curl -Ssf -X PUT \
+          -d "${CURRENT_BUILD_TAG}" \
+          ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${SERVICE_CATEGORY}/${SERVICE_NAME}/current_deploy_tag >/dev/null
+        exit 0
+      ;;
+
+      failed|cancelled)
+        exit 1
+    esac
+  fi
 done  
 
-# Script should never end up here!
+# Script should never end here!
 exit 1
