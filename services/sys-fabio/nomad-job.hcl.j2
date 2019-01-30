@@ -1,11 +1,7 @@
 #jinja2: lstrip_blocks: "True"
 job "{{lookup('env','SERVICE_NAME')}}" {
   datacenters = ["dc1"]
-  type = "service"
-  constraint {
-    operator  = "distinct_hosts"
-    value     = "true"
-  }
+  type = "system"
   update {
     max_parallel = 1
     health_check     = "checks"
