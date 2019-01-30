@@ -55,7 +55,7 @@ echo "[info] getting information back from Nomad API..."
 # Getting information
 JOB_EVAL_ID="$(echo "${JOB_POST_DATA}" | jq -re .EvalID)"
 
-until [[ "${DEPLOYMENT_ID:-}" != "" ]] && [[ "${DEPLOYMENT_TYPE:-}" != "system" ]]; do
+until [[ "${DEPLOYMENT_ID:-}" != "" ]] && [[ "${JOB_TYPE:-}" != "system" ]]; do
   sleep 1
   echo "[info] trying ${NOMAD_ADDR}/v1/evaluation/${JOB_EVAL_ID}"
   JOB_EVAL_DATA="$(curl -Ssf \
