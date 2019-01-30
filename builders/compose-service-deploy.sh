@@ -60,9 +60,9 @@ until [[ "${DEPLOYMENT_ID:-}" != "" ]] && [[ "${JOB_TYPE:-}" != "system" ]]; do
   echo "[info] trying ${NOMAD_ADDR}/v1/evaluation/${JOB_EVAL_ID}"
   JOB_EVAL_DATA="$(curl -Ssf \
     ${NOMAD_ADDR}/v1/evaluation/${JOB_EVAL_ID})"
-  JOB_TYPE="$(echo "${JOB_EVAL_DATA}" | jq -re .Type)"
+  # JOB_MODIFY_INDEX="$(echo "${JOB_EVAL_DATA}" | jq -re .JobModifyIndex)"
+  # JOB_TYPE="$(echo "${JOB_EVAL_DATA}" | jq -re .Type)"
   DEPLOYMENT_ID="$(echo "${JOB_EVAL_DATA}" | jq -re .DeploymentID)"
-  JOB_MODIFY_INDEX="$(echo "${JOB_EVAL_DATA}" | jq -re .JobModifyIndex)"
 done
 
 echo "[info] waiting for deployment to finish..."
@@ -73,38 +73,39 @@ while :; do
   wait || true
 
   # nomad system job currently does not support deployments
-  if [[ "${JOB_TYPE}" == "system" ]]; then
-    JOB_DATA="$(curl -Ssf \
-      ${NOMAD_ADDR}/v1/jobs?prefix=${SERVICE_NAME} | jq -re ".[] | select(.ModifyIndex==${JOB_MODIFY_INDEX})")"
-    JOB_STATUS="$(echo "${JOB_DATA}"| jq -re .Status)"
-    echo "[info] job status: ${JOB_STATUS:-unknown}"
-    case "${JOB_STATUS}" in
-      running)
-        curl -Ssf -X PUT \
-          -d "${CURRENT_BUILD_TAG}" \
-          ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${SERVICE_CATEGORY}/${SERVICE_NAME}/current_deploy_tag >/dev/null
-        exit 0
-      ;;
-      dead)
-        exit 1
-    esac
-  else
-    DEPLOYMENT_STATUS="$(curl -Ssf \
-      ${NOMAD_ADDR}/v1/deployment/${DEPLOYMENT_ID} \
-      | jq -re .Status)"
-    echo "[info] deployment status: ${DEPLOYMENT_STATUS}"
+  # if [[ "${JOB_TYPE}" == "system" ]]; then
+  #   JOB_DATA="$(curl -Ssf \
+  #     ${NOMAD_ADDR}/v1/jobs?prefix=${SERVICE_NAME} | jq -re ".[] | select(.ModifyIndex==${JOB_MODIFY_INDEX})")"
+  #   JOB_STATUS="$(echo "${JOB_DATA}"| jq -re .Status)"
+  #   echo "[info] job status: ${JOB_STATUS:-unknown}"
+  #   case "${JOB_STATUS}" in
+  #     running)
+  #       curl -Ssf -X PUT \
+  #         -d "${CURRENT_BUILD_TAG}" \
+  #         ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${SERVICE_CATEGORY}/${SERVICE_NAME}/current_deploy_tag >/dev/null
+  #       exit 0
+  #     ;;
+  #     dead)
+  #       exit 1
+  #   esac
+  # else
+  # fi
 
-    case "${DEPLOYMENT_STATUS}" in
-      successful)
-        curl -Ssf -X PUT \
-          -d "${CURRENT_BUILD_TAG}" \
-          ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${SERVICE_CATEGORY}/${SERVICE_NAME}/current_deploy_tag >/dev/null
-        exit 0
-      ;;
-      failed|cancelled)
-        exit 1
-    esac
-  fi
+  DEPLOYMENT_STATUS="$(curl -Ssf \
+    ${NOMAD_ADDR}/v1/deployment/${DEPLOYMENT_ID} \
+    | jq -re .Status)"
+  echo "[info] deployment status: ${DEPLOYMENT_STATUS}"
+
+  case "${DEPLOYMENT_STATUS}" in
+    successful)
+      curl -Ssf -X PUT \
+        -d "${CURRENT_BUILD_TAG}" \
+        ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${SERVICE_CATEGORY}/${SERVICE_NAME}/current_deploy_tag >/dev/null
+      exit 0
+    ;;
+    failed|cancelled)
+      exit 1
+  esac
 done  
 
 # Script should never end here!
