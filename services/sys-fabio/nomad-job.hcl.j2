@@ -1,7 +1,11 @@
 #jinja2: lstrip_blocks: "True"
 job "{{lookup('env','SERVICE_NAME')}}" {
   datacenters = ["dc1"]
-  type = "system"
+  type = "service"
+  constraint {
+    operator  = "distinct_hosts"
+    value     = "true"
+  }
   update {
     max_parallel = 1
     health_check     = "checks"
@@ -10,6 +14,7 @@ job "{{lookup('env','SERVICE_NAME')}}" {
     stagger          = "10s"
   }
   group "{{lookup('env','SERVICE_NAME')}}" {
+    count = {{lookup('env','SERVICE_COUNT')|default(999,true)}}
     restart {
       attempts = 3
       delay    = "60s"

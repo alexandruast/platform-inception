@@ -15,5 +15,5 @@ RUN useradd --no-create-home --no-log-init --system fabio
 
 USER fabio
 
-CMD ["exit 1"]
+CMD ["fabio"]
 
