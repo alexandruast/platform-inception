@@ -55,12 +55,14 @@ echo "[info] getting information back from Nomad API..."
 # Getting information
 JOB_EVAL_ID="$(echo "${JOB_POST_DATA}" | jq -re .EvalID)"
 
-until [[ "${DEPLOYMENT_ID:-}" != "" ]]; do
+until [[ "${DEPLOYMENT_ID:-}" != "" ]] && [[ "${DEPLOYMENT_TYPE:-}" != "system" ]]; do
   sleep 1
   echo "[info] trying ${NOMAD_ADDR}/v1/evaluation/${JOB_EVAL_ID}"
-  DEPLOYMENT_ID="$(curl -Ssf \
-    ${NOMAD_ADDR}/v1/evaluation/${JOB_EVAL_ID} \
-    | jq -re .DeploymentID)"
+  JOB_EVAL_DATA="$(curl -Ssf \
+    ${NOMAD_ADDR}/v1/evaluation/${JOB_EVAL_ID})"
+  JOB_TYPE="$(echo "${JOB_EVAL_DATA}" | jq -re .Type)"
+  DEPLOYMENT_ID="$(echo "${JOB_EVAL_DATA}" | jq -re .DeploymentID)"
+  JOB_MODIFY_INDEX="$(echo "${JOB_EVAL_DATA}" | jq -re .JobModifyIndex)"
 done
 
 echo "[info] waiting for deployment to finish..."
@@ -70,9 +72,15 @@ while :; do
   sleep 10 &
   wait || true
 
-  DEPLOYMENT_STATUS="$(curl -Ssf \
-    ${NOMAD_ADDR}/v1/deployment/${DEPLOYMENT_ID} \
-    | jq -re .Status)"
+  # nomad system job currently does not support deployments
+  if [[ "${JOB_TYPE}" == "system" ]]; then
+    JOB_DATA="$(curl -Ssf \
+      ${NOMAD_ADDR}/v1/jobs?prefix=${SERVICE_NAME} | jq -re ".[] | select(.ModifyIndex==${JOB_MODIFY_INDEX})")"
+    JOB_STATUS="$(echo "${JOB_DATA}"| jq -re .Status)"
+    echo "[info] job status: ${JOB_STATUS:-unknown}"
+  fi
+  
+  
   
   echo "[info] deployment status: ${DEPLOYMENT_STATUS}"
   
@@ -87,7 +95,7 @@ while :; do
     failed|cancelled)
       exit 1
   esac
-done
+done  
 
 # Script should never end up here!
 exit 1
