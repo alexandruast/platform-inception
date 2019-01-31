@@ -45,6 +45,7 @@ Sandbox infrastructure (Nomad, Consul, Vault, Fabio) is provisioned from Factory
 * CentOS7, Amazon Linux 7, RHEL 7 - all supported also in Vagrant
 
 #### ToDo
+* use system scheduler when deployments are implemented in nomad
 * build publish plugin - run build on prod-jenkins
 * hide sensitive info from console output
 * store archives/backups
@@ -136,6 +137,8 @@ local consul in dev mode as ephemeral key value store in jenkins
 accelerated provisioning by using setup_completed facts  
 
 #### Misc Stuff
+Code quality, code coverage and unit testing will run at build time, because it's language specific. The directives to check code, coverage and tests are to be bundled in the Dockerfile.
+Going with a simple rolling update, instead of canary/bg, is preferred if health checks are used properly.
 Don't do it:
 * autoscaling - a well designed platform does not need to autoscale based on load, but keep a baseline and proactively scale based on usage patterns. A single distributed attack, with an autoscaling enabled customer on a common cloud provider, will add thousands of dollars to the monthly bill.  
 

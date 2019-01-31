@@ -2,6 +2,9 @@
 set -eEuo pipefail
 trap 'RC=$?; echo [error] exit code $RC running $BASH_COMMAND; exit $RC' ERR
 
+if [[ -f "${WORKSPACE}/.build-secrets" ]]; then source "${WORKSPACE}/.build-secrets"; fi
+source "${WORKSPACE}/.build-env"
+
 echo "[info] getting all information required for the deploy to start..."
 
 SSH_OPTS=(
@@ -72,25 +75,6 @@ while :; do
   sleep 10 &
   wait || true
 
-  # nomad system job currently does not support deployments
-  # if [[ "${JOB_TYPE}" == "system" ]]; then
-  #   JOB_DATA="$(curl -Ssf \
-  #     ${NOMAD_ADDR}/v1/jobs?prefix=${SERVICE_NAME} | jq -re ".[] | select(.ModifyIndex==${JOB_MODIFY_INDEX})")"
-  #   JOB_STATUS="$(echo "${JOB_DATA}"| jq -re .Status)"
-  #   echo "[info] job status: ${JOB_STATUS:-unknown}"
-  #   case "${JOB_STATUS}" in
-  #     running)
-  #       curl -Ssf -X PUT \
-  #         -d "${CURRENT_BUILD_TAG}" \
-  #         ${CONSUL_HTTP_ADDR}/v1/kv/platform/data/${PLATFORM_ENVIRONMENT}/${SERVICE_CATEGORY}/${SERVICE_NAME}/current_deploy_tag >/dev/null
-  #       exit 0
-  #     ;;
-  #     dead)
-  #       exit 1
-  #   esac
-  # else
-  # fi
-
   DEPLOYMENT_STATUS="$(curl -Ssf \
     ${NOMAD_ADDR}/v1/deployment/${DEPLOYMENT_ID} \
     | jq -re .Status)"
@@ -106,7 +90,7 @@ while :; do
     failed|cancelled)
       exit 1
   esac
-done  
+done
 
 # Script should never end here!
 exit 1

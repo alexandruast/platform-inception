@@ -56,12 +56,7 @@ node {
         string(credentialsId: 'JENKINS_VAULT_TOKEN', variable: 'VAULT_TOKEN'),
         string(credentialsId: 'JENKINS_VAULT_ROLE_ID', variable: 'VAULT_ROLE_ID'),
     ]) {
-      sh '''#!/usr/bin/env bash
-        if [[ -f "${WORKSPACE}/.build-secrets" ]]; then source "${WORKSPACE}/.build-secrets"; fi
-        source "${WORKSPACE}/.build-env"
-        set -eEuo pipefail
-        "${BUILDERS_RELATIVE_DIR}/${BUILDERS_CHECKOUT_DIR}/compose-service-build.sh"
-      '''
+      sh("${builders_relative_dir}/${builders_checkout_dir}/compose-service-build.sh")
     }
   }
   if ( SERVICE_CATEGORY == "services" ) {
@@ -70,12 +65,7 @@ node {
           string(credentialsId: 'JENKINS_VAULT_TOKEN', variable: 'VAULT_TOKEN'),
           string(credentialsId: 'JENKINS_VAULT_ROLE_ID', variable: 'VAULT_ROLE_ID'),
       ]) {
-        sh '''#!/usr/bin/env bash
-          set -eEuo pipefail
-          if [[ -f "${WORKSPACE}/.build-secrets" ]]; then source "${WORKSPACE}/.build-secrets"; fi
-          source "${WORKSPACE}/.build-env"
-          "${BUILDERS_RELATIVE_DIR}/${BUILDERS_CHECKOUT_DIR}/compose-service-deploy.sh"
-        '''
+        sh("${builders_relative_dir}/${builders_checkout_dir}/compose-service-deploy.sh")
       }
     }
   }
