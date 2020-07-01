@@ -9,6 +9,7 @@ BUILDERS_ABSOLUTE_DIR="$(cd "$(dirname $0)" && pwd)"
 BUILD_TAG="$(git rev-parse --short HEAD)"
 
 source "${WORKSPACE}/.build-env"
+source "${WORKSPACE}/.build-secrets"
 
 REGISTRY_CREDENTIALS="$(curl -Ssf -X GET \
   -H "X-Vault-Token:${VAULT_TOKEN}" \
