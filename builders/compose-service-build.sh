@@ -8,8 +8,13 @@ BUILDERS_ABSOLUTE_DIR="$(cd "$(dirname $0)" && pwd)"
 
 BUILD_TAG="$(git rev-parse --short HEAD)"
 
-source "${WORKSPACE}/.build-secrets"
-source "${WORKSPACE}/.build-env"
+SOURCE=("${WORKSPACE}/.build-secrets" "${WORKSPACE}/.build-env")
+
+for file in "${SOURCE[@]}"; do
+  if [ -f "$file" ]; then
+    source "$file"
+  fi
+done
 
 REGISTRY_CREDENTIALS="$(curl -Ssf -X GET \
   -H "X-Vault-Token:${VAULT_TOKEN}" \
