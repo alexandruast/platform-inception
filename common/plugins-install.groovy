@@ -1,5 +1,4 @@
 import jenkins.model.Jenkins
-sleep(10000)
 
 instance = Jenkins.instance
 pm = instance.pluginManager

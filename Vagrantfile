@@ -11,10 +11,10 @@ ci_admin_pass = "welcome1"
 # Network interface to use for services:
 # amazon linux 2 - eth1
 # centos/rhel7 - enp0s8
-service_network_interface = "enp0s8"
-# service_network_interface = "eth1"
+# service_network_interface = "enp0s8"
+service_network_interface = "eth1"
 
-box = "bento/centos-7.4"
+box = "bento/centos-7.8"
 # box = "moonphase/amazonlinux2"
 # box = "xianlin/rhel-7"
 

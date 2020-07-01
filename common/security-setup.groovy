@@ -7,8 +7,8 @@ import org.jenkinsci.plugins.workflow.flow.FlowDurabilityHint
 
 instance = Jenkins.instance
 
-println "Disable CLI over remoting"
-instance.getDescriptor("jenkins.CLI").get().setEnabled(false)
+// println "Disable CLI over remoting"
+// instance.getDescriptor("jenkins.CLI").get().setEnabled(false)
 
 // Disable agent protocols, except for protocol 4
 println "Disable unsafe agent protocols"

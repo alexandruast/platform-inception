@@ -54,17 +54,16 @@ fi
 CSRF="$(curl --connect-timeout $connect_timeout ${auth_args[*]} -s ${JENKINS_ADDR}/api/json?pretty=true | jq -r '.useCrumbs' | awk '{print tolower($0)}')"
 
 if [[ $CSRF == "true" ]]; then
-  token=$(curl --connect-timeout $connect_timeout ${auth_args[*]} -s ${JENKINS_ADDR}/crumbIssuer/api/json | jq -re '.crumbRequestField + "=" + .crumb')
-  auth_args=(${auth_args[@]} -d $token)
+  crumb="$(curl --connect-timeout $connect_timeout ${auth_args[*]} --cookie-jar ./cookie -s "${JENKINS_ADDR}/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)")"
 fi
 
 # Fill variable placeholders in groovy file with mo
 script=$(cat $JENKINS_SCRIPT | mo)
 # Running groovy script
-result=$(curl --connect-timeout $connect_timeout --silent ${auth_args[*]} --data-urlencode "script=$script" ${JENKINS_ADDR}/scriptText)
+result=$(curl --connect-timeout $connect_timeout --silent ${auth_args[*]} --cookie ./cookie -H "${crumb}" --data-urlencode "script=$script" ${JENKINS_ADDR}/scriptText)
 
 # Output parse and cleanup
-EXCEPTIONS=('Exception:')
+EXCEPTIONS=('Exception:' 'Error ')
 PASS=('Result: org.kohsuke.stapler.HttpRedirect' 'Result: false' 'Result: true' '200' '201')
 
 for i in "${EXCEPTIONS[@]}"; do
