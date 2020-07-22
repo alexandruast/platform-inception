@@ -7,13 +7,13 @@ uc = instance.updateCenter
 Set<String> installPlugins = {{JENKINS_PLUGINS}}
 
 def activatePlugin(plugin) {
-  if (! plugin.isEnabled()) {
-    println("Enabling ${plugin}")
-    plugin.enable()
-  }
   plugin.getDependencies().each {
     println("Processing dependency ${it} for ${plugin}")
     activatePlugin(pm.getPlugin(it.shortName))
+  }
+  if (! plugin.isEnabled()) {
+    println("Enabling ${plugin}")
+    plugin.enable()
   }
 }
 
